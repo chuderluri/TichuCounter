@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="feature_players_title">Players</string>
+    <string name="feature_players_quick_play">Quick play</string>
+    <string name="feature_players_search">Search…</string>
+    <string name="feature_players_add">Add player</string>
+    <string name="feature_players_games_played">%1$d games</string>
+    <string name="feature_players_last_played">last played %1$s</string>
+    <string name="feature_players_never_played">never played</string>
+    <string name="feature_players_show_archived">Show archived (%1$d)</string>
+    <string name="feature_players_hide_archived">Hide archived</string>
+    <string name="feature_players_archived_label">archived</string>
+    <string name="feature_players_in_game">In current game</string>
+    <string name="feature_players_empty_title">No players yet</string>
+    <string name="feature_players_empty_description">Add the people you play with to keep history and statistics.</string>
+    <string name="feature_players_quick_play_title">Playing without a group</string>
+    <string name="feature_players_quick_play_description">Create a group to keep players and statistics.</string>
+    <string name="feature_players_create_group">Create a group</string>
+    <string name="feature_players_edit_title">Edit player</string>
+    <string name="feature_players_new_title">New player</string>
+    <string name="feature_players_save">Save</string>
+    <string name="feature_players_name">Name</string>
+    <string name="feature_players_name_error">Enter a unique name (max. 30 characters)</string>
+    <string name="feature_players_colour">Colour</string>
+    <string name="feature_players_groups">Groups</string>
+    <string name="feature_players_archive">Archive player</string>
+    <string name="feature_players_unarchive">Unarchive player</string>
+    <string name="feature_players_delete">Delete</string>
+    <string name="feature_players_delete_hint">Only possible if the player never played a game</string>
+    <string name="feature_players_locked_banner">Cannot edit while in a game – finish or abandon the current game first.</string>
+    <string name="feature_players_last_group_error">A player must stay in at least one group</string>
+    <string name="feature_players_saved">Saved</string>
+    <string name="feature_players_back">Back</string>
+</resources>

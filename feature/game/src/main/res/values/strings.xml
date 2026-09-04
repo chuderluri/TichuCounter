@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="feature_game_quick_play">Quick play</string>
+    <string name="feature_game_settings">Settings</string>
+    <string name="feature_game_current_game">Current game</string>
+    <string name="feature_game_team_a">Team A</string>
+    <string name="feature_game_team_b">Team B</string>
+    <string name="feature_game_round_started">Round %1$d · started %2$s</string>
+    <string name="feature_game_continue">Continue</string>
+    <string name="feature_game_new_game">New game</string>
+    <string name="feature_game_start_new_game">Start a new game</string>
+    <string name="feature_game_no_game">No game in progress</string>
+    <string name="feature_game_game_in_group">Game in group %1$s</string>
+    <string name="feature_game_abandon_title">Abandon current game?</string>
+    <string name="feature_game_abandon_confirm">Abandon &amp; new</string>
+    <string name="feature_game_cancel">Cancel</string>
+
+    <string name="feature_game_setup_title">New game</string>
+    <string name="feature_game_add_player">Add player</string>
+    <string name="feature_game_clear_slot">Clear</string>
+    <string name="feature_game_rename_guest">Rename</string>
+    <string name="feature_game_search_member">Search member…</string>
+    <string name="feature_game_guest_player">Guest player</string>
+    <string name="feature_game_guest_hint">not saved, no statistics</string>
+    <string name="feature_game_new_person">New</string>
+    <string name="feature_game_quick_play_hint">Playing without a group. Names are not saved and no statistics are recorded.</string>
+    <string name="feature_game_create_group_instead">Create a group instead</string>
+    <string name="feature_game_target_score">Target score</string>
+    <string name="feature_game_start_game">Start game</string>
+    <string name="feature_game_guest_name">Guest name</string>
+    <string name="feature_game_ok">OK</string>
+    <string name="feature_game_new_person_name">Name</string>
+    <string name="feature_game_name_error">Enter a unique name (max. 30 characters)</string>
+    <string name="feature_game_start_error">Could not start the game</string>
+    <string name="feature_game_last_played">last played %1$s</string>
+    <string name="feature_game_never_played">never played</string>
+    <string name="feature_game_back">Back</string>
+
+    <string name="feature_game_swap_title">Replace %1$s (%2$s)</string>
+    <string name="feature_game_swap_search">Search…</string>
+    <string name="feature_game_swap_error">Could not swap the player</string>
+</resources>

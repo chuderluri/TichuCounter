@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="feature_groups_picker_title">Who is playing?</string>
+    <string name="feature_groups_picker_subtitle">Choose a group</string>
+    <string name="feature_groups_app_name">Tichu Counter</string>
+    <string name="feature_groups_members_games">%1$d members · %2$d games</string>
+    <string name="feature_groups_create_group">Create group</string>
+    <string name="feature_groups_or">or</string>
+    <string name="feature_groups_just_play">Just play</string>
+    <string name="feature_groups_just_play_subtitle">Count points without registering players. No statistics.</string>
+    <string name="feature_groups_create_group_subtitle">Register players, keep history and statistics.</string>
+    <string name="feature_groups_group_name">Group name</string>
+    <string name="feature_groups_name_error">Enter a unique name (max. 30 characters)</string>
+    <string name="feature_groups_create">Create</string>
+    <string name="feature_groups_cancel">Cancel</string>
+    <string name="feature_groups_active">Active</string>
+    <string name="feature_groups_edit_group">Edit group</string>
+    <string name="feature_groups_save">Save</string>
+    <string name="feature_groups_members">Members (%1$d)</string>
+    <string name="feature_groups_in_current_game">in current game</string>
+    <string name="feature_groups_edit_person">Edit person</string>
+    <string name="feature_groups_remove_member">Remove from group</string>
+    <string name="feature_groups_add_existing">Add existing person</string>
+    <string name="feature_groups_add_new">New person</string>
+    <string name="feature_groups_archive_group">Archive group</string>
+    <string name="feature_groups_unarchive_group">Unarchive group</string>
+    <string name="feature_groups_person_in_game_error">Finish or abandon the current game first</string>
+    <string name="feature_groups_add_existing_title">Add existing person</string>
+    <string name="feature_groups_no_other_persons">All persons are already members</string>
+    <string name="feature_groups_new_person_name">Name</string>
+    <string name="feature_groups_add">Add</string>
+    <string name="feature_groups_saved">Saved</string>
+</resources>
