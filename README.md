@@ -1,48 +1,148 @@
 # Tichu Counter
 
-Native Android score-keeping app for the card game Tichu.
+Android app to replace the paper score sheet for the card game Tichu.
 
-## Features
+The app is designed to be usable at the table: large scores, calculator-like
+point input, Tichu and double-win buttons, player swaps, and undo/redo.
 
-- Groups of persons; one person may be part of several groups.
-- **Just play** mode with placeholder guests (`Player 1`–`Player 4`) and no
-  registration or statistics.
-- Four-seat team setup; each seat can be a registered person or guest.
-- Calculator-style score entry: enter one team score, automatic complement to 100.
-- Small/Grand Tichu toggles per player, entered at round end as made/lost.
-- Double wins, player swaps between rounds, persistent undo/redo.
-- One in-progress game per device; completed and abandoned games in history.
-- Local Room persistence and DataStore preferences; offline-first.
+## What You Can Do
 
-Statistics, backup/import and remote sync are planned for later phases.
+- Create a **group** such as "Family" or "Tuesday club" and add people to it.
+- A person may appear in more than one group.
+- Use **Just play** without creating a group or registering people.
+  The app starts with `Player 1` to `Player 4`; names can be changed for that
+  game but are not saved as persons.
+- Create two teams of two players.
+- Use a **guest player** in any group game. A guest is not registered and has
+  no statistics, while the registered players still receive their statistics.
+- Enter a round with the numeric keypad. Entering `60` for Team A automatically
+  proposes `40` for Team B.
+- Enter Small Tichu / Grand Tichu as made or lost at the end of the round.
+- Record a double win.
+- Swap a player between rounds.
+- Undo and redo entries, including after closing and reopening the app.
+- View finished, abandoned, and current games in History.
 
-## Requirements
+Statistics, backup/import, and online synchronisation are planned for a later
+version. The Statistics tab is currently only a placeholder.
 
-- JDK 17+
-- Android SDK Platform 35 and Build Tools 35.0.0
-- Windows: use `gradlew.bat`; macOS/Linux: use `./gradlew`
+## The Main Screens
 
-## Build and verify
+| Screen | What it is for |
+| --- | --- |
+| Group picker | Select the circle of people playing today, create a group, or choose **Just play**. |
+| Play | Shows the only currently running game, if there is one. |
+| Players | Add, edit, archive, and organise registered people in groups. |
+| New game | Put four registered people or guests into the two teams. |
+| Scoring | Enter points, Tichu results, double wins, and player changes. |
+| History | Look at older games and continue an abandoned/current one. |
+| Settings | Change point target, display behaviour, and the active group. |
+
+## Install On A Phone
+
+The project can create an installable Android file called an **APK**.
+
+1. Build the APK as described in [Create The APK](#create-the-apk).
+2. Find `app-debug.apk` in this folder:
+
+   ```text
+   app\build\outputs\apk\debug\app-debug.apk
+   ```
+
+3. Copy the file to your Android phone, for example through USB, OneDrive, or
+   e-mail.
+4. Open it on the phone and allow installation from that file manager if Android
+   asks. This is normal for an app that is not yet installed from Google Play.
+
+The app stores all current data locally on the phone. Uninstalling the app
+removes that local data unless an export/backup feature is added later.
+
+## Create The APK
+
+This project uses **Gradle**, the standard Android build tool. Think of it as a
+repeatable build recipe: it downloads required libraries, compiles the app,
+tests it, and packages the APK.
+
+Open PowerShell in this project folder and run:
 
 ```powershell
-./gradlew.bat assembleDebug
-./gradlew.bat testDebugUnitTest
-./gradlew.bat spotlessCheck
-./gradlew.bat detekt
+.\gradlew.bat assembleDebug
 ```
 
-The debug APK is written to `app/build/outputs/apk/debug/app-debug.apk`.
+The first build can take several minutes because Gradle downloads libraries.
+Later builds are much faster.
 
-## Architecture
+If the command finishes with `BUILD SUCCESSFUL`, the APK was created at:
 
-Architecture decisions, data model, scoring rules and UI plans are under
-[`docs/architecture/`](docs/architecture/00-overview.md). Agent/project rules
-are in [`AGENTS.md`](AGENTS.md).
+```text
+app\build\outputs\apk\debug\app-debug.apk
+```
 
-## Current implementation status
+## Open In Android Studio
 
-Phase 1 and the local-MVP foundations are implemented: Gradle multi-module
-project, scoring domain tests, Room/DataStore, group/player management, game
-setup, scoring, undo/redo, history and settings. See
-[`docs/architecture/10-roadmap.md`](docs/architecture/10-roadmap.md) for
-remaining work.
+Android Studio is the recommended program for working on an Android project.
+
+1. Install [Android Studio](https://developer.android.com/studio).
+2. Select **Open**.
+3. Select this `TichuCounter` folder, not an individual file inside it.
+4. Wait for "Gradle Sync" to finish. Android Studio may offer to install missing
+   Android SDK components; accept that.
+5. To run the app, connect an Android phone with USB debugging enabled or start
+   an emulator, then press the green **Run** triangle.
+
+## Useful Commands
+
+Run all commands from the project root in PowerShell.
+
+| Command | Meaning |
+| --- | --- |
+| `.\gradlew.bat assembleDebug` | Build the installable debug APK. |
+| `.\gradlew.bat testDebugUnitTest` | Run automatic logic tests. These verify the score calculations without opening the app. |
+| `.\gradlew.bat spotlessApply` | Format Kotlin and Gradle files automatically. |
+| `.\gradlew.bat spotlessCheck` | Check that formatting is correct without changing files. |
+| `.\gradlew.bat detekt` | Look for common Kotlin code problems. |
+| `.\gradlew.bat check` | Run the usual automated checks together. |
+
+`gradlew.bat` is only the Windows variant. On macOS or Linux, use `./gradlew`
+
+## Folder Overview
+
+You do not need to understand every folder to use the app. The important ones
+are:
+
+| Folder | Plain-language purpose |
+| --- | --- |
+| `app/` | The actual Android application: starts the app and connects the screens. |
+| `feature/` | The visible app areas, for example scoring, groups, players, and history. |
+| `core/domain/` | The rule engine. This is where Tichu points and undo logic are calculated. |
+| `core/database/` | The local database on the phone. |
+| `core/data/` | The connection between the database and the rest of the app. |
+| `core/ui/` | Shared visual components, colours, typography, keypad, and score table. |
+| `docs/architecture/` | Design documentation and decisions. |
+
+## Architecture In One Minute
+
+The app works like a device with separate functional blocks:
+
+```text
+Screen and buttons
+        ↓
+ViewModel: receives a button press and prepares what the screen shows
+        ↓
+Domain rules: validates and calculates Tichu scores
+        ↓
+Local database: stores games, people, groups, and every action
+```
+
+Every game action is kept as a log entry, for example "round scored" or
+"player swapped". The current score is calculated from that log. Therefore
+Undo does not destroy information: it marks the last entry as undone, and Redo
+can restore it. This also makes the future statistics feature reliable.
+
+## More Detail
+
+- Main architecture overview: [`docs/architecture/00-overview.md`](docs/architecture/00-overview.md)
+- Scoring rules and calculation examples: [`docs/architecture/03-scoring-rules.md`](docs/architecture/03-scoring-rules.md)
+- User-interface sketches: [`docs/architecture/07-ui-navigation.md`](docs/architecture/07-ui-navigation.md)
+- Development roadmap: [`docs/architecture/10-roadmap.md`](docs/architecture/10-roadmap.md)
+- Rules for AI coding agents: [`AGENTS.md`](AGENTS.md)
