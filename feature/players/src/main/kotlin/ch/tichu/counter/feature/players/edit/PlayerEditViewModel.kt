@@ -6,6 +6,7 @@ import androidx.lifecycle.viewModelScope
 import androidx.navigation.toRoute
 import ch.tichu.counter.core.common.Result
 import ch.tichu.counter.core.domain.DomainError
+import ch.tichu.counter.core.domain.repository.PersonRepository
 import ch.tichu.counter.core.domain.usecase.group.ObserveActiveGroupUseCase
 import ch.tichu.counter.core.domain.usecase.group.ObserveGroupsOfPersonUseCase
 import ch.tichu.counter.core.domain.usecase.group.ObserveGroupsUseCase
@@ -16,7 +17,6 @@ import ch.tichu.counter.core.domain.usecase.person.IsPersonInCurrentGameUseCase
 import ch.tichu.counter.core.domain.usecase.person.ObservePersonUseCase
 import ch.tichu.counter.core.domain.usecase.person.SetPersonGroupMembershipUseCase
 import ch.tichu.counter.core.domain.usecase.person.UpdatePersonUseCase
-import ch.tichu.counter.core.domain.repository.PersonRepository
 import ch.tichu.counter.core.model.AvatarColor
 import ch.tichu.counter.core.model.GroupId
 import ch.tichu.counter.core.model.PersonId

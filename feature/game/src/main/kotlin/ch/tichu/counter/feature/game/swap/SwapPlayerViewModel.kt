@@ -6,11 +6,11 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.navigation.toRoute
 import ch.tichu.counter.core.common.Result
+import ch.tichu.counter.core.domain.repository.PersonRepository
 import ch.tichu.counter.core.domain.usecase.game.ObserveGameStateUseCase
 import ch.tichu.counter.core.domain.usecase.game.SwapPlayerUseCase
 import ch.tichu.counter.core.domain.usecase.person.CreatePersonUseCase
 import ch.tichu.counter.core.domain.usecase.person.ObserveGroupMembersUseCase
-import ch.tichu.counter.core.domain.repository.PersonRepository
 import ch.tichu.counter.core.model.AvatarColor
 import ch.tichu.counter.core.model.GameId
 import ch.tichu.counter.core.model.PersonId

@@ -9,10 +9,10 @@ import ch.tichu.counter.core.domain.scoring.ValidationResult
 import ch.tichu.counter.core.model.GameEventPayload
 import ch.tichu.counter.core.model.GameId
 import ch.tichu.counter.core.model.GameStatus
+import ch.tichu.counter.core.model.LineUp
 import ch.tichu.counter.core.model.RoundInput
 import ch.tichu.counter.core.model.RoundResult
 import ch.tichu.counter.core.model.RuleSet
-import ch.tichu.counter.core.model.LineUp
 import javax.inject.Inject
 
 class ValidateRoundUseCase @Inject constructor(private val engine: ScoringEngine) {

@@ -95,15 +95,14 @@ fun GameEventEntity.toDomain(codec: GameEventPayloadCodec): GameEvent = GameEven
     payload = codec.decode(payload),
 )
 
-fun GameEvent.toEntity(codec: GameEventPayloadCodec, syncState: SyncState = SyncState.LOCAL_ONLY): GameEventEntity =
-    GameEventEntity(
-        id = id.value,
-        gameId = gameId.value,
-        sequence = sequence,
-        type = GameEventType.of(payload).name,
-        payload = codec.encode(payload),
-        occurredAt = occurredAt.toEpochMillis(),
-        isUndone = isUndone,
-        undoneAt = null,
-        syncState = syncState.name,
-    )
+fun GameEvent.toEntity(codec: GameEventPayloadCodec, syncState: SyncState = SyncState.LOCAL_ONLY): GameEventEntity = GameEventEntity(
+    id = id.value,
+    gameId = gameId.value,
+    sequence = sequence,
+    type = GameEventType.of(payload).name,
+    payload = codec.encode(payload),
+    occurredAt = occurredAt.toEpochMillis(),
+    isUndone = isUndone,
+    undoneAt = null,
+    syncState = syncState.name,
+)

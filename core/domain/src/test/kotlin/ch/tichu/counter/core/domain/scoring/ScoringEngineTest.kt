@@ -23,8 +23,7 @@ class ScoringEngineTest {
     private val rules = RuleSet.DEFAULT
     private val lineUp = Fixtures.lineUp()
 
-    private fun score(input: RoundInput, previousA: Int = 0, previousB: Int = 0) =
-        engine.score(1, lineUp, input, previousA, previousB, rules)
+    private fun score(input: RoundInput, previousA: Int = 0, previousB: Int = 0) = engine.score(1, lineUp, input, previousA, previousB, rules)
 
     @Nested
     inner class WorkedExamples {

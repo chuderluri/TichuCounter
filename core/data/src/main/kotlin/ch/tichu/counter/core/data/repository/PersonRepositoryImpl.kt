@@ -41,48 +41,43 @@ class PersonRepositoryImpl @Inject constructor(
     private val timeProvider: TimeProvider,
 ) : PersonRepository {
 
-    override fun observeAll(includeArchived: Boolean): Flow<List<Person>> =
-        personDao.observeAll(includeArchived).map { list -> list.map { it.toDomain() } }
+    override fun observeAll(includeArchived: Boolean): Flow<List<Person>> = personDao.observeAll(includeArchived).map { list -> list.map { it.toDomain() } }
 
-    override fun observeMembers(groupId: GroupId, includeArchived: Boolean): Flow<List<PersonSummary>> =
-        combine(
-            personDao.observeMembers(groupId.value, includeArchived),
-            gameDao.observeCurrentGame(),
-        ) { members, current ->
-            val seated = current?.let { codec.decodeLineUp(it.lineUpJson).registeredPersons() } ?: emptySet()
-            members.map { it.toDomain(isInCurrentGame = PersonId(it.id) in seated) }
-        }
+    override fun observeMembers(groupId: GroupId, includeArchived: Boolean): Flow<List<PersonSummary>> = combine(
+        personDao.observeMembers(groupId.value, includeArchived),
+        gameDao.observeCurrentGame(),
+    ) { members, current ->
+        val seated = current?.let { codec.decodeLineUp(it.lineUpJson).registeredPersons() } ?: emptySet()
+        members.map { it.toDomain(isInCurrentGame = PersonId(it.id) in seated) }
+    }
 
-    override fun observePerson(personId: PersonId): Flow<Person?> =
-        personDao.observePerson(personId.value).map { it?.toDomain() }
+    override fun observePerson(personId: PersonId): Flow<Person?> = personDao.observePerson(personId.value).map { it?.toDomain() }
 
     override suspend fun getPerson(personId: PersonId): Person? = personDao.getPerson(personId.value)?.toDomain()
 
-    override suspend fun findByName(name: String): Person? =
-        personDao.findActiveByNormalizedName(name.normalizeName())?.toDomain()
+    override suspend fun findByName(name: String): Person? = personDao.findActiveByNormalizedName(name.normalizeName())?.toDomain()
 
-    override suspend fun create(name: String, avatarColor: AvatarColor, groupId: GroupId?): Result<Person, DomainError> =
-        database.withTransaction {
-            val now = timeProvider.now().toEpochMillis()
-            val entity = PersonEntity(
-                id = idGenerator.newId(),
-                name = name.trim(),
-                nameNormalized = name.normalizeName(),
-                avatarColor = avatarColor.name,
-                isArchived = false,
-                createdAt = now,
-                updatedAt = now,
-                syncState = SyncState.LOCAL_ONLY.name,
+    override suspend fun create(name: String, avatarColor: AvatarColor, groupId: GroupId?): Result<Person, DomainError> = database.withTransaction {
+        val now = timeProvider.now().toEpochMillis()
+        val entity = PersonEntity(
+            id = idGenerator.newId(),
+            name = name.trim(),
+            nameNormalized = name.normalizeName(),
+            avatarColor = avatarColor.name,
+            isArchived = false,
+            createdAt = now,
+            updatedAt = now,
+            syncState = SyncState.LOCAL_ONLY.name,
+        )
+        personDao.insert(entity)
+        if (groupId != null) {
+            groupDao.getGroup(groupId.value) ?: return@withTransaction DomainError.GroupNotFound.failure()
+            groupDao.insertMember(
+                GroupMemberEntity(groupId.value, entity.id, now, SyncState.LOCAL_ONLY.name),
             )
-            personDao.insert(entity)
-            if (groupId != null) {
-                groupDao.getGroup(groupId.value) ?: return@withTransaction DomainError.GroupNotFound.failure()
-                groupDao.insertMember(
-                    GroupMemberEntity(groupId.value, entity.id, now, SyncState.LOCAL_ONLY.name),
-                )
-            }
-            entity.toDomain().success()
         }
+        entity.toDomain().success()
+    }
 
     override suspend fun update(personId: PersonId, name: String, avatarColor: AvatarColor): Result<Unit, DomainError> {
         val existing = personDao.getPerson(personId.value) ?: return DomainError.PersonNotFound.failure()
@@ -119,6 +114,5 @@ class PersonRepositoryImpl @Inject constructor(
 
     override suspend fun hasGames(personId: PersonId): Boolean = personDao.hasGames(personId.value)
 
-    private fun pendingIfSynced(current: String): String =
-        if (current == SyncState.SYNCED.name) SyncState.PENDING_UPLOAD.name else current
+    private fun pendingIfSynced(current: String): String = if (current == SyncState.SYNCED.name) SyncState.PENDING_UPLOAD.name else current
 }

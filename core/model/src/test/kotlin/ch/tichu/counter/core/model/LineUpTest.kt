@@ -67,7 +67,10 @@ class LineUpTest {
 
     @Test
     fun `event payload round trips through json with discriminator`() {
-        val json = Json { encodeDefaults = true; ignoreUnknownKeys = true }
+        val json = Json {
+            encodeDefaults = true
+            ignoreUnknownKeys = true
+        }
         val payload: GameEventPayload = GameEventPayload.RoundScored(
             RoundOutcome.DoubleWin(Team.B),
             listOf(TichuCall(Seat.B1, TichuType.GRAND, true)),

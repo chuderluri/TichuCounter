@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="feature_statistics_title">Stats</string>
+    <string name="feature_statistics_quick_play">Quick play</string>
+    <string name="feature_statistics_unavailable_title">Statistics need a group</string>
+    <string name="feature_statistics_unavailable_description">Create a group and register players to collect statistics.</string>
+    <string name="feature_statistics_create_group">Create a group</string>
+    <string name="feature_statistics_coming_soon">Statistics are coming in the next phase.</string>
+</resources>

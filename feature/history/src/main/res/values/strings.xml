@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="feature_history_title">History</string>
+    <string name="feature_history_quick_play">Quick play</string>
+    <string name="feature_history_in_progress">In progress</string>
+    <string name="feature_history_finished">Finished</string>
+    <string name="feature_history_abandoned">Abandoned</string>
+    <string name="feature_history_rounds">%1$d rounds</string>
+    <string name="feature_history_continue">Continue</string>
+    <string name="feature_history_delete">Delete game</string>
+    <string name="feature_history_delete_title">Delete this game?</string>
+    <string name="feature_history_delete_confirm">Delete</string>
+    <string name="feature_history_cancel">Cancel</string>
+    <string name="feature_history_empty_title">No games yet</string>
+    <string name="feature_history_empty_description">Finished and abandoned games appear here.</string>
+    <string name="feature_history_back">Back</string>
+    <string name="feature_history_share">Share as text</string>
+    <string name="feature_history_winner_a">Team A wins</string>
+    <string name="feature_history_winner_b">Team B wins</string>
+    <string name="feature_history_draw">Draw</string>
+</resources>

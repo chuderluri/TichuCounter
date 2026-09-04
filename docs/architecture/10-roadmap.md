@@ -21,27 +21,30 @@ for later phases:
 
 ## Phase 1 - Project skeleton and domain
 
-- [ ] Install JDK 17+, Android SDK; document in README
-- [ ] Gradle project: settings, version catalog, `build-logic` convention plugins
-- [ ] Modules created with empty `AndroidManifest`/packages: `app`, `core:*`, `feature:*`
-- [ ] Spotless/ktlint, detekt, Android Lint baseline, GitHub Actions CI
-- [ ] `core:common`: `DispatcherProvider`, `TimeProvider`, `IdGenerator`, `Result`
-- [ ] `core:model`: all types from 02
-- [ ] `core:domain`: `ScoringEngine`, `GameReducer`, ports, use cases + tests (03, 05)
-- [ ] `core:testing`: fakes, builders, `MainDispatcherRule`
+- [x] Install JDK 17+, Android SDK; document in README
+- [x] Gradle project: settings, version catalog, `build-logic` convention plugins
+- [x] Modules created: `app`, `core:*`, `feature:*`
+- [x] Spotless/ktlint and detekt configuration (GitHub Actions CI pending)
+- [x] `core:common`: `DispatcherProvider`, `TimeProvider`, `IdGenerator`, `Result`
+- [x] `core:model`: all types from 02
+- [x] `core:domain`: `ScoringEngine`, `GameReducer`, ports, use cases + scoring/reducer tests
+- [x] `core:testing`: fixtures, event-log builder, fake time/id providers
+- [ ] `MainDispatcherRule` for ViewModel unit tests
 
 ## Phase 2 - Local MVP
 
-- [ ] `core:database`: schema v1, DAOs, projections, migration test harness
-- [ ] `core:datastore`: `UserPreferences`
-- [ ] `core:data`: `GroupRepositoryImpl`, `PersonRepositoryImpl`, `GameRepositoryImpl` (transactional append, undo/redo, single in-progress game), `PreferencesRepositoryImpl`
-- [ ] `core:ui`: theme, design system components, previews
-- [ ] `feature:groups`: group picker (first start), group edit with members
-- [ ] `feature:players`: list + edit (scoped to active group)
-- [ ] `feature:game`: home (single current game, abandon confirmation), setup, swap dialog
-- [ ] `feature:scoring`: full scoring screen, keypad, Tichu buttons, double win, undo/redo, finish dialog
-- [ ] `feature:history`: list + detail
-- [ ] `app`: Hilt wiring, NavHost, bottom navigation
+- [x] `core:database`: schema v1, DAOs, rebuildable projections (migration test harness pending)
+- [x] `core:datastore`: `UserPreferences`
+- [x] `core:data`: `GroupRepositoryImpl`, `PersonRepositoryImpl`, `GameRepositoryImpl` (transactional append, undo/redo, single in-progress game), `PreferencesRepositoryImpl`
+- [x] `core:ui`: theme and core design system components
+- [x] `feature:groups`: group picker (first start), group edit with members
+- [x] `feature:players`: list + edit (scoped to active group)
+- [x] `feature:game`: home (single current game, abandon confirmation), setup, swap dialog
+- [x] `feature:scoring`: scoring screen, keypad, Tichu buttons, double win, undo/redo, finish dialog
+- [x] `feature:history`: list + detail
+- [x] `feature:settings`: local settings
+- [x] `app`: Hilt wiring, NavHost, bottom navigation
+- [ ] Compose previews and ViewModel/DAO/instrumented tests
 - [ ] E2E test 1 and 3 from 09
 - [ ] Internal release (APK) for table testing
 

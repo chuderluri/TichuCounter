@@ -21,8 +21,7 @@ import kotlinx.coroutines.flow.map
 import javax.inject.Inject
 
 class ObserveGroupsUseCase @Inject constructor(private val repository: GroupRepository) {
-    operator fun invoke(includeArchived: Boolean = false): Flow<List<GroupSummary>> =
-        repository.observeGroups(includeArchived)
+    operator fun invoke(includeArchived: Boolean = false): Flow<List<GroupSummary>> = repository.observeGroups(includeArchived)
 }
 
 class ObserveGroupUseCase @Inject constructor(private val repository: GroupRepository) {
@@ -45,14 +44,13 @@ class ObserveActiveGroupUseCase @Inject constructor(
     private val preferences: PreferencesRepository,
     private val groups: GroupRepository,
 ) {
-    operator fun invoke(): Flow<ActiveGroup> =
-        preferences.preferences
-            .map { it.onboardingDone to it.activeGroupId }
-            .distinctUntilChanged()
-            .flatMapLatest { (onboardingDone, groupId) ->
-                val groupFlow = if (groupId == null) flowOf(null) else groups.observeGroup(groupId)
-                combine(groupFlow, flowOf(onboardingDone)) { group, done -> ActiveGroup(done, group) }
-            }
+    operator fun invoke(): Flow<ActiveGroup> = preferences.preferences
+        .map { it.onboardingDone to it.activeGroupId }
+        .distinctUntilChanged()
+        .flatMapLatest { (onboardingDone, groupId) ->
+            val groupFlow = if (groupId == null) flowOf(null) else groups.observeGroup(groupId)
+            combine(groupFlow, flowOf(onboardingDone)) { group, done -> ActiveGroup(done, group) }
+        }
 }
 
 class SetActiveGroupUseCase @Inject constructor(private val preferences: PreferencesRepository) {
@@ -70,13 +68,11 @@ class ClearActiveGroupUseCase @Inject constructor(private val preferences: Prefe
 }
 
 class CreateGroupUseCase @Inject constructor(private val repository: GroupRepository) {
-    suspend operator fun invoke(name: String): Result<Group, DomainError> =
-        validateName(name).flatMap { repository.create(it) }
+    suspend operator fun invoke(name: String): Result<Group, DomainError> = validateName(name).flatMap { repository.create(it) }
 }
 
 class RenameGroupUseCase @Inject constructor(private val repository: GroupRepository) {
-    suspend operator fun invoke(groupId: GroupId, name: String): Result<Unit, DomainError> =
-        validateName(name).flatMap { repository.rename(groupId, it) }
+    suspend operator fun invoke(groupId: GroupId, name: String): Result<Unit, DomainError> = validateName(name).flatMap { repository.rename(groupId, it) }
 }
 
 class ArchiveGroupUseCase @Inject constructor(
@@ -91,8 +87,7 @@ class ArchiveGroupUseCase @Inject constructor(
 }
 
 class AddGroupMemberUseCase @Inject constructor(private val repository: GroupRepository) {
-    suspend operator fun invoke(groupId: GroupId, personId: PersonId): Result<Unit, DomainError> =
-        repository.addMember(groupId, personId)
+    suspend operator fun invoke(groupId: GroupId, personId: PersonId): Result<Unit, DomainError> = repository.addMember(groupId, personId)
 }
 
 class RemoveGroupMemberUseCase @Inject constructor(

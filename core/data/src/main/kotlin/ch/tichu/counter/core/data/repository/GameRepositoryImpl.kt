@@ -52,34 +52,30 @@ class GameRepositoryImpl @Inject constructor(
     private val timeProvider: TimeProvider,
 ) : GameRepository {
 
-    override fun observeGameState(gameId: GameId): Flow<GameState?> =
-        eventDao.observeEvents(gameId.value).map { entities ->
-            if (entities.isEmpty()) null else reducer.reduce(entities.map { it.toDomain(codec) })
-        }
+    override fun observeGameState(gameId: GameId): Flow<GameState?> = eventDao.observeEvents(gameId.value).map { entities ->
+        if (entities.isEmpty()) null else reducer.reduce(entities.map { it.toDomain(codec) })
+    }
 
-    override fun observeGameSummary(gameId: GameId): Flow<GameSummary?> =
-        gameDao.observeGame(gameId.value).flatMapLatest { entity ->
-            if (entity == null) flowOf(null) else summaryFlow(entity)
-        }
+    override fun observeGameSummary(gameId: GameId): Flow<GameSummary?> = gameDao.observeGame(gameId.value).flatMapLatest { entity ->
+        if (entity == null) flowOf(null) else summaryFlow(entity)
+    }
 
-    override fun observeCurrentGame(): Flow<GameSummary?> =
-        gameDao.observeCurrentGame().flatMapLatest { entity ->
-            if (entity == null) flowOf(null) else summaryFlow(entity)
-        }
+    override fun observeCurrentGame(): Flow<GameSummary?> = gameDao.observeCurrentGame().flatMapLatest { entity ->
+        if (entity == null) flowOf(null) else summaryFlow(entity)
+    }
 
-    override fun observeGames(groupId: GroupId?, statuses: Set<GameStatus>): Flow<List<GameSummary>> =
-        gameDao.observeGames(groupId?.value, statuses.map { it.name }).flatMapLatest { entities ->
-            if (entities.isEmpty()) {
-                flowOf(emptyList())
-            } else {
-                val lineUps = entities.associate { it.id to codec.decodeLineUp(it.lineUpJson) }
-                val personIds = lineUps.values.flatMap { it.registeredPersons() }.map { it.value }.distinct()
-                personDao.observePersons(personIds).map { persons ->
-                    val byId = persons.associate { PersonId(it.id) to it.toDomain() }
-                    entities.map { entity -> entity.toSummary(lineUps.getValue(entity.id), byId) }
-                }
+    override fun observeGames(groupId: GroupId?, statuses: Set<GameStatus>): Flow<List<GameSummary>> = gameDao.observeGames(groupId?.value, statuses.map { it.name }).flatMapLatest { entities ->
+        if (entities.isEmpty()) {
+            flowOf(emptyList())
+        } else {
+            val lineUps = entities.associate { it.id to codec.decodeLineUp(it.lineUpJson) }
+            val personIds = lineUps.values.flatMap { it.registeredPersons() }.map { it.value }.distinct()
+            personDao.observePersons(personIds).map { persons ->
+                val byId = persons.associate { PersonId(it.id) to it.toDomain() }
+                entities.map { entity -> entity.toSummary(lineUps.getValue(entity.id), byId) }
             }
         }
+    }
 
     override suspend fun getGameState(gameId: GameId): GameState? {
         val entities = eventDao.getEvents(gameId.value)
@@ -128,8 +124,7 @@ class GameRepositoryImpl @Inject constructor(
         gameId.success()
     }
 
-    override suspend fun appendEvent(gameId: GameId, payload: GameEventPayload): Result<Unit, DomainError> =
-        database.withTransaction { appendInTransaction(gameId, payload) }
+    override suspend fun appendEvent(gameId: GameId, payload: GameEventPayload): Result<Unit, DomainError> = database.withTransaction { appendInTransaction(gameId, payload) }
 
     override suspend fun undo(gameId: GameId): Result<Unit, DomainError> = database.withTransaction {
         val last = eventDao.lastActiveEvent(gameId.value) ?: return@withTransaction DomainError.NothingToUndo.failure()
@@ -215,14 +210,13 @@ class GameRepositoryImpl @Inject constructor(
         }
     }
 
-    private fun GameEntity.toSummary(lineUp: LineUp, persons: Map<PersonId, ch.tichu.counter.core.model.Person>) =
-        GameSummary(
-            game = toDomain(),
-            scoreA = scoreA,
-            scoreB = scoreB,
-            roundCount = roundCount,
-            winner = winner?.let { ch.tichu.counter.core.model.Team.valueOf(it) },
-            currentLineUp = lineUp,
-            persons = persons,
-        )
+    private fun GameEntity.toSummary(lineUp: LineUp, persons: Map<PersonId, ch.tichu.counter.core.model.Person>) = GameSummary(
+        game = toDomain(),
+        scoreA = scoreA,
+        scoreB = scoreB,
+        roundCount = roundCount,
+        winner = winner?.let { ch.tichu.counter.core.model.Team.valueOf(it) },
+        currentLineUp = lineUp,
+        persons = persons,
+    )
 }

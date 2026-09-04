@@ -21,6 +21,7 @@ data class CurrentGameUi(
 data class HomeUiState(
     val groupName: String? = null,
     val isQuickPlay: Boolean = false,
+    val needsOnboarding: Boolean = false,
     val currentGame: CurrentGameUi? = null,
     val showAbandonConfirmation: Boolean = false,
     val isLoading: Boolean = true,

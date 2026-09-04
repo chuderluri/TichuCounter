@@ -28,8 +28,7 @@ fun validateName(raw: String): Result<String, DomainError> {
 }
 
 class ObserveGroupMembersUseCase @Inject constructor(private val repository: PersonRepository) {
-    operator fun invoke(groupId: GroupId, includeArchived: Boolean = false): Flow<List<PersonSummary>> =
-        repository.observeMembers(groupId, includeArchived)
+    operator fun invoke(groupId: GroupId, includeArchived: Boolean = false): Flow<List<PersonSummary>> = repository.observeMembers(groupId, includeArchived)
 }
 
 class ObserveAllPersonsUseCase @Inject constructor(private val repository: PersonRepository) {

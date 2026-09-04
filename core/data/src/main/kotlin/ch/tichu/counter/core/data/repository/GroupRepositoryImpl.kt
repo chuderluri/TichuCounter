@@ -33,14 +33,11 @@ class GroupRepositoryImpl @Inject constructor(
     private val timeProvider: TimeProvider,
 ) : GroupRepository {
 
-    override fun observeGroups(includeArchived: Boolean): Flow<List<GroupSummary>> =
-        groupDao.observeGroupsWithCounts(includeArchived).map { list -> list.map { it.toDomain() } }
+    override fun observeGroups(includeArchived: Boolean): Flow<List<GroupSummary>> = groupDao.observeGroupsWithCounts(includeArchived).map { list -> list.map { it.toDomain() } }
 
-    override fun observeGroup(groupId: GroupId): Flow<Group?> =
-        groupDao.observeGroup(groupId.value).map { it?.toDomain() }
+    override fun observeGroup(groupId: GroupId): Flow<Group?> = groupDao.observeGroup(groupId.value).map { it?.toDomain() }
 
-    override fun observeGroupsOfPerson(personId: PersonId): Flow<List<Group>> =
-        groupDao.observeGroupsOfPerson(personId.value).map { list -> list.map { it.toDomain() } }
+    override fun observeGroupsOfPerson(personId: PersonId): Flow<List<Group>> = groupDao.observeGroupsOfPerson(personId.value).map { list -> list.map { it.toDomain() } }
 
     override suspend fun getGroup(groupId: GroupId): Group? = groupDao.getGroup(groupId.value)?.toDomain()
 
@@ -101,6 +98,5 @@ class GroupRepositoryImpl @Inject constructor(
         return Unit.success()
     }
 
-    override suspend fun isMember(groupId: GroupId, personId: PersonId): Boolean =
-        groupDao.isMember(groupId.value, personId.value)
+    override suspend fun isMember(groupId: GroupId, personId: PersonId): Boolean = groupDao.isMember(groupId.value, personId.value)
 }

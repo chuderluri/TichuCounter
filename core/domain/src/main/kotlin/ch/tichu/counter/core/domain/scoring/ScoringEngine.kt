@@ -58,9 +58,8 @@ class ScoringEngine @Inject constructor() {
 
     fun complement(entered: Int, rules: RuleSet): Int = rules.roundCardPointsTotal - entered
 
-    fun tichuBonus(calls: List<TichuCall>, team: Team, rules: RuleSet): Int =
-        calls.filter { it.seat.team == team }
-            .sumOf { call -> if (call.success) rules.tichuValue(call.type) else -rules.tichuValue(call.type) }
+    fun tichuBonus(calls: List<TichuCall>, team: Team, rules: RuleSet): Int = calls.filter { it.seat.team == team }
+        .sumOf { call -> if (call.success) rules.tichuValue(call.type) else -rules.tichuValue(call.type) }
 
     private fun cardPoints(outcome: RoundOutcome, rules: RuleSet): Pair<Int, Int> = when (outcome) {
         is RoundOutcome.CardPoints -> outcome.teamA to outcome.teamB

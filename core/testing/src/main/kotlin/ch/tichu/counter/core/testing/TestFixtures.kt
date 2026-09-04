@@ -68,8 +68,7 @@ object Fixtures {
 
     fun registered(id: PersonId): SeatOccupant = SeatOccupant.Registered(id)
 
-    fun call(seat: Seat, type: TichuType = TichuType.SMALL, success: Boolean = true): TichuCall =
-        TichuCall(seat, type, success)
+    fun call(seat: Seat, type: TichuType = TichuType.SMALL, success: Boolean = true): TichuCall = TichuCall(seat, type, success)
 
     fun cards(teamA: Int, teamB: Int = 100 - teamA): RoundOutcome = RoundOutcome.CardPoints(teamA, teamB)
 
@@ -88,14 +87,11 @@ class EventLogBuilder(
         groupId: GroupId? = Fixtures.groupId,
     ): EventLogBuilder = add(GameEventPayload.GameStarted(groupId, lineUp, ruleSet))
 
-    fun round(teamA: Int, vararg calls: TichuCall): EventLogBuilder =
-        add(GameEventPayload.RoundScored(Fixtures.cards(teamA), calls.toList()))
+    fun round(teamA: Int, vararg calls: TichuCall): EventLogBuilder = add(GameEventPayload.RoundScored(Fixtures.cards(teamA), calls.toList()))
 
-    fun round(outcome: RoundOutcome, vararg calls: TichuCall): EventLogBuilder =
-        add(GameEventPayload.RoundScored(outcome, calls.toList()))
+    fun round(outcome: RoundOutcome, vararg calls: TichuCall): EventLogBuilder = add(GameEventPayload.RoundScored(outcome, calls.toList()))
 
-    fun doubleWin(team: Team, vararg calls: TichuCall): EventLogBuilder =
-        add(GameEventPayload.RoundScored(Fixtures.doubleWin(team), calls.toList()))
+    fun doubleWin(team: Team, vararg calls: TichuCall): EventLogBuilder = add(GameEventPayload.RoundScored(Fixtures.doubleWin(team), calls.toList()))
 
     fun swap(seat: Seat, next: SeatOccupant): EventLogBuilder {
         val current = currentLineUp().occupantAt(seat)

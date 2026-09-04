@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="feature_scoring_round">Round %1$d</string>
+    <string name="feature_scoring_undo">Undo</string>
+    <string name="feature_scoring_redo">Redo</string>
+    <string name="feature_scoring_more">More options</string>
+    <string name="feature_scoring_team_a">Team A</string>
+    <string name="feature_scoring_team_b">Team B</string>
+    <string name="feature_scoring_double_win_a">Double win A</string>
+    <string name="feature_scoring_double_win_b">Double win B</string>
+    <string name="feature_scoring_small_tichu">T</string>
+    <string name="feature_scoring_grand_tichu">GT</string>
+    <string name="feature_scoring_tichu_state">%1$s: %2$s</string>
+    <string name="feature_scoring_tichu_off">off</string>
+    <string name="feature_scoring_tichu_made">made</string>
+    <string name="feature_scoring_tichu_lost">lost</string>
+    <string name="feature_scoring_round_saved">Round %1$d saved</string>
+    <string name="feature_scoring_confirm">OK</string>
+    <string name="feature_scoring_abandon">Abandon game</string>
+    <string name="feature_scoring_abandon_title">Abandon this game?</string>
+    <string name="feature_scoring_cancel">Cancel</string>
+    <string name="feature_scoring_abandon_confirm">Abandon</string>
+    <string name="feature_scoring_error">Check the entered round</string>
+    <string name="feature_scoring_finished_title_a">Team A wins</string>
+    <string name="feature_scoring_finished_title_b">Team B wins</string>
+    <string name="feature_scoring_finished_draw">It is a draw</string>
+    <string name="feature_scoring_rounds_duration">%1$d rounds · %2$d min</string>
+    <string name="feature_scoring_show_rounds">Show rounds</string>
+    <string name="feature_scoring_hide_rounds">Hide rounds</string>
+    <string name="feature_scoring_rematch">Rematch</string>
+    <string name="feature_scoring_new_game">New game</string>
+    <string name="feature_scoring_home">Home</string>
+    <string name="feature_scoring_undo_last_round">Undo last round</string>
+    <string name="feature_scoring_game_finished">Game finished</string>
+    <string name="feature_scoring_guest">Guest</string>
+</resources>

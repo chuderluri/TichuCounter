@@ -1,41 +1,48 @@
 # Tichu Counter
 
-Android score-keeping app for the card game Tichu.
+Native Android score-keeping app for the card game Tichu.
 
-- Compose teams from a pool of persons; swap players between rounds.
-- Calculator-style score entry with automatic complement to 100.
-- Small/Grand Tichu and double-win buttons per player/team.
-- Undo/redo for every action, also after restarting the app.
-- Per-player statistics (games, win rate, Tichu success, partners, streaks).
-- Planned: remote sync of persons and statistics.
+## Features
 
-## Status
+- Groups of persons; one person may be part of several groups.
+- **Just play** mode with placeholder guests (`Player 1`–`Player 4`) and no
+  registration or statistics.
+- Four-seat team setup; each seat can be a registered person or guest.
+- Calculator-style score entry: enter one team score, automatic complement to 100.
+- Small/Grand Tichu toggles per player, entered at round end as made/lost.
+- Double wins, player swaps between rounds, persistent undo/redo.
+- One in-progress game per device; completed and abandoned games in history.
+- Local Room persistence and DataStore preferences; offline-first.
 
-Architecture phase. No application code yet. Design documents live in
-[`docs/architecture/`](docs/architecture/00-overview.md); decisions in
-[`docs/architecture/adr/`](docs/architecture/adr/README.md); implementation
-plan in [`docs/architecture/10-roadmap.md`](docs/architecture/10-roadmap.md).
+Statistics, backup/import and remote sync are planned for later phases.
 
-## Tech stack
+## Requirements
 
-Kotlin, Jetpack Compose (Material 3), Hilt, Room, DataStore, Coroutines/Flow,
-Navigation Compose, kotlinx.serialization, Ktor (later), JUnit 5, Turbine,
-MockK. Gradle Kotlin DSL with version catalog and convention plugins.
+- JDK 17+
+- Android SDK Platform 35 and Build Tools 35.0.0
+- Windows: use `gradlew.bat`; macOS/Linux: use `./gradlew`
 
-## Development setup (to do before phase 1)
+## Build and verify
 
-1. Install JDK 17 or newer (e.g. `winget install Microsoft.OpenJDK.17`).
-2. Install Android Studio (bundles the Android SDK) or the SDK command line
-   tools; set `ANDROID_HOME`.
-3. Clone and open the project in Android Studio, or run
-   `gradlew.bat assembleDebug` from the command line.
+```powershell
+./gradlew.bat assembleDebug
+./gradlew.bat testDebugUnitTest
+./gradlew.bat spotlessCheck
+./gradlew.bat detekt
+```
 
-## Working with AI agents
+The debug APK is written to `app/build/outputs/apk/debug/app-debug.apk`.
 
-The repository is set up for [opencode](https://opencode.ai). `AGENTS.md`
-contains the rules for agents; `.opencode/skills/` contains the Jetpack
-Compose skill (`compose-skill`) and selected Compose performance skills.
+## Architecture
 
-## License
+Architecture decisions, data model, scoring rules and UI plans are under
+[`docs/architecture/`](docs/architecture/00-overview.md). Agent/project rules
+are in [`AGENTS.md`](AGENTS.md).
 
-TBD.
+## Current implementation status
+
+Phase 1 and the local-MVP foundations are implemented: Gradle multi-module
+project, scoring domain tests, Room/DataStore, group/player management, game
+setup, scoring, undo/redo, history and settings. See
+[`docs/architecture/10-roadmap.md`](docs/architecture/10-roadmap.md) for
+remaining work.

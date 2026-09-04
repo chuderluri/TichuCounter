@@ -32,10 +32,8 @@ data class LineUp(val seats: Map<Seat, SeatOccupant>) {
     }
 
     companion object {
-        fun of(a1: SeatOccupant, b1: SeatOccupant, a2: SeatOccupant, b2: SeatOccupant): LineUp =
-            LineUp(mapOf(Seat.A1 to a1, Seat.B1 to b1, Seat.A2 to a2, Seat.B2 to b2))
+        fun of(a1: SeatOccupant, b1: SeatOccupant, a2: SeatOccupant, b2: SeatOccupant): LineUp = LineUp(mapOf(Seat.A1 to a1, Seat.B1 to b1, Seat.A2 to a2, Seat.B2 to b2))
 
-        fun allGuests(): LineUp =
-            LineUp(Seat.entries.associateWith { SeatOccupant.Guest(SeatOccupant.defaultGuestName(it)) })
+        fun allGuests(): LineUp = LineUp(Seat.entries.associateWith { SeatOccupant.Guest(SeatOccupant.defaultGuestName(it)) })
     }
 }

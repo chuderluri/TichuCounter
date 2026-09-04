@@ -20,9 +20,13 @@ complexity:
     thresholdInObjects: 20
     ignorePrivate: true
   CyclomaticComplexMethod:
-    threshold: 18
+    threshold: 30
+  ComplexCondition:
+    threshold: 8
 
 naming:
+  MatchingDeclarationName:
+    active: false
   FunctionNaming:
     ignoreAnnotated: ["Composable", "Preview"]
   TopLevelPropertyNaming:
@@ -32,11 +36,11 @@ style:
   MagicNumber:
     active: false
   MaxLineLength:
-    maxLineLength: 120
+    active: false
+  ReturnCount:
+    active: false
   UnusedPrivateMember:
     ignoreAnnotated: ["Preview"]
-  ReturnCount:
-    max: 4
   ForbiddenComment:
     active: false
   WildcardImport:

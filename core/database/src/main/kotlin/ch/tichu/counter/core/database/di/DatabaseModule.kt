@@ -21,26 +21,25 @@ object DatabaseModule {
 
     @Provides
     @Singleton
-    fun provideDatabase(@ApplicationContext context: Context): TichuDatabase =
-        Room.databaseBuilder(context, TichuDatabase::class.java, TichuDatabase.NAME)
-            .addCallback(
-                object : androidx.room.RoomDatabase.Callback() {
-                    override fun onCreate(db: SupportSQLiteDatabase) {
-                        db.execSQL(
-                            "CREATE UNIQUE INDEX IF NOT EXISTS index_games_single_in_progress " +
-                                "ON games(status) WHERE status = 'IN_PROGRESS'",
-                        )
-                    }
+    fun provideDatabase(@ApplicationContext context: Context): TichuDatabase = Room.databaseBuilder(context, TichuDatabase::class.java, TichuDatabase.NAME)
+        .addCallback(
+            object : androidx.room.RoomDatabase.Callback() {
+                override fun onCreate(db: SupportSQLiteDatabase) {
+                    db.execSQL(
+                        "CREATE UNIQUE INDEX IF NOT EXISTS index_games_single_in_progress " +
+                            "ON games(status) WHERE status = 'IN_PROGRESS'",
+                    )
+                }
 
-                    override fun onOpen(db: SupportSQLiteDatabase) {
-                        db.execSQL(
-                            "CREATE UNIQUE INDEX IF NOT EXISTS index_games_single_in_progress " +
-                                "ON games(status) WHERE status = 'IN_PROGRESS'",
-                        )
-                    }
-                },
-            )
-            .build()
+                override fun onOpen(db: SupportSQLiteDatabase) {
+                    db.execSQL(
+                        "CREATE UNIQUE INDEX IF NOT EXISTS index_games_single_in_progress " +
+                            "ON games(status) WHERE status = 'IN_PROGRESS'",
+                    )
+                }
+            },
+        )
+        .build()
 
     @Provides
     fun provideGroupDao(db: TichuDatabase): GroupDao = db.groupDao()

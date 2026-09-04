@@ -1,8 +1,8 @@
 package ch.tichu.counter.core.ui.util
 
+import android.text.format.DateUtils
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.platform.LocalContext
-import android.text.format.DateUtils
 import kotlinx.datetime.Instant
 
 @Composable

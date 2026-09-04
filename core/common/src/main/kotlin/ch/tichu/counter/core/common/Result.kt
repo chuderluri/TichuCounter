@@ -13,17 +13,15 @@ sealed interface Result<out T, out E> {
     fun errorOrNull(): E? = (this as? Failure)?.error
 }
 
-inline fun <T, E, R> Result<T, E>.map(transform: (T) -> R): Result<R, E> =
-    when (this) {
-        is Result.Success -> Result.Success(transform(value))
-        is Result.Failure -> this
-    }
+inline fun <T, E, R> Result<T, E>.map(transform: (T) -> R): Result<R, E> = when (this) {
+    is Result.Success -> Result.Success(transform(value))
+    is Result.Failure -> this
+}
 
-inline fun <T, E, R> Result<T, E>.flatMap(transform: (T) -> Result<R, E>): Result<R, E> =
-    when (this) {
-        is Result.Success -> transform(value)
-        is Result.Failure -> this
-    }
+inline fun <T, E, R> Result<T, E>.flatMap(transform: (T) -> Result<R, E>): Result<R, E> = when (this) {
+    is Result.Success -> transform(value)
+    is Result.Failure -> this
+}
 
 inline fun <T, E> Result<T, E>.onSuccess(action: (T) -> Unit): Result<T, E> {
     if (this is Result.Success) action(value)

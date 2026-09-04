@@ -27,8 +27,7 @@ class ObserveCurrentGameUseCase @Inject constructor(private val repository: Game
 }
 
 class ObserveGamesUseCase @Inject constructor(private val repository: GameRepository) {
-    operator fun invoke(groupId: GroupId?, statuses: Set<GameStatus> = GameStatus.entries.toSet()): Flow<List<GameSummary>> =
-        repository.observeGames(groupId, statuses)
+    operator fun invoke(groupId: GroupId?, statuses: Set<GameStatus> = GameStatus.entries.toSet()): Flow<List<GameSummary>> = repository.observeGames(groupId, statuses)
 }
 
 class ObserveGameSummaryUseCase @Inject constructor(private val repository: GameRepository) {
