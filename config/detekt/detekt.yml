@@ -1,0 +1,47 @@
+build:
+  maxIssues: 0
+
+config:
+  validation: true
+  warningsAsErrors: false
+
+complexity:
+  LongParameterList:
+    functionThreshold: 8
+    constructorThreshold: 12
+    ignoreAnnotated: ["Composable", "Inject"]
+  LongMethod:
+    threshold: 80
+    ignoreAnnotated: ["Composable", "Preview", "Test"]
+  TooManyFunctions:
+    thresholdInFiles: 20
+    thresholdInClasses: 20
+    thresholdInInterfaces: 20
+    thresholdInObjects: 20
+    ignorePrivate: true
+  CyclomaticComplexMethod:
+    threshold: 18
+
+naming:
+  FunctionNaming:
+    ignoreAnnotated: ["Composable", "Preview"]
+  TopLevelPropertyNaming:
+    constantPattern: "[A-Za-z][_A-Za-z0-9]*"
+
+style:
+  MagicNumber:
+    active: false
+  MaxLineLength:
+    maxLineLength: 120
+  UnusedPrivateMember:
+    ignoreAnnotated: ["Preview"]
+  ReturnCount:
+    max: 4
+  ForbiddenComment:
+    active: false
+  WildcardImport:
+    active: false
+
+exceptions:
+  TooGenericExceptionCaught:
+    active: false
