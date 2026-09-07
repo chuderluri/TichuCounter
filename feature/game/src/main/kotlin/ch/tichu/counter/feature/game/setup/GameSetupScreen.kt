@@ -218,12 +218,12 @@ private fun SlotCard(seat: Seat, slot: SlotUi?, selected: Boolean, teamColor: Co
                         slot.name,
                         style = MaterialTheme.typography.bodyLarge,
                         fontStyle = FontStyle.Italic,
-                        modifier = Modifier.weight(1f),
+                        modifier = Modifier
+                            .weight(1f)
+                            .clickable { onEvent(GameSetupUiEvent.RenameGuestStarted(seat)) },
                         maxLines = 1,
                     )
-                    IconButton(onClick = { onEvent(GameSetupUiEvent.RenameGuestStarted(seat)) }) {
-                        Icon(Icons.Default.Edit, contentDescription = stringResource(R.string.feature_game_rename_guest))
-                    }
+                    Icon(Icons.Default.Edit, contentDescription = stringResource(R.string.feature_game_rename_guest))
                 }
             }
         }

@@ -72,7 +72,7 @@ class GameSetupViewModel @Inject constructor(
     init {
         viewModelScope.launch {
             val active = activeGroup.first()
-            if (active.group == null) {
+            if (active.group == null && !active.needsOnboarding) {
                 draft.update { d ->
                     if (d.initialised) d else d.copy(slots = LineUp.allGuests().seats, selectedSeat = null, initialised = true)
                 }
@@ -168,7 +168,7 @@ class GameSetupViewModel @Inject constructor(
 
     private fun fill(occupant: SeatOccupant) {
         draft.update { d ->
-            val seat = d.selectedSeat ?: return@update d
+            val seat = d.selectedSeat ?: Seat.entries.firstOrNull { d.slots[it] == null } ?: return@update d
             val personId = occupant.personIdOrNull
             val cleaned = if (personId != null) d.slots.mapValues { (_, o) -> if (o?.personIdOrNull == personId) null else o } else d.slots
             val slots = cleaned + (seat to occupant)
