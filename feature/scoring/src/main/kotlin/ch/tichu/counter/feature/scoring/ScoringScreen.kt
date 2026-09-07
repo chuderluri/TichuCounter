@@ -172,14 +172,16 @@ fun ScoringContent(state: ScoringUiState, onEvent: (ScoringUiEvent) -> Unit, mod
 @OptIn(androidx.compose.foundation.ExperimentalFoundationApi::class)
 @Composable
 private fun PlayerSection(state: ScoringUiState, onEvent: (ScoringUiEvent) -> Unit) {
-    CompactPlayerSummary(state, onEvent)
     if (state.roundOptionsExpanded) {
         ExpandedRoundOptions(state, onEvent)
+    } else {
+        CompactPlayerSummary(state)
     }
+    RoundOptionsButton(state.roundOptionsExpanded, onEvent)
 }
 
 @Composable
-private fun CompactPlayerSummary(state: ScoringUiState, onEvent: (ScoringUiEvent) -> Unit) {
+private fun CompactPlayerSummary(state: ScoringUiState) {
     Row(
         modifier = Modifier
             .fillMaxWidth()
@@ -190,13 +192,17 @@ private fun CompactPlayerSummary(state: ScoringUiState, onEvent: (ScoringUiEvent
         Text("│ │", color = MaterialTheme.colorScheme.outlineVariant)
         PlayerSummaryNames(Team.B, state, Modifier.weight(1f))
     }
+}
+
+@Composable
+private fun RoundOptionsButton(expanded: Boolean, onEvent: (ScoringUiEvent) -> Unit) {
     TextButton(
         onClick = { onEvent(ScoringUiEvent.ToggleRoundOptions) },
         modifier = Modifier.fillMaxWidth(),
     ) {
         Text(
             stringResource(R.string.feature_scoring_tichu_double_win) +
-                if (state.roundOptionsExpanded) " ▴" else " ▾",
+                if (expanded) " ▴" else " ▾",
         )
     }
 }
