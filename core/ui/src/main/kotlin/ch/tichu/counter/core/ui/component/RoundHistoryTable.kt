@@ -155,7 +155,12 @@ private fun RoundRow(row: HistoryRowUi.Round, onClick: ((Int) -> Unit)?) {
             modifier = Modifier.weight(1f),
         )
         TeamColumnDivider()
-        Box(Modifier.width(RoundColumnWidth), contentAlignment = Alignment.Center) {
+        Box(
+            Modifier
+                .width(RoundColumnWidth)
+                .fillMaxHeight(),
+            contentAlignment = Alignment.Center,
+        ) {
             Text(
                 row.roundNumber.toString(),
                 style = MaterialTheme.typography.bodyMedium,

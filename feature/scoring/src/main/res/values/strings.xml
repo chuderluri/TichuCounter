@@ -8,6 +8,7 @@
     <string name="feature_scoring_team_b">Team B</string>
     <string name="feature_scoring_double_win_a">Double win A</string>
     <string name="feature_scoring_double_win_b">Double win B</string>
+    <string name="feature_scoring_double_win">Double win</string>
     <string name="feature_scoring_tichu_double_win">Tichu / Double Win</string>
     <string name="feature_scoring_small_tichu">T</string>
     <string name="feature_scoring_grand_tichu">GT</string>

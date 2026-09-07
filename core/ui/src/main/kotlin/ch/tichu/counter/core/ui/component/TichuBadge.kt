@@ -36,7 +36,7 @@ fun TichuBadge(
 @Composable
 fun DoubleWinBadge(modifier: Modifier = Modifier) {
     Text(
-        text = "DS",
+        text = "DW",
         modifier = modifier
             .clip(MaterialTheme.shapes.extraSmall)
             .background(MaterialTheme.colorScheme.tertiaryContainer)

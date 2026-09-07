@@ -211,17 +211,33 @@ private fun RoundOptionsButton(expanded: Boolean, onEvent: (ScoringUiEvent) -> U
 
 @Composable
 private fun PlayerSummaryNames(team: Team, state: ScoringUiState, modifier: Modifier) {
-    val players = Seat.forTeam(team).mapNotNull { state.seat(it) }
     Row(modifier, horizontalArrangement = Arrangement.Center) {
-        players.forEachIndexed { index, player ->
-            if (index > 0) Text(" · ")
-            Text(player.name, fontStyle = if (player.isGuest) FontStyle.Italic else FontStyle.Normal)
-            player.tichu?.let { tichu ->
+        if (state.doubleWin == team) {
+            Text(
+                stringResource(R.string.feature_scoring_double_win),
+                color = MaterialTheme.colorScheme.tertiary,
+                fontWeight = FontWeight.Bold,
+            )
+        } else {
+            val holders = Seat.forTeam(team).mapNotNull { seat ->
+                val player = state.seat(seat) ?: return@mapNotNull null
+                player.tichu?.let { it to player }
+            }
+            if (holders.isEmpty()) {
                 Text(
-                    " ${tichu.shortLabel()}",
-                    color = if (tichu.success) TichuThemeDefaults.colors.success else TichuThemeDefaults.colors.failure,
-                    fontWeight = FontWeight.Bold,
+                    stringResource(if (team == Team.A) R.string.feature_scoring_team_a else R.string.feature_scoring_team_b),
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
                 )
+            } else {
+                holders.forEachIndexed { index, (tichu, player) ->
+                    if (index > 0) Text(" · ")
+                    Text(player.name, fontStyle = if (player.isGuest) FontStyle.Italic else FontStyle.Normal)
+                    Text(
+                        " ${tichu.shortLabel()}",
+                        color = if (tichu.success) TichuThemeDefaults.colors.success else TichuThemeDefaults.colors.failure,
+                        fontWeight = FontWeight.Bold,
+                    )
+                }
             }
         }
     }

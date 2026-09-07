@@ -35,3 +35,6 @@ Thumbs.db
 *.env
 secrets.properties
 google-services.json
+
+# Tooling
+*Session.json
