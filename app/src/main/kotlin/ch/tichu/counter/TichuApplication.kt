@@ -1,6 +1,7 @@
 package ch.tichu.counter
 
 import android.app.Application
+import ch.tichu.counter.core.ui.util.CrashLogStore
 import dagger.hilt.android.HiltAndroidApp
 
 @HiltAndroidApp

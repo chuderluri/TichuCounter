@@ -33,6 +33,7 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import ch.tichu.counter.core.model.ThemeMode
+import ch.tichu.counter.core.ui.util.CrashLogStore
 import ch.tichu.counter.core.ui.util.CollectEffects
 import ch.tichu.counter.feature.settings.R
 
@@ -132,6 +133,7 @@ fun SettingsContent(state: SettingsUiState, onEvent: (SettingsUiEvent) -> Unit, 
 }
 
 private fun openBugReport(context: android.content.Context) {
+    val crashLog = CrashLogStore(context).read()?.take(4_000).orEmpty()
     val device = "${android.os.Build.MANUFACTURER} ${android.os.Build.MODEL} (Android ${android.os.Build.VERSION.RELEASE})"
     val body = buildString {
         appendLine("What happened?")
@@ -141,6 +143,11 @@ private fun openBugReport(context: android.content.Context) {
         appendLine()
         appendLine("Device")
         appendLine(device)
+        if (crashLog.isNotBlank()) {
+            appendLine()
+            appendLine("Last crash log")
+            appendLine(crashLog)
+        }
     }
     val intent = android.content.Intent(
         android.content.Intent.ACTION_SENDTO,

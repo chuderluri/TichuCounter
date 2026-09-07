@@ -1,4 +1,4 @@
-package ch.tichu.counter
+package ch.tichu.counter.core.ui.util
 
 import android.content.Context
 import java.io.File
