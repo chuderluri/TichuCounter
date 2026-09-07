@@ -107,7 +107,7 @@ class ScoringViewModel @Inject constructor(
             scoreB = game.scoreB,
             roundNumber = game.roundNumber,
             seats = seats,
-            history = game.toHistory().toImmutableList(),
+            history = game.toHistory(names).toImmutableList(),
             enteredA = if (draft.doubleWin != null) if (draft.doubleWin == Team.A) "200" else "0" else draft.enteredA,
             enteredB = if (draft.doubleWin != null) if (draft.doubleWin == Team.B) "200" else "0" else draft.enteredB,
             activeTeam = draft.activeTeam,
@@ -264,7 +264,7 @@ class ScoringViewModel @Inject constructor(
         GameStatus.ABANDONED -> ScoringStatus.ABANDONED
     }
 
-    private fun GameState.toHistory(): List<HistoryRowUi> = timeline.mapIndexed { index, item ->
+    private fun GameState.toHistory(persons: Map<ch.tichu.counter.core.model.PersonId, ch.tichu.counter.core.model.Person>): List<HistoryRowUi> = timeline.mapIndexed { index, item ->
         when (item) {
             is TimelineEntry.Round -> {
                 val result = item.result
@@ -281,17 +281,17 @@ class ScoringViewModel @Inject constructor(
             }
             is TimelineEntry.Swap -> HistoryRowUi.Swap(
                 index = index,
-                previousName = item.previous.displayName(),
-                nextName = item.next.displayName(),
+                previousName = item.previous.displayName(persons),
+                nextName = item.next.displayName(persons),
                 previousIsGuest = item.previous is SeatOccupant.Guest,
                 nextIsGuest = item.next is SeatOccupant.Guest,
             )
         }
     }
 
-    private fun SeatOccupant.displayName(): String = when (this) {
+    private fun SeatOccupant.displayName(persons: Map<ch.tichu.counter.core.model.PersonId, ch.tichu.counter.core.model.Person>): String = when (this) {
         is SeatOccupant.Guest -> name
-        is SeatOccupant.Registered -> "Player"
+        is SeatOccupant.Registered -> persons[personId]?.name ?: "Player"
     }
 
     private fun send(effect: ScoringUiEffect) {

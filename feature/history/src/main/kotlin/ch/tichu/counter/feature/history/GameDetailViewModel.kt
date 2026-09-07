@@ -85,7 +85,7 @@ class GameDetailViewModel @Inject constructor(
             winner = game.winner,
             teamANames = summary.currentLineUp.members(Team.A).joinToString(" · ") { summary.displayName(it) },
             teamBNames = summary.currentLineUp.members(Team.B).joinToString(" · ") { summary.displayName(it) },
-            history = game.toHistory().toImmutableList(),
+            history = game.toHistory(summary.persons).toImmutableList(),
             canUndo = game.canUndo,
             canRedo = game.canRedo,
             isLoading = false,
@@ -103,7 +103,9 @@ class GameDetailViewModel @Inject constructor(
 
     private fun send(effect: GameDetailUiEffect) = viewModelScope.launch { _effects.send(effect) }
 
-    private fun ch.tichu.counter.core.model.GameState.toHistory(): List<HistoryRowUi> = timeline.mapIndexed { index, item ->
+    private fun ch.tichu.counter.core.model.GameState.toHistory(
+        persons: Map<ch.tichu.counter.core.model.PersonId, ch.tichu.counter.core.model.Person>,
+    ): List<HistoryRowUi> = timeline.mapIndexed { index, item ->
         when (item) {
             is TimelineEntry.Round -> HistoryRowUi.Round(
                 roundNumber = item.result.roundNumber,
@@ -117,16 +119,18 @@ class GameDetailViewModel @Inject constructor(
             )
             is TimelineEntry.Swap -> HistoryRowUi.Swap(
                 index = index,
-                previousName = item.previous.displayName(),
-                nextName = item.next.displayName(),
+                previousName = item.previous.displayName(persons),
+                nextName = item.next.displayName(persons),
                 previousIsGuest = item.previous is SeatOccupant.Guest,
                 nextIsGuest = item.next is SeatOccupant.Guest,
             )
         }
     }
 
-    private fun SeatOccupant.displayName(): String = when (this) {
+    private fun SeatOccupant.displayName(
+        persons: Map<ch.tichu.counter.core.model.PersonId, ch.tichu.counter.core.model.Person>,
+    ): String = when (this) {
         is SeatOccupant.Guest -> name
-        is SeatOccupant.Registered -> "Player"
+        is SeatOccupant.Registered -> persons[personId]?.name ?: "Player"
     }
 }

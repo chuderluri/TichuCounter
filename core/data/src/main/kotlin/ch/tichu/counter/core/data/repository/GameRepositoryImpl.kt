@@ -204,9 +204,14 @@ class GameRepositoryImpl @Inject constructor(
 
     private fun summaryFlow(entity: GameEntity): Flow<GameSummary> {
         val lineUp = codec.decodeLineUp(entity.lineUpJson)
-        val personIds = lineUp.registeredPersons().map { it.value }
-        return combine(flowOf(entity), personDao.observePersons(personIds)) { game, persons ->
-            game.toSummary(lineUp, persons.associate { PersonId(it.id) to it.toDomain() })
+        return kotlinx.coroutines.flow.flow {
+            val participantIds = gameDao.participantIds(entity.id)
+            val currentIds = lineUp.registeredPersons().map { it.value }
+            emit((participantIds + currentIds).distinct())
+        }.flatMapLatest { personIds ->
+            personDao.observePersons(personIds).map { persons ->
+                entity.toSummary(lineUp, persons.associate { PersonId(it.id) to it.toDomain() })
+            }
         }
     }
 

@@ -48,4 +48,7 @@ interface GameDao {
 
     @Query("DELETE FROM game_participants WHERE game_id = :gameId")
     suspend fun deleteParticipants(gameId: String)
+
+    @Query("SELECT person_id FROM game_participants WHERE game_id = :gameId")
+    suspend fun participantIds(gameId: String): List<String>
 }
