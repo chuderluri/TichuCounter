@@ -19,7 +19,6 @@
     <string name="feature_game_add_player">Add player</string>
     <string name="feature_game_clear_slot">Clear</string>
     <string name="feature_game_clear_all_players">Clear all players</string>
-    <string name="feature_game_rename_guest">Rename</string>
     <string name="feature_game_search_member">Search member…</string>
     <string name="feature_game_guest_player">Guest player</string>
     <string name="feature_game_guest_hint">not saved, no statistics</string>

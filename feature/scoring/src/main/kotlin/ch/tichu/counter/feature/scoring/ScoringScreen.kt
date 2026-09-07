@@ -11,6 +11,7 @@ import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -24,6 +25,8 @@ import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material.icons.filled.Redo
 import androidx.compose.material.icons.filled.Undo
 import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
@@ -189,7 +192,7 @@ private fun PlayerSection(state: ScoringUiState, onEvent: (ScoringUiEvent) -> Un
     } else {
         CompactPlayerSummary(state)
     }
-    RoundOptionsButton(state.roundOptionsExpanded, onEvent)
+    RoundOptionsButton(state, onEvent)
 }
 
 @Composable
@@ -198,6 +201,7 @@ private fun CompactPlayerSummary(state: ScoringUiState) {
     Row(
         modifier = Modifier
             .fillMaxWidth()
+            .height(IntrinsicSize.Min)
             .padding(horizontal = 8.dp, vertical = 4.dp),
         verticalAlignment = Alignment.CenterVertically,
     ) {
@@ -209,46 +213,83 @@ private fun CompactPlayerSummary(state: ScoringUiState) {
     }
 }
 
-private fun hasSummaryContent(team: Team, state: ScoringUiState): Boolean = state.doubleWin == team ||
-    Seat.forTeam(team).any { seat -> state.seat(seat)?.tichu != null }
+private fun hasSummaryContent(team: Team, state: ScoringUiState): Boolean = Seat.forTeam(team).any { seat -> state.seat(seat)?.tichu != null }
 
 @Composable
-private fun RoundOptionsButton(expanded: Boolean, onEvent: (ScoringUiEvent) -> Unit) {
-    TextButton(
-        onClick = { onEvent(ScoringUiEvent.ToggleRoundOptions) },
-        modifier = Modifier.fillMaxWidth(),
+private fun RoundOptionsButton(state: ScoringUiState, onEvent: (ScoringUiEvent) -> Unit) {
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = 8.dp, vertical = 4.dp),
+        horizontalArrangement = Arrangement.spacedBy(6.dp),
     ) {
-        Text(
-            stringResource(R.string.feature_scoring_tichu_double_win) +
-                if (expanded) " ▴" else " ▾",
+        DoubleWinButton(
+            team = Team.A,
+            selected = state.doubleWin == Team.A,
+            onClick = { onEvent(ScoringUiEvent.DoubleWin(Team.A)) },
+            modifier = Modifier.weight(1.2f),
+        )
+        TextButton(
+            onClick = { onEvent(ScoringUiEvent.ToggleRoundOptions) },
+            modifier = Modifier.weight(0.6f),
+        ) {
+            Text(
+                stringResource(R.string.feature_scoring_tichu) +
+                    if (state.roundOptionsExpanded) " ▴" else " ▾",
+            )
+        }
+        DoubleWinButton(
+            team = Team.B,
+            selected = state.doubleWin == Team.B,
+            onClick = { onEvent(ScoringUiEvent.DoubleWin(Team.B)) },
+            modifier = Modifier.weight(1.2f),
         )
     }
 }
 
 @Composable
-private fun PlayerSummaryNames(team: Team, state: ScoringUiState, modifier: Modifier) {
-    Row(modifier, horizontalArrangement = Arrangement.Center) {
-        if (state.doubleWin == team) {
+private fun DoubleWinButton(
+    team: Team,
+    selected: Boolean,
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    if (selected) {
+        Button(
+            onClick = onClick,
+            modifier = modifier,
+            colors = ButtonDefaults.buttonColors(containerColor = TichuThemeDefaults.teamColor(team)),
+        ) {
             Text(
-                stringResource(R.string.feature_scoring_double_win),
-                color = MaterialTheme.colorScheme.tertiary,
-                fontWeight = FontWeight.Bold,
+                stringResource(if (team == Team.A) R.string.feature_scoring_double_win_a else R.string.feature_scoring_double_win_b),
+                maxLines = 1,
             )
-        } else {
-            val holders = Seat.forTeam(team).mapNotNull { seat ->
-                val player = state.seat(seat) ?: return@mapNotNull null
-                player.tichu?.let { it to player }
-            }
-            if (holders.isNotEmpty()) {
-                holders.forEachIndexed { index, (tichu, player) ->
-                    if (index > 0) Text(" · ")
-                    Text(player.name, fontStyle = if (player.isGuest) FontStyle.Italic else FontStyle.Normal)
-                    Text(
-                        " ${tichu.shortLabel()}",
-                        color = if (tichu.success) TichuThemeDefaults.colors.success else TichuThemeDefaults.colors.failure,
-                        fontWeight = FontWeight.Bold,
-                    )
-                }
+        }
+    } else {
+        FilledTonalButton(onClick = onClick, modifier = modifier) {
+            Text(
+                stringResource(if (team == Team.A) R.string.feature_scoring_double_win_a else R.string.feature_scoring_double_win_b),
+                maxLines = 1,
+            )
+        }
+    }
+}
+
+@Composable
+private fun PlayerSummaryNames(team: Team, state: ScoringUiState, modifier: Modifier) {
+    Column(modifier, horizontalAlignment = Alignment.CenterHorizontally) {
+        val holders = Seat.forTeam(team).mapNotNull { seat ->
+            val player = state.seat(seat) ?: return@mapNotNull null
+            player.tichu?.let { it to player }
+        }
+        holders.forEach { (tichu, player) ->
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                Text(player.name, fontStyle = if (player.isGuest) FontStyle.Italic else FontStyle.Normal)
+                Text(
+                    " ${tichu.shortLabel()}",
+                    color = if (tichu.success) TichuThemeDefaults.colors.success else TichuThemeDefaults.colors.failure,
+                    fontWeight = FontWeight.Bold,
+                )
             }
         }
     }
@@ -303,14 +344,6 @@ private fun PlayerColumn(
                     onEvent(ScoringUiEvent.TichuToggled(seat, TichuType.GRAND))
                 }
             }
-        }
-        FilledTonalButton(
-            onClick = { onEvent(ScoringUiEvent.DoubleWin(team)) },
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(top = 4.dp),
-        ) {
-            Text(stringResource(if (team == Team.A) R.string.feature_scoring_double_win_a else R.string.feature_scoring_double_win_b))
         }
     }
 }
@@ -480,12 +513,24 @@ private fun FinishedDialog(state: ScoringUiState, onEvent: (ScoringUiEvent) -> U
             }
         },
         confirmButton = {
-            Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                TextButton(onClick = { onEvent(ScoringUiEvent.NewGameClicked) }) {
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.spacedBy(8.dp),
+            ) {
+                TextButton(
+                    onClick = { onEvent(ScoringUiEvent.NewGameClicked) },
+                    modifier = Modifier.weight(1f),
+                ) {
                     Text(stringResource(R.string.feature_scoring_new_game))
                 }
-                TextButton(onClick = { onEvent(ScoringUiEvent.HomeClicked) }) { Text(stringResource(R.string.feature_scoring_home)) }
-                TextButton(onClick = { onEvent(ScoringUiEvent.FinishedDialogDismissed) }) {
+                TextButton(
+                    onClick = { onEvent(ScoringUiEvent.HomeClicked) },
+                    modifier = Modifier.weight(1f),
+                ) { Text(stringResource(R.string.feature_scoring_home)) }
+                TextButton(
+                    onClick = { onEvent(ScoringUiEvent.FinishedDialogDismissed) },
+                    modifier = Modifier.weight(1f),
+                ) {
                     Text(stringResource(R.string.feature_scoring_close))
                 }
             }

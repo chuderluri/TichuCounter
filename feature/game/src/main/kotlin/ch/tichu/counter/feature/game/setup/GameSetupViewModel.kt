@@ -51,8 +51,6 @@ class GameSetupViewModel @Inject constructor(
         val selectedSeat: Seat? = Seat.A1,
         val query: String = "",
         val targetScore: Int? = null,
-        val renamingSeat: Seat? = null,
-        val renameDraft: String = "",
         val showNewPerson: Boolean = false,
         val newPersonName: String = "",
         val newPersonError: Boolean = false,
@@ -116,8 +114,6 @@ class GameSetupViewModel @Inject constructor(
             query = draft.query,
             targetScore = draft.targetScore ?: prefs.defaultTargetScore,
             targetScoreOptions = RuleSet.TARGET_SCORE_OPTIONS.toImmutableList(),
-            renamingSeat = draft.renamingSeat,
-            renameDraft = draft.renameDraft,
             showNewPerson = draft.showNewPerson,
             newPersonName = draft.newPersonName,
             newPersonError = draft.newPersonError,
@@ -143,17 +139,6 @@ class GameSetupViewModel @Inject constructor(
                     selectedSeat = Seat.A1,
                 )
             }
-            is GameSetupUiEvent.RenameGuestStarted -> {
-                val current = draft.value.slots[event.seat] as? SeatOccupant.Guest ?: return
-                draft.update { it.copy(renamingSeat = event.seat, renameDraft = current.name) }
-            }
-            is GameSetupUiEvent.RenameDraftChanged -> draft.update { it.copy(renameDraft = event.name) }
-            GameSetupUiEvent.RenameConfirmed -> draft.update { d ->
-                val seat = d.renamingSeat ?: return@update d
-                val name = d.renameDraft.trim().ifBlank { SeatOccupant.defaultGuestName(seat) }
-                d.copy(slots = d.slots + (seat to SeatOccupant.Guest(name)), renamingSeat = null, renameDraft = "")
-            }
-            GameSetupUiEvent.RenameCancelled -> draft.update { it.copy(renamingSeat = null, renameDraft = "") }
             is GameSetupUiEvent.QueryChanged -> draft.update { it.copy(query = event.query) }
             GameSetupUiEvent.NewPersonClicked -> draft.update { it.copy(showNewPerson = true, newPersonName = it.query, newPersonError = false) }
             is GameSetupUiEvent.NewPersonNameChanged -> draft.update { it.copy(newPersonName = event.name, newPersonError = false) }

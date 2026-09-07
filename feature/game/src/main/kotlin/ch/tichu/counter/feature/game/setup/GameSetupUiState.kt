@@ -39,8 +39,6 @@ data class GameSetupUiState(
     val query: String = "",
     val targetScore: Int = 1000,
     val targetScoreOptions: ImmutableList<Int> = persistentListOf(500, 1000, 1500, 2000),
-    val renamingSeat: Seat? = null,
-    val renameDraft: String = "",
     val showNewPerson: Boolean = false,
     val newPersonName: String = "",
     val newPersonError: Boolean = false,
@@ -60,14 +58,6 @@ sealed interface GameSetupUiEvent {
     data class ClearSeat(val seat: Seat) : GameSetupUiEvent
 
     data object ClearAllPlayers : GameSetupUiEvent
-
-    data class RenameGuestStarted(val seat: Seat) : GameSetupUiEvent
-
-    data class RenameDraftChanged(val name: String) : GameSetupUiEvent
-
-    data object RenameConfirmed : GameSetupUiEvent
-
-    data object RenameCancelled : GameSetupUiEvent
 
     data class QueryChanged(val query: String) : GameSetupUiEvent
 

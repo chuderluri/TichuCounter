@@ -65,7 +65,7 @@ class ScoringViewModel @Inject constructor(
         val tichus: Map<Seat, DraftTichu> = emptyMap(),
         val roundOptionsExpanded: Boolean = false,
         val showAbandon: Boolean = false,
-        val showFinished: Boolean = false,
+        val finishedDialogDismissed: Boolean = false,
     )
 
     private val draft = MutableStateFlow(Draft())
@@ -119,7 +119,7 @@ class ScoringViewModel @Inject constructor(
             canRedo = game.canRedo,
             validationError = validation is ValidationResult.Invalid,
             showAbandonConfirmation = draft.showAbandon,
-            showFinishedDialog = draft.showFinished || game.status == GameStatus.FINISHED,
+            showFinishedDialog = game.status == GameStatus.FINISHED && !draft.finishedDialogDismissed,
             winner = game.winner,
             durationMinutes = ((game.lastEventAt.toEpochMilliseconds() - game.startedAt.toEpochMilliseconds()) / 60_000).toInt(),
         )
@@ -148,7 +148,7 @@ class ScoringViewModel @Inject constructor(
                 draft.update { it.copy(showAbandon = false) }
                 _effects.send(ScoringUiEffect.NavigateHome)
             }
-            ScoringUiEvent.FinishedDialogDismissed -> draft.update { it.copy(showFinished = false) }
+            ScoringUiEvent.FinishedDialogDismissed -> draft.update { it.copy(finishedDialogDismissed = true) }
             ScoringUiEvent.NewGameClicked -> startNewGameWithSameLineUp()
             ScoringUiEvent.HomeClicked -> send(ScoringUiEffect.NavigateHome)
         }

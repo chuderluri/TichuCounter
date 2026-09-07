@@ -20,7 +20,6 @@ import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.ArrowDropDown
 import androidx.compose.material.icons.filled.Close
-import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.Info
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.AlertDialog
@@ -131,9 +130,6 @@ fun GameSetupContent(
         HorizontalDivider()
         BottomBar(state, onEvent)
     }
-    if (state.renamingSeat != null) {
-        RenameDialog(state, onEvent)
-    }
     if (state.showNewPerson) {
         NewPersonDialog(state, onEvent)
     }
@@ -154,13 +150,11 @@ private fun SlotsSection(state: GameSetupUiState, onEvent: (GameSetupUiEvent) ->
         TeamColumnDivider(Modifier.fillMaxHeight())
         TeamColumn(Team.B, stringResource(R.string.feature_game_team_b).uppercase(), colors.teamB, state, onEvent, Modifier.weight(1f))
     }
-    if (!state.isQuickPlay && state.slots.values.any { it != null }) {
-        TextButton(
-            onClick = { onEvent(GameSetupUiEvent.ClearAllPlayers) },
-            modifier = Modifier.fillMaxWidth(),
-        ) {
-            Text(stringResource(R.string.feature_game_clear_all_players))
-        }
+    TextButton(
+        onClick = { onEvent(GameSetupUiEvent.ClearAllPlayers) },
+        modifier = Modifier.fillMaxWidth(),
+    ) {
+        Text(stringResource(R.string.feature_game_clear_all_players))
     }
 }
 
@@ -191,9 +185,7 @@ private fun SlotCard(seat: Seat, slot: SlotUi?, selected: Boolean, teamColor: Co
         else -> BorderStroke(1.dp, MaterialTheme.colorScheme.outline)
     }
     OutlinedCard(
-        onClick = {
-            if (slot is SlotUi.Guest) onEvent(GameSetupUiEvent.RenameGuestStarted(seat)) else onEvent(GameSetupUiEvent.SeatSelected(seat))
-        },
+        onClick = { onEvent(GameSetupUiEvent.SeatSelected(seat)) },
         border = border,
         modifier = Modifier.fillMaxWidth(),
     ) {
@@ -225,12 +217,12 @@ private fun SlotCard(seat: Seat, slot: SlotUi?, selected: Boolean, teamColor: Co
                         slot.name,
                         style = MaterialTheme.typography.bodyLarge,
                         fontStyle = FontStyle.Italic,
-                        modifier = Modifier
-                            .weight(1f)
-                            .clickable { onEvent(GameSetupUiEvent.RenameGuestStarted(seat)) },
+                        modifier = Modifier.weight(1f),
                         maxLines = 1,
                     )
-                    Icon(Icons.Default.Edit, contentDescription = stringResource(R.string.feature_game_rename_guest))
+                    IconButton(onClick = { onEvent(GameSetupUiEvent.ClearSeat(seat)) }) {
+                        Icon(Icons.Default.Close, contentDescription = stringResource(R.string.feature_game_clear_slot))
+                    }
                 }
             }
         }
@@ -352,27 +344,6 @@ private fun TargetScoreDropdown(state: GameSetupUiState, onEvent: (GameSetupUiEv
             }
         }
     }
-}
-
-@Composable
-private fun RenameDialog(state: GameSetupUiState, onEvent: (GameSetupUiEvent) -> Unit) {
-    AlertDialog(
-        onDismissRequest = { onEvent(GameSetupUiEvent.RenameCancelled) },
-        title = { Text(stringResource(R.string.feature_game_guest_name)) },
-        text = {
-            OutlinedTextField(
-                value = state.renameDraft,
-                onValueChange = { onEvent(GameSetupUiEvent.RenameDraftChanged(it)) },
-                singleLine = true,
-            )
-        },
-        confirmButton = {
-            TextButton(onClick = { onEvent(GameSetupUiEvent.RenameConfirmed) }) { Text(stringResource(R.string.feature_game_ok)) }
-        },
-        dismissButton = {
-            TextButton(onClick = { onEvent(GameSetupUiEvent.RenameCancelled) }) { Text(stringResource(R.string.feature_game_cancel)) }
-        },
-    )
 }
 
 @Composable

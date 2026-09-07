@@ -54,7 +54,7 @@ fun Keypad(
                 horizontalArrangement = Arrangement.spacedBy(6.dp),
             ) {
                 row.forEach { key ->
-                    val weight = if (key is KeypadKey.Digit && key.value == 0) 2f else 1f
+                    val weight = if (key is KeypadKey.Digit && key.value == 0) 3f else 1f
                     val keyModifier = Modifier
                         .weight(weight)
                         .height(52.dp)
@@ -86,7 +86,7 @@ fun Keypad(
                     }
                 }
                 if (row.size == 1) {
-                    Row(Modifier.weight(2f)) {}
+                    Row(Modifier.weight(1f)) {}
                 }
             }
         }

@@ -10,11 +10,13 @@ point input, Tichu and double-win buttons, player swaps, and undo/redo.
 - Create a **group** such as "Family" or "Tuesday club" and add people to it.
 - A person may appear in more than one group.
 - Use **Just play** without creating a group or registering people.
-  The app starts with `Player 1` to `Player 4`; names can be changed for that
-  game but are not saved as persons.
+  The app starts with fixed `Player 1` to `Player 4` guest names. Guests can be
+  removed again, but their names cannot be edited and are never saved as persons.
 - Create two teams of two players.
 - Use a **guest player** in any group game. A guest is not registered and has
   no statistics, while the registered players still receive their statistics.
+  Guests can be removed from a slot, but their names are not editable.
+- Clear all players in the game setup at any time, even when no slots are filled.
 - Enter a round with the numeric keypad. Entering `60` for Team A automatically
   proposes `40` for Team B.
 - Enter Small Tichu / Grand Tichu as made or lost at the end of the round.
