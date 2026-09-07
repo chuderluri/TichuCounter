@@ -25,6 +25,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -42,7 +43,7 @@ fun SettingsScreen(
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
     val unavailable = stringResource(R.string.feature_settings_unavailable)
-    val context = androidx.compose.ui.platform.LocalContext.current
+    val context = LocalContext.current
     CollectEffects(viewModel.effects) { effect ->
         when (effect) {
             SettingsUiEffect.OpenGroupPicker -> onOpenGroupPicker()
@@ -52,6 +53,7 @@ fun SettingsScreen(
                 unavailable,
                 android.widget.Toast.LENGTH_SHORT,
             ).show()
+            SettingsUiEffect.OpenBugReport -> openBugReport(context)
         }
     }
     Scaffold(
@@ -110,10 +112,36 @@ fun SettingsContent(state: SettingsUiState, onEvent: (SettingsUiEvent) -> Unit, 
             trailingContent = { Text("›", style = MaterialTheme.typography.titleLarge) },
             modifier = Modifier.clickable { onEvent(SettingsUiEvent.ImportClicked) },
         )
+        ListItem(
+            headlineContent = { Text(stringResource(R.string.feature_settings_report_bug)) },
+            supportingContent = { Text(stringResource(R.string.feature_settings_report_bug_description)) },
+            trailingContent = { Text("›", style = MaterialTheme.typography.titleLarge) },
+            modifier = Modifier.clickable { onEvent(SettingsUiEvent.ReportBugClicked) },
+        )
         HorizontalDivider()
         SectionTitle(stringResource(R.string.feature_settings_about))
         ListItem(headlineContent = { Text(stringResource(R.string.feature_settings_version)) })
     }
+}
+
+private fun openBugReport(context: android.content.Context) {
+    val device = "${android.os.Build.MANUFACTURER} ${android.os.Build.MODEL} (Android ${android.os.Build.VERSION.RELEASE})"
+    val body = buildString {
+        appendLine("What happened?")
+        appendLine()
+        appendLine("Steps to reproduce")
+        appendLine("1. ")
+        appendLine()
+        appendLine("Device")
+        appendLine(device)
+    }
+    val intent = android.content.Intent(
+        android.content.Intent.ACTION_SENDTO,
+        android.net.Uri.parse("mailto:tichucounter.bugs@gmail.com"),
+    )
+        .putExtra(android.content.Intent.EXTRA_SUBJECT, "Tichu Counter bug report")
+        .putExtra(android.content.Intent.EXTRA_TEXT, body)
+    context.startActivity(intent)
 }
 
 @Composable
