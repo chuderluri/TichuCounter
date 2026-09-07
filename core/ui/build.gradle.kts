@@ -1,6 +1,7 @@
 plugins {
     alias(libs.plugins.tichu.android.library)
     alias(libs.plugins.tichu.android.compose)
+    alias(libs.plugins.tichu.android.hilt)
     alias(libs.plugins.kotlin.serialization)
 }
 

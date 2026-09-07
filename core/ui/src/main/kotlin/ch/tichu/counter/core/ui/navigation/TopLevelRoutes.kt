@@ -49,3 +49,6 @@ data class PersonStatisticsRoute(val personId: String)
 
 @Serializable
 data object SettingsRoute
+
+@Serializable
+data object BugReportRoute

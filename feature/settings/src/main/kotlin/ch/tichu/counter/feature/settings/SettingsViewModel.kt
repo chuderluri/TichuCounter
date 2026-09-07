@@ -49,8 +49,6 @@ sealed interface SettingsUiEvent {
     data object ExportClicked : SettingsUiEvent
 
     data object ImportClicked : SettingsUiEvent
-
-    data object ReportBugClicked : SettingsUiEvent
 }
 
 sealed interface SettingsUiEffect {
@@ -59,8 +57,6 @@ sealed interface SettingsUiEffect {
     data object OpenGroupManagement : SettingsUiEffect
 
     data object ShowUnavailable : SettingsUiEffect
-
-    data object OpenBugReport : SettingsUiEffect
 }
 
 @HiltViewModel
@@ -94,7 +90,6 @@ class SettingsViewModel @Inject constructor(
             is SettingsUiEvent.KeepScreenOnChanged -> viewModelScope.launch { updatePreferences.keepScreenOn(event.enabled) }
             is SettingsUiEvent.HapticChanged -> viewModelScope.launch { updatePreferences.hapticFeedback(event.enabled) }
             SettingsUiEvent.ExportClicked, SettingsUiEvent.ImportClicked -> send(SettingsUiEffect.ShowUnavailable)
-            SettingsUiEvent.ReportBugClicked -> send(SettingsUiEffect.OpenBugReport)
         }
     }
 

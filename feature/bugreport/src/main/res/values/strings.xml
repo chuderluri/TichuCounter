@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="feature_bugreport_title">Report a bug</string>
+    <string name="feature_bugreport_description">What happened?</string>
+    <string name="feature_bugreport_description_hint">Describe what you did and what you expected to happen.</string>
+    <string name="feature_bugreport_add_screenshot">Add screenshot of current view</string>
+    <string name="feature_bugreport_add_crash_log">Add last crash log</string>
+    <string name="feature_bugreport_no_crash_log">No crash log is available</string>
+    <string name="feature_bugreport_prepare_email">Prepare e-mail</string>
+    <string name="feature_bugreport_email_subject">Tichu Counter bug report</string>
+    <string name="feature_bugreport_email_chooser">Send bug report with</string>
+    <string name="feature_bugreport_no_email_app">No e-mail app is available</string>
+    <string name="feature_bugreport_device">Device</string>
+    <string name="feature_bugreport_app_version">App version</string>
+    <string name="feature_bugreport_steps">Steps to reproduce</string>
+    <string name="feature_bugreport_back">Back</string>
+</resources>

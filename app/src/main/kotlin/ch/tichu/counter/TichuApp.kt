@@ -3,6 +3,7 @@ package ch.tichu.counter
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.BarChart
+import androidx.compose.material.icons.filled.BugReport
 import androidx.compose.material.icons.filled.Group
 import androidx.compose.material.icons.filled.History
 import androidx.compose.material.icons.filled.PlayArrow
@@ -25,6 +26,8 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
+import ch.tichu.counter.core.domain.usecase.preferences.ObservePreferencesUseCase
+import ch.tichu.counter.core.ui.navigation.BugReportRoute
 import ch.tichu.counter.core.ui.navigation.GameDetailRoute
 import ch.tichu.counter.core.ui.navigation.GameListRoute
 import ch.tichu.counter.core.ui.navigation.GameSetupRoute
@@ -37,7 +40,7 @@ import ch.tichu.counter.core.ui.navigation.PlayerListRoute
 import ch.tichu.counter.core.ui.navigation.ScoringRoute
 import ch.tichu.counter.core.ui.navigation.SettingsRoute
 import ch.tichu.counter.core.ui.navigation.SwapPlayerRoute
-import ch.tichu.counter.core.domain.usecase.preferences.ObservePreferencesUseCase
+import ch.tichu.counter.feature.bugreport.navigation.bugreportGraph
 import ch.tichu.counter.feature.game.navigation.gameGraph
 import ch.tichu.counter.feature.groups.navigation.groupsGraph
 import ch.tichu.counter.feature.history.navigation.historyGraph
@@ -74,6 +77,7 @@ fun TichuApp(
             BottomDestination(PlayerListRoute, "Players", Icons.Default.Group),
             BottomDestination(GameListRoute, "History", Icons.Default.History),
             BottomDestination(LeaderboardRoute, "Stats", Icons.Default.BarChart),
+            BottomDestination(BugReportRoute, "Bug", Icons.Default.BugReport),
         )
     }
 
@@ -143,6 +147,9 @@ fun TichuApp(
                 onOpenGroupPicker = { navController.navigate(GroupPickerRoute) },
                 onOpenGroupManagement = { navController.navigate(GroupPickerRoute) },
             )
+            bugreportGraph(
+                onNavigateBack = { navController.popBackStack() },
+            )
         }
     }
 }
@@ -154,4 +161,4 @@ class AppViewModel @Inject constructor(observePreferences: ObservePreferencesUse
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), null)
 }
 
-private fun NavDestination.isBottomDestination(): Boolean = hasRoute<HomeRoute>() || hasRoute<PlayerListRoute>() || hasRoute<GameListRoute>() || hasRoute<LeaderboardRoute>()
+private fun NavDestination.isBottomDestination(): Boolean = hasRoute<HomeRoute>() || hasRoute<PlayerListRoute>() || hasRoute<GameListRoute>() || hasRoute<LeaderboardRoute>() || hasRoute<BugReportRoute>()
