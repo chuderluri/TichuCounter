@@ -15,6 +15,7 @@ import ch.tichu.counter.core.model.LineUp
 import ch.tichu.counter.core.model.RuleSet
 import ch.tichu.counter.core.model.Seat
 import ch.tichu.counter.core.model.SeatOccupant
+import ch.tichu.counter.core.model.Team
 import ch.tichu.counter.core.ui.navigation.GameSetupRoute
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.collections.immutable.toImmutableList
@@ -58,6 +59,8 @@ class GameSetupViewModel @Inject constructor(
         val isStarting: Boolean = false,
         val initialised: Boolean = false,
     )
+
+    private val fillOrder = Seat.forTeam(Team.A) + Seat.forTeam(Team.B)
 
     private val draft = MutableStateFlow(Draft())
     private val _effects = Channel<GameSetupUiEffect>(Channel.BUFFERED)
@@ -174,11 +177,11 @@ class GameSetupViewModel @Inject constructor(
 
     private fun fill(occupant: SeatOccupant) {
         draft.update { d ->
-            val seat = d.selectedSeat ?: Seat.entries.firstOrNull { d.slots[it] == null } ?: return@update d
+            val seat = d.selectedSeat ?: fillOrder.firstOrNull { d.slots[it] == null } ?: return@update d
             val personId = occupant.personIdOrNull
             val cleaned = if (personId != null) d.slots.mapValues { (_, o) -> if (o?.personIdOrNull == personId) null else o } else d.slots
             val slots = cleaned + (seat to occupant)
-            val next = Seat.entries.firstOrNull { slots[it] == null }
+            val next = fillOrder.firstOrNull { slots[it] == null }
             d.copy(slots = slots, selectedSeat = next, query = "")
         }
     }

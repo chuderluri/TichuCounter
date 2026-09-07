@@ -51,10 +51,10 @@ class LineUpTest {
     fun `all guests default names follow seat numbers`() {
         val lineUp = LineUp.allGuests()
         assertTrue(lineUp.isAllGuests())
-        assertEquals(SeatOccupant.Guest("Player 1"), lineUp.occupantAt(Seat.A1))
-        assertEquals(SeatOccupant.Guest("Player 2"), lineUp.occupantAt(Seat.A2))
-        assertEquals(SeatOccupant.Guest("Player 3"), lineUp.occupantAt(Seat.B1))
-        assertEquals(SeatOccupant.Guest("Player 4"), lineUp.occupantAt(Seat.B2))
+        assertEquals(SeatOccupant.Guest("Guest 1"), lineUp.occupantAt(Seat.A1))
+        assertEquals(SeatOccupant.Guest("Guest 2"), lineUp.occupantAt(Seat.A2))
+        assertEquals(SeatOccupant.Guest("Guest 3"), lineUp.occupantAt(Seat.B1))
+        assertEquals(SeatOccupant.Guest("Guest 4"), lineUp.occupantAt(Seat.B2))
     }
 
     @Test

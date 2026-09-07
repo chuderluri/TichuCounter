@@ -76,12 +76,8 @@ fun ScoringScreen(
     val state by viewModel.state.collectAsStateWithLifecycle()
     val snackbar = remember { SnackbarHostState() }
     val invalidMessage = stringResource(R.string.feature_scoring_error)
-    val roundSavedTemplate = stringResource(R.string.feature_scoring_round_saved, 0)
     CollectEffects(viewModel.effects) { effect ->
         when (effect) {
-            is ScoringUiEffect.ShowRoundSavedSnackbar -> snackbar.showSnackbar(
-                roundSavedTemplate.replace("0", effect.roundNumber.toString()),
-            )
             ScoringUiEffect.ShowInvalidRound -> snackbar.showSnackbar(invalidMessage)
             is ScoringUiEffect.NavigateToSwapDialog -> onNavigateToSwap(effect.gameId, effect.seat)
             is ScoringUiEffect.NavigateToSetup -> onNavigateToSetup()
@@ -436,13 +432,11 @@ private fun FinishedDialog(state: ScoringUiState, onEvent: (ScoringUiEvent) -> U
             }
         },
         confirmButton = {
-            TextButton(onClick = { onEvent(ScoringUiEvent.NewGameClicked) }) {
-                Text(stringResource(R.string.feature_scoring_new_game))
-            }
-        },
-        dismissButton = {
-            Row {
+            Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                 TextButton(onClick = { onEvent(ScoringUiEvent.Undo) }) { Text(stringResource(R.string.feature_scoring_undo_last_round)) }
+                TextButton(onClick = { onEvent(ScoringUiEvent.NewGameClicked) }) {
+                    Text(stringResource(R.string.feature_scoring_new_game))
+                }
                 TextButton(onClick = { onEvent(ScoringUiEvent.HomeClicked) }) { Text(stringResource(R.string.feature_scoring_home)) }
             }
         },

@@ -15,7 +15,6 @@
     <string name="feature_scoring_tichu_off">off</string>
     <string name="feature_scoring_tichu_made">made</string>
     <string name="feature_scoring_tichu_lost">lost</string>
-    <string name="feature_scoring_round_saved">Round %1$d saved</string>
     <string name="feature_scoring_confirm">OK</string>
     <string name="feature_scoring_abandon">Abandon game</string>
     <string name="feature_scoring_abandon_title">Abandon this game?</string>

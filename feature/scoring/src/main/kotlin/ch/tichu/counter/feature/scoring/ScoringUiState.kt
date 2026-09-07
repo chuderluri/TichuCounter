@@ -108,8 +108,6 @@ sealed interface ScoringUiEvent {
 }
 
 sealed interface ScoringUiEffect {
-    data class ShowRoundSavedSnackbar(val roundNumber: Int) : ScoringUiEffect
-
     data object ShowInvalidRound : ScoringUiEffect
 
     data class NavigateToSwapDialog(val gameId: GameId, val seat: Seat) : ScoringUiEffect

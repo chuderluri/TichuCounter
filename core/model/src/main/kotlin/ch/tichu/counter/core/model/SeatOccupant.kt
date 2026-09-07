@@ -20,6 +20,6 @@ sealed interface SeatOccupant {
         get() = this is Guest
 
     companion object {
-        fun defaultGuestName(seat: Seat): String = "Player ${seat.displayNumber}"
+        fun defaultGuestName(seat: Seat): String = "Guest ${seat.displayNumber}"
     }
 }

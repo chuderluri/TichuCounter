@@ -225,9 +225,7 @@ class ScoringViewModel @Inject constructor(
             val input = draft.value.toInput(game)
             when (recordRound(gameId, input)) {
                 is Result.Success -> {
-                    val round = game.roundNumber
                     draft.value = Draft()
-                    _effects.send(ScoringUiEffect.ShowRoundSavedSnackbar(round))
                 }
                 is Result.Failure -> _effects.send(ScoringUiEffect.ShowInvalidRound)
             }
