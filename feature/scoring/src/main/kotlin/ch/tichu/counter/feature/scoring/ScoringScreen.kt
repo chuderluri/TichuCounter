@@ -70,6 +70,7 @@ fun ScoringScreen(
     onNavigateToSwap: (GameId, Seat) -> Unit,
     onNavigateToSetup: () -> Unit,
     onNavigateHome: () -> Unit,
+    onNavigateToScoring: (GameId) -> Unit,
     viewModel: ScoringViewModel = hiltViewModel(),
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
@@ -84,6 +85,7 @@ fun ScoringScreen(
             ScoringUiEffect.ShowInvalidRound -> snackbar.showSnackbar(invalidMessage)
             is ScoringUiEffect.NavigateToSwapDialog -> onNavigateToSwap(effect.gameId, effect.seat)
             is ScoringUiEffect.NavigateToSetup -> onNavigateToSetup()
+            is ScoringUiEffect.NavigateToScoring -> onNavigateToScoring(effect.gameId)
             ScoringUiEffect.NavigateHome -> onNavigateHome()
             ScoringUiEffect.NavigateBack -> onNavigateBack()
         }

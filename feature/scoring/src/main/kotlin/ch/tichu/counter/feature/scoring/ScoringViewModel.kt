@@ -10,6 +10,7 @@ import ch.tichu.counter.core.domain.usecase.game.AbandonGameUseCase
 import ch.tichu.counter.core.domain.usecase.game.ObserveGameStateUseCase
 import ch.tichu.counter.core.domain.usecase.game.ObserveGameSummaryUseCase
 import ch.tichu.counter.core.domain.usecase.game.RedoLastEventUseCase
+import ch.tichu.counter.core.domain.usecase.game.StartGameUseCase
 import ch.tichu.counter.core.domain.usecase.game.UndoLastEventUseCase
 import ch.tichu.counter.core.domain.usecase.scoring.RecordRoundUseCase
 import ch.tichu.counter.core.domain.usecase.scoring.ValidateRoundUseCase
@@ -51,6 +52,7 @@ class ScoringViewModel @Inject constructor(
     private val undo: UndoLastEventUseCase,
     private val redo: RedoLastEventUseCase,
     private val abandonGame: AbandonGameUseCase,
+    private val startGame: StartGameUseCase,
 ) : ViewModel() {
 
     private val gameId = GameId(savedStateHandle.toRoute<ScoringRoute>().gameId)
@@ -145,8 +147,7 @@ class ScoringViewModel @Inject constructor(
             }
             ScoringUiEvent.FinishedDialogDismissed -> draft.update { it.copy(showFinished = false) }
             ScoringUiEvent.ToggleFinishedRoundList -> draft.update { it.copy(roundsExpanded = !it.roundsExpanded) }
-            ScoringUiEvent.RematchClicked -> send(ScoringUiEffect.NavigateToSetup(abandonCurrent = false))
-            ScoringUiEvent.NewGameClicked -> send(ScoringUiEffect.NavigateToSetup(abandonCurrent = false))
+            ScoringUiEvent.RematchClicked, ScoringUiEvent.NewGameClicked -> startNewGameWithSameLineUp()
             ScoringUiEvent.HomeClicked -> send(ScoringUiEffect.NavigateHome)
         }
     }
@@ -245,6 +246,16 @@ class ScoringViewModel @Inject constructor(
     private fun complementText(value: String): String {
         val parsed = value.toIntOrNull() ?: return ""
         return (100 - parsed).takeIf { it in -25..125 && it.mod(5) == 0 }?.toString().orEmpty()
+    }
+
+    private fun startNewGameWithSameLineUp() {
+        viewModelScope.launch {
+            val game = gameState.first() ?: return@launch
+            when (val result = startGame(game.groupId, game.lineUp, game.ruleSet, abandonCurrent = false)) {
+                is Result.Success -> _effects.send(ScoringUiEffect.NavigateToScoring(result.value))
+                is Result.Failure -> _effects.send(ScoringUiEffect.ShowInvalidRound)
+            }
+        }
     }
 
     private fun GameStatus.toUiStatus(): ScoringStatus = when (this) {

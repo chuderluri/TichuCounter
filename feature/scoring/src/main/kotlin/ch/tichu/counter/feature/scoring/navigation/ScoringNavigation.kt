@@ -12,6 +12,7 @@ fun NavGraphBuilder.scoringGraph(
     onNavigateToSwap: (GameId, Seat) -> Unit,
     onNavigateToSetup: () -> Unit,
     onNavigateHome: () -> Unit,
+    onNavigateToScoring: (GameId) -> Unit,
 ) {
     composable<ScoringRoute> {
         ScoringScreen(
@@ -19,6 +20,7 @@ fun NavGraphBuilder.scoringGraph(
             onNavigateToSwap = onNavigateToSwap,
             onNavigateToSetup = onNavigateToSetup,
             onNavigateHome = onNavigateHome,
+            onNavigateToScoring = onNavigateToScoring,
         )
     }
 }

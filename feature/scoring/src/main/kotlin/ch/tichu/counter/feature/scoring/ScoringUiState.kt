@@ -114,6 +114,8 @@ sealed interface ScoringUiEffect {
 
     data class NavigateToSetup(val abandonCurrent: Boolean) : ScoringUiEffect
 
+    data class NavigateToScoring(val gameId: GameId) : ScoringUiEffect
+
     data object NavigateHome : ScoringUiEffect
 
     data object NavigateBack : ScoringUiEffect

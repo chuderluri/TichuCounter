@@ -129,6 +129,7 @@ fun TichuApp(
                 onNavigateToSwap = { gameId, seat -> navController.navigate(SwapPlayerRoute(gameId.value, seat.name)) },
                 onNavigateToSetup = { navController.navigate(GameSetupRoute()) },
                 onNavigateHome = { navController.navigate(HomeRoute) { popUpTo(HomeRoute) { inclusive = false } } },
+                onNavigateToScoring = { gameId -> navController.navigate(ScoringRoute(gameId.value)) },
             )
             historyGraph(
                 onNavigateToDetail = { gameId -> navController.navigate(GameDetailRoute(gameId.value)) },
