@@ -32,6 +32,7 @@ import androidx.compose.ui.unit.dp
 import androidx.core.content.FileProvider
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import ch.tichu.counter.core.ui.BuildConfig
 import ch.tichu.counter.core.ui.util.CollectEffects
 import ch.tichu.counter.core.ui.util.ScreenshotHolder
 import ch.tichu.counter.core.ui.util.captureCurrentView
@@ -175,7 +176,7 @@ private fun prepareEmail(
 private fun uriFor(context: android.content.Context, file: File): Uri = FileProvider.getUriForFile(context, "${context.packageName}.fileprovider", file)
 private fun appVersion(context: android.content.Context): String = try {
     val pkg = context.packageManager.getPackageInfo(context.packageName, 0)
-    "${pkg.versionName} (${pkg.versionCode})"
+    "${pkg.versionName} (${pkg.versionCode}, ${BuildConfig.GIT_COMMIT_HASH})"
 } catch (e: android.content.pm.PackageManager.NameNotFoundException) {
     android.util.Log.w(TAG, "App version unavailable", e)
     "unknown"

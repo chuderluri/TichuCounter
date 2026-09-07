@@ -25,11 +25,9 @@
     <string name="feature_scoring_finished_title_b">Team B wins</string>
     <string name="feature_scoring_finished_draw">It is a draw</string>
     <string name="feature_scoring_rounds_duration">%1$d rounds · %2$d min</string>
-    <string name="feature_scoring_show_rounds">Show rounds</string>
-    <string name="feature_scoring_hide_rounds">Hide rounds</string>
     <string name="feature_scoring_new_game">New game</string>
     <string name="feature_scoring_home">Home</string>
-    <string name="feature_scoring_undo_last_round">Undo last round</string>
+    <string name="feature_scoring_close">Close</string>
     <string name="feature_scoring_game_finished">Game finished</string>
     <string name="feature_scoring_guest">Guest</string>
 </resources>

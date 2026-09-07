@@ -66,7 +66,6 @@ class ScoringViewModel @Inject constructor(
         val roundOptionsExpanded: Boolean = false,
         val showAbandon: Boolean = false,
         val showFinished: Boolean = false,
-        val roundsExpanded: Boolean = false,
     )
 
     private val draft = MutableStateFlow(Draft())
@@ -123,7 +122,6 @@ class ScoringViewModel @Inject constructor(
             showFinishedDialog = draft.showFinished || game.status == GameStatus.FINISHED,
             winner = game.winner,
             durationMinutes = ((game.lastEventAt.toEpochMilliseconds() - game.startedAt.toEpochMilliseconds()) / 60_000).toInt(),
-            finishedRoundListExpanded = draft.roundsExpanded,
         )
     }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), ScoringUiState())
 
@@ -151,7 +149,6 @@ class ScoringViewModel @Inject constructor(
                 _effects.send(ScoringUiEffect.NavigateHome)
             }
             ScoringUiEvent.FinishedDialogDismissed -> draft.update { it.copy(showFinished = false) }
-            ScoringUiEvent.ToggleFinishedRoundList -> draft.update { it.copy(roundsExpanded = !it.roundsExpanded) }
             ScoringUiEvent.NewGameClicked -> startNewGameWithSameLineUp()
             ScoringUiEvent.HomeClicked -> send(ScoringUiEffect.NavigateHome)
         }

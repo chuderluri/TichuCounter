@@ -49,7 +49,6 @@ data class ScoringUiState(
     val showFinishedDialog: Boolean = false,
     val winner: Team? = null,
     val durationMinutes: Int = 0,
-    val finishedRoundListExpanded: Boolean = false,
 ) {
     val isKeypadEnabled: Boolean get() = status == ScoringStatus.IN_PROGRESS && doubleWin == null
     val isConfirmEnabled: Boolean
@@ -99,8 +98,6 @@ sealed interface ScoringUiEvent {
     data object AbandonDismissed : ScoringUiEvent
 
     data object FinishedDialogDismissed : ScoringUiEvent
-
-    data object ToggleFinishedRoundList : ScoringUiEvent
 
     data object NewGameClicked : ScoringUiEvent
 

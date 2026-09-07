@@ -9,7 +9,6 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.material.icons.Icons
@@ -422,22 +421,17 @@ private fun FinishedDialog(state: ScoringUiState, onEvent: (ScoringUiEvent) -> U
                     if (state.winner == Team.B) Text("🏆", style = MaterialTheme.typography.headlineMedium)
                 }
                 Text(stringResource(R.string.feature_scoring_rounds_duration, state.roundNumber - 1, state.durationMinutes))
-                Spacer(Modifier.height(8.dp))
-                TextButton(onClick = { onEvent(ScoringUiEvent.ToggleFinishedRoundList) }) {
-                    Text(stringResource(if (state.finishedRoundListExpanded) R.string.feature_scoring_hide_rounds else R.string.feature_scoring_show_rounds))
-                }
-                if (state.finishedRoundListExpanded) {
-                    RoundHistoryTable(state.history, modifier = Modifier.height(180.dp), autoScrollToEnd = false)
-                }
             }
         },
         confirmButton = {
             Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                TextButton(onClick = { onEvent(ScoringUiEvent.Undo) }) { Text(stringResource(R.string.feature_scoring_undo_last_round)) }
                 TextButton(onClick = { onEvent(ScoringUiEvent.NewGameClicked) }) {
                     Text(stringResource(R.string.feature_scoring_new_game))
                 }
                 TextButton(onClick = { onEvent(ScoringUiEvent.HomeClicked) }) { Text(stringResource(R.string.feature_scoring_home)) }
+                TextButton(onClick = { onEvent(ScoringUiEvent.FinishedDialogDismissed) }) {
+                    Text(stringResource(R.string.feature_scoring_close))
+                }
             }
         },
     )
