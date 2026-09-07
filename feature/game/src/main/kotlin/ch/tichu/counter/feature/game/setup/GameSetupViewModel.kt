@@ -134,6 +134,12 @@ class GameSetupViewModel @Inject constructor(
             is GameSetupUiEvent.ClearSeat -> draft.update {
                 it.copy(slots = it.slots + (event.seat to null), selectedSeat = event.seat)
             }
+            GameSetupUiEvent.ClearAllPlayers -> draft.update { current ->
+                current.copy(
+                    slots = Seat.entries.associateWith { null },
+                    selectedSeat = Seat.A1,
+                )
+            }
             is GameSetupUiEvent.RenameGuestStarted -> {
                 val current = draft.value.slots[event.seat] as? SeatOccupant.Guest ?: return
                 draft.update { it.copy(renamingSeat = event.seat, renameDraft = current.name) }

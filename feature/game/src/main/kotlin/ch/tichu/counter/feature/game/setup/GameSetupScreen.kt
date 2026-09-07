@@ -151,6 +151,14 @@ private fun SlotsSection(state: GameSetupUiState, onEvent: (GameSetupUiEvent) ->
         TeamColumnDivider(Modifier.fillMaxHeight())
         TeamColumn(Team.B, stringResource(R.string.feature_game_team_b).uppercase(), colors.teamB, state, onEvent, Modifier.weight(1f))
     }
+    if (!state.isQuickPlay && state.slots.values.any { it != null }) {
+        TextButton(
+            onClick = { onEvent(GameSetupUiEvent.ClearAllPlayers) },
+            modifier = Modifier.fillMaxWidth(),
+        ) {
+            Text(stringResource(R.string.feature_game_clear_all_players))
+        }
+    }
 }
 
 @Composable

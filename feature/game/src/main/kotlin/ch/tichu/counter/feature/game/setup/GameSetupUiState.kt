@@ -59,6 +59,8 @@ sealed interface GameSetupUiEvent {
 
     data class ClearSeat(val seat: Seat) : GameSetupUiEvent
 
+    data object ClearAllPlayers : GameSetupUiEvent
+
     data class RenameGuestStarted(val seat: Seat) : GameSetupUiEvent
 
     data class RenameDraftChanged(val name: String) : GameSetupUiEvent
