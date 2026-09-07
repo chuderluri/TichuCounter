@@ -17,6 +17,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.PlayArrow
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
@@ -50,6 +51,7 @@ fun GroupPickerScreen(
     onNavigateToGroupEdit: (GroupId?) -> Unit,
     onNavigateToSetup: () -> Unit,
     onDismiss: () -> Unit,
+    showBackButton: Boolean = false,
     viewModel: GroupPickerViewModel = hiltViewModel(),
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
@@ -66,6 +68,8 @@ fun GroupPickerScreen(
             state = state,
             onEvent = viewModel::onEvent,
             modifier = Modifier.padding(padding),
+            showBackButton = showBackButton,
+            onBack = onDismiss,
         )
     }
 }
@@ -75,12 +79,14 @@ fun GroupPickerContent(
     state: GroupPickerUiState,
     onEvent: (GroupPickerUiEvent) -> Unit,
     modifier: Modifier = Modifier,
+    showBackButton: Boolean = false,
+    onBack: (() -> Unit)? = null,
 ) {
     if (state.isLoading) return
     if (state.isFirstStart && state.groups.isEmpty()) {
-        FirstStartContent(state, onEvent, modifier)
+        FirstStartContent(state, onEvent, modifier, showBackButton, onBack)
     } else {
-        PickerContent(state, onEvent, modifier)
+        PickerContent(state, onEvent, modifier, showBackButton, onBack)
     }
 }
 
@@ -89,6 +95,8 @@ private fun FirstStartContent(
     state: GroupPickerUiState,
     onEvent: (GroupPickerUiEvent) -> Unit,
     modifier: Modifier,
+    showBackButton: Boolean,
+    onBack: (() -> Unit)?,
 ) {
     Column(
         modifier = modifier
@@ -97,11 +105,19 @@ private fun FirstStartContent(
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center,
     ) {
-        Text(
-            stringResource(R.string.feature_groups_app_name),
-            style = MaterialTheme.typography.headlineLarge,
-            textAlign = TextAlign.Center,
-        )
+        Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
+            if (showBackButton && onBack != null) {
+                IconButton(onClick = onBack) {
+                    Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = null)
+                }
+            }
+            Text(
+                stringResource(R.string.feature_groups_app_name),
+                modifier = Modifier.weight(1f),
+                style = MaterialTheme.typography.headlineLarge,
+                textAlign = TextAlign.Center,
+            )
+        }
         Spacer(Modifier.height(48.dp))
         ChoiceCard(
             icon = Icons.Default.PlayArrow,
@@ -155,15 +171,27 @@ private fun PickerContent(
     state: GroupPickerUiState,
     onEvent: (GroupPickerUiEvent) -> Unit,
     modifier: Modifier,
+    showBackButton: Boolean,
+    onBack: (() -> Unit)?,
 ) {
     Column(modifier = modifier.fillMaxSize()) {
-        Column(Modifier.padding(horizontal = 24.dp, vertical = 16.dp)) {
+        Row(
+            Modifier.padding(horizontal = 16.dp, vertical = 8.dp),
+            verticalAlignment = Alignment.CenterVertically,
+        ) {
+            if (showBackButton && onBack != null) {
+                IconButton(onClick = onBack) {
+                    Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = null)
+                }
+            }
+            Column {
             Text(stringResource(R.string.feature_groups_picker_title), style = MaterialTheme.typography.headlineSmall)
             Text(
                 stringResource(R.string.feature_groups_picker_subtitle),
                 style = MaterialTheme.typography.bodyMedium,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
             )
+            }
         }
         LazyColumn(
             modifier = Modifier

@@ -22,6 +22,7 @@ fun NavGraphBuilder.groupsGraph(
             onNavigateToGroupEdit = onNavigateToGroupEdit,
             onNavigateToSetup = onNavigateToSetup,
             onDismiss = onNavigateBack,
+            showBackButton = true,
         )
     }
     composable<GroupEditRoute> {

@@ -1,7 +1,10 @@
 package ch.tichu.counter.feature.settings
 
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
@@ -72,7 +75,11 @@ fun SettingsScreen(
 
 @Composable
 fun SettingsContent(state: SettingsUiState, onEvent: (SettingsUiEvent) -> Unit, modifier: Modifier = Modifier) {
-    Column(modifier) {
+    Column(
+        modifier
+            .fillMaxSize()
+            .verticalScroll(rememberScrollState()),
+    ) {
         SectionTitle(stringResource(R.string.feature_settings_group))
         ListItem(
             headlineContent = { Text(stringResource(R.string.feature_settings_active_group)) },
