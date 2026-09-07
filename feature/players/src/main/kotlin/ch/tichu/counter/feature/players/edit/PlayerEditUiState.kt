@@ -1,7 +1,6 @@
 package ch.tichu.counter.feature.players.edit
 
 import androidx.compose.runtime.Immutable
-import ch.tichu.counter.core.model.AvatarColor
 import ch.tichu.counter.core.model.GroupId
 import ch.tichu.counter.core.model.PersonId
 import kotlinx.collections.immutable.ImmutableList
@@ -18,7 +17,6 @@ data class GroupMembershipUi(
 data class PlayerEditUiState(
     val personId: PersonId? = null,
     val name: String = "",
-    val color: AvatarColor = AvatarColor.BLUE,
     val isArchived: Boolean = false,
     val groups: ImmutableList<GroupMembershipUi> = persistentListOf(),
     val isLocked: Boolean = false,
@@ -33,8 +31,6 @@ data class PlayerEditUiState(
 
 sealed interface PlayerEditUiEvent {
     data class NameChanged(val name: String) : PlayerEditUiEvent
-
-    data class ColorPicked(val color: AvatarColor) : PlayerEditUiEvent
 
     data class GroupToggled(val groupId: GroupId) : PlayerEditUiEvent
 

@@ -1,6 +1,5 @@
 package ch.tichu.counter.feature.players.edit
 
-import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -14,7 +13,6 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
@@ -44,10 +42,6 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import ch.tichu.counter.core.model.AvatarColor
-import ch.tichu.counter.core.ui.component.OccupantDot
-import ch.tichu.counter.core.ui.component.PersonAvatar
-import ch.tichu.counter.core.ui.theme.toColor
 import ch.tichu.counter.core.ui.util.CollectEffects
 import ch.tichu.counter.feature.players.R
 
@@ -123,8 +117,6 @@ fun PlayerEditContent(
             }
             Spacer(Modifier.height(16.dp))
         }
-        PersonAvatar(name = state.name.ifBlank { "?" }, color = state.color.toColor(), size = 80.dp)
-        Spacer(Modifier.height(24.dp))
         OutlinedTextField(
             value = state.name,
             onValueChange = { onEvent(PlayerEditUiEvent.NameChanged(it)) },
@@ -139,36 +131,6 @@ fun PlayerEditContent(
             singleLine = true,
             modifier = Modifier.fillMaxWidth(),
         )
-        Spacer(Modifier.height(24.dp))
-        Text(
-            stringResource(R.string.feature_players_colour),
-            style = MaterialTheme.typography.labelLarge,
-            modifier = Modifier.fillMaxWidth(),
-        )
-        Spacer(Modifier.height(8.dp))
-        FlowRow(
-            horizontalArrangement = Arrangement.spacedBy(12.dp),
-            verticalArrangement = Arrangement.spacedBy(12.dp),
-            modifier = Modifier.fillMaxWidth(),
-        ) {
-            AvatarColor.entries.forEach { color ->
-                val selected = color == state.color
-                OccupantDot(
-                    color = color.toColor(),
-                    size = 36.dp,
-                    modifier = Modifier
-                        .clip(CircleShape)
-                        .then(
-                            if (selected) {
-                                Modifier.border(3.dp, MaterialTheme.colorScheme.onSurface, CircleShape)
-                            } else {
-                                Modifier
-                            },
-                        )
-                        .clickable(enabled = !state.isLocked) { onEvent(PlayerEditUiEvent.ColorPicked(color)) },
-                )
-            }
-        }
         if (!state.isNew && state.groups.isNotEmpty()) {
             Spacer(Modifier.height(24.dp))
             Text(

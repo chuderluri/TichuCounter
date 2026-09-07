@@ -39,8 +39,6 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import ch.tichu.counter.core.model.PersonId
-import ch.tichu.counter.core.ui.component.PersonAvatar
-import ch.tichu.counter.core.ui.theme.toColor
 import ch.tichu.counter.core.ui.util.CollectEffects
 import ch.tichu.counter.feature.groups.R
 
@@ -121,7 +119,6 @@ fun GroupEditContent(
         LazyColumn(Modifier.weight(1f)) {
             items(state.members, key = { it.id.value }) { member ->
                 ListItem(
-                    leadingContent = { PersonAvatar(member.name, member.color.toColor(), size = 36.dp) },
                     headlineContent = { Text(member.name) },
                     supportingContent = if (member.isInCurrentGame) {
                         { Text(stringResource(R.string.feature_groups_in_current_game)) }
@@ -196,7 +193,6 @@ private fun AddExistingDialog(state: GroupEditUiState, onEvent: (GroupEditUiEven
                 LazyColumn {
                     items(state.candidates, key = { it.id.value }) { candidate ->
                         ListItem(
-                            leadingContent = { PersonAvatar(candidate.name, candidate.color.toColor(), size = 32.dp) },
                             headlineContent = { Text(candidate.name) },
                             modifier = Modifier.padding(0.dp),
                             colors = androidx.compose.material3.ListItemDefaults.colors(containerColor = Color.Transparent),

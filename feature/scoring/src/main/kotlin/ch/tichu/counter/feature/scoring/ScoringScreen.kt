@@ -54,7 +54,6 @@ import ch.tichu.counter.core.model.Team
 import ch.tichu.counter.core.model.TichuType
 import ch.tichu.counter.core.ui.component.Keypad
 import ch.tichu.counter.core.ui.component.KeypadKey
-import ch.tichu.counter.core.ui.component.OccupantDot
 import ch.tichu.counter.core.ui.component.RoundHistoryTable
 import ch.tichu.counter.core.ui.component.TeamHeader
 import ch.tichu.counter.core.ui.theme.TichuThemeDefaults
@@ -203,8 +202,6 @@ private fun PlayerColumn(
                     .padding(vertical = 3.dp),
                 verticalAlignment = Alignment.CenterVertically,
             ) {
-                OccupantDot(player.color?.toColor(), size = 10.dp)
-                Spacer(Modifier.width(6.dp))
                 Text(
                     player.name,
                     modifier = Modifier.weight(1f),

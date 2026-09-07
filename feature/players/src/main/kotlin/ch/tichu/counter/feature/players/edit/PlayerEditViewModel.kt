@@ -17,7 +17,6 @@ import ch.tichu.counter.core.domain.usecase.person.IsPersonInCurrentGameUseCase
 import ch.tichu.counter.core.domain.usecase.person.ObservePersonUseCase
 import ch.tichu.counter.core.domain.usecase.person.SetPersonGroupMembershipUseCase
 import ch.tichu.counter.core.domain.usecase.person.UpdatePersonUseCase
-import ch.tichu.counter.core.model.AvatarColor
 import ch.tichu.counter.core.model.GroupId
 import ch.tichu.counter.core.model.PersonId
 import ch.tichu.counter.core.ui.navigation.PlayerEditRoute
@@ -57,7 +56,6 @@ class PlayerEditViewModel @Inject constructor(
 
     private data class Draft(
         val name: String? = null,
-        val color: AvatarColor? = null,
         val nameError: Boolean = false,
     )
 
@@ -89,7 +87,6 @@ class PlayerEditViewModel @Inject constructor(
         PlayerEditUiState(
             personId = person?.id,
             name = draft.name ?: person?.name ?: "",
-            color = draft.color ?: person?.avatarColor ?: AvatarColor.forIndex((0..9).random()),
             isArchived = person?.isArchived ?: false,
             groups = groups.map { GroupMembershipUi(it.group.id, it.group.name, it.group.id in memberIds) }
                 .toImmutableList(),
@@ -97,14 +94,13 @@ class PlayerEditViewModel @Inject constructor(
             canDelete = canDelete && !locked,
             nameError = draft.nameError,
             isLoading = personId != null && person == null,
-            isDirty = draft.name != null || draft.color != null,
+            isDirty = draft.name != null,
         )
     }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), PlayerEditUiState(isLoading = personId != null))
 
     fun onEvent(event: PlayerEditUiEvent) {
         when (event) {
             is PlayerEditUiEvent.NameChanged -> draft.update { it.copy(name = event.name, nameError = false) }
-            is PlayerEditUiEvent.ColorPicked -> draft.update { it.copy(color = event.color) }
             is PlayerEditUiEvent.GroupToggled -> toggleGroup(event.groupId)
             PlayerEditUiEvent.Save -> save()
             PlayerEditUiEvent.ToggleArchive -> viewModelScope.launch {
@@ -128,9 +124,9 @@ class PlayerEditViewModel @Inject constructor(
             val current = state.value
             val result = if (personId == null) {
                 val activeGroupId = observeActiveGroup().first().group?.id
-                createPerson(current.name, current.color, activeGroupId)
+                createPerson(current.name, ch.tichu.counter.core.model.AvatarColor.BLUE, activeGroupId)
             } else {
-                updatePerson(personId, current.name, current.color)
+                updatePerson(personId, current.name, ch.tichu.counter.core.model.AvatarColor.BLUE)
             }
             when (result) {
                 is Result.Success -> {

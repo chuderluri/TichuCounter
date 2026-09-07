@@ -21,7 +21,6 @@
     <string name="feature_players_save">Save</string>
     <string name="feature_players_name">Name</string>
     <string name="feature_players_name_error">Enter a unique name (max. 30 characters)</string>
-    <string name="feature_players_colour">Colour</string>
     <string name="feature_players_groups">Groups</string>
     <string name="feature_players_archive">Archive player</string>
     <string name="feature_players_unarchive">Unarchive player</string>

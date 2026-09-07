@@ -62,7 +62,6 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import ch.tichu.counter.core.model.GameId
 import ch.tichu.counter.core.model.Seat
 import ch.tichu.counter.core.model.Team
-import ch.tichu.counter.core.ui.component.OccupantDot
 import ch.tichu.counter.core.ui.component.TeamColumnDivider
 import ch.tichu.counter.core.ui.theme.TichuThemeDefaults
 import ch.tichu.counter.core.ui.theme.toColor
@@ -212,16 +211,12 @@ private fun SlotCard(seat: Seat, slot: SlotUi?, selected: Boolean, teamColor: Co
                     )
                 }
                 is SlotUi.Person -> {
-                    OccupantDot(slot.color.toColor())
-                    Spacer(Modifier.width(8.dp))
                     Text(slot.name, style = MaterialTheme.typography.bodyLarge, modifier = Modifier.weight(1f), maxLines = 1)
                     IconButton(onClick = { onEvent(GameSetupUiEvent.ClearSeat(seat)) }) {
                         Icon(Icons.Default.Close, contentDescription = stringResource(R.string.feature_game_clear_slot))
                     }
                 }
                 is SlotUi.Guest -> {
-                    OccupantDot(null)
-                    Spacer(Modifier.width(8.dp))
                     Text(
                         slot.name,
                         style = MaterialTheme.typography.bodyLarge,
@@ -266,7 +261,6 @@ private fun MemberPicker(state: GameSetupUiState, onEvent: (GameSetupUiEvent) ->
                 ListItem(
                     headlineContent = { Text(stringResource(R.string.feature_game_guest_player), fontStyle = FontStyle.Italic) },
                     supportingContent = { Text(stringResource(R.string.feature_game_guest_hint)) },
-                    leadingContent = { OccupantDot(null, size = 16.dp) },
                     modifier = Modifier.clickableIf(state.selectedSeat != null) { onEvent(GameSetupUiEvent.GuestPicked) },
                     colors = ListItemDefaults.colors(containerColor = Color.Transparent),
                 )
@@ -284,7 +278,6 @@ private fun MemberPicker(state: GameSetupUiState, onEvent: (GameSetupUiEvent) ->
                             },
                         )
                     },
-                    leadingContent = { OccupantDot(member.color.toColor(), size = 16.dp) },
                     modifier = Modifier
                         .alpha(if (member.isSeated) 0.4f else 1f)
                         .clickableIf(!member.isSeated && state.selectedSeat != null) {

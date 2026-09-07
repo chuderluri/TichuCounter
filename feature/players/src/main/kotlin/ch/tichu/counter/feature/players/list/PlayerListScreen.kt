@@ -36,8 +36,6 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import ch.tichu.counter.core.model.PersonId
 import ch.tichu.counter.core.ui.component.EmptyState
-import ch.tichu.counter.core.ui.component.PersonAvatar
-import ch.tichu.counter.core.ui.theme.toColor
 import ch.tichu.counter.core.ui.util.CollectEffects
 import ch.tichu.counter.core.ui.util.relativeDateText
 import ch.tichu.counter.feature.players.R
@@ -171,7 +169,6 @@ private fun PlayerRow(player: PlayerRowUi, onClick: () -> Unit) {
     ListItem(
         headlineContent = { Text(player.name) },
         supportingContent = { Text(supporting) },
-        leadingContent = { PersonAvatar(player.name, player.color.toColor()) },
         trailingContent = if (player.isInCurrentGame) {
             {
                 Row(verticalAlignment = Alignment.CenterVertically) {
