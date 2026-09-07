@@ -18,7 +18,10 @@ fun NavGraphBuilder.historyGraph(
 ) {
     navigation<HistoryGraphRoute>(startDestination = GameListRoute) {
         composable<GameListRoute> {
-            GameListScreen(onNavigateToDetail = onNavigateToDetail, onOpenGroupPicker = onOpenGroupPicker)
+            GameListScreen(
+                onNavigateToDetail = onNavigateToDetail,
+                onOpenGroupPicker = onOpenGroupPicker,
+            )
         }
         composable<GameDetailRoute> {
             GameDetailScreen(onNavigateBack = onNavigateBack, onNavigateToScoring = onNavigateToScoring)
