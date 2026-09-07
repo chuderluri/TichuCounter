@@ -3,7 +3,6 @@ package ch.tichu.counter
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.BarChart
-import androidx.compose.material.icons.filled.BugReport
 import androidx.compose.material.icons.filled.Group
 import androidx.compose.material.icons.filled.History
 import androidx.compose.material.icons.filled.PlayArrow
@@ -16,6 +15,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -40,6 +40,8 @@ import ch.tichu.counter.core.ui.navigation.PlayerListRoute
 import ch.tichu.counter.core.ui.navigation.ScoringRoute
 import ch.tichu.counter.core.ui.navigation.SettingsRoute
 import ch.tichu.counter.core.ui.navigation.SwapPlayerRoute
+import ch.tichu.counter.core.ui.util.ScreenshotHolder
+import ch.tichu.counter.core.ui.util.captureCurrentView
 import ch.tichu.counter.feature.bugreport.navigation.bugreportGraph
 import ch.tichu.counter.feature.game.navigation.gameGraph
 import ch.tichu.counter.feature.groups.navigation.groupsGraph
@@ -68,6 +70,7 @@ fun TichuApp(
 ) {
     val onboardingDone by viewModel.onboardingDone.collectAsStateWithLifecycle()
     if (onboardingDone == null) return
+    val context = LocalContext.current
     val backStackEntry by navController.currentBackStackEntryAsState()
     val destination = backStackEntry?.destination
     val showBottomBar = destination?.isBottomDestination() == true
@@ -77,8 +80,11 @@ fun TichuApp(
             BottomDestination(PlayerListRoute, "Players", Icons.Default.Group),
             BottomDestination(GameListRoute, "History", Icons.Default.History),
             BottomDestination(LeaderboardRoute, "Stats", Icons.Default.BarChart),
-            BottomDestination(BugReportRoute, "Bug", Icons.Default.BugReport),
         )
+    }
+    val onBugReport = {
+        ScreenshotHolder.bitmap = captureCurrentView(context)
+        navController.navigate(BugReportRoute) { launchSingleTop = true }
     }
 
     Scaffold(
@@ -114,6 +120,7 @@ fun TichuApp(
                 onNavigateToSetup = { navController.navigate(GameSetupRoute()) },
                 onNavigateToPlayerEdit = { personId -> navController.navigate(PlayerEditRoute(personId.value)) },
                 onNavigateBack = { navController.popBackStack() },
+                onBugReport = onBugReport,
             )
             gameGraph(
                 onNavigateToSetup = { abandon -> navController.navigate(GameSetupRoute(abandon)) },
@@ -122,11 +129,13 @@ fun TichuApp(
                 onOpenSettings = { navController.navigate(SettingsRoute) },
                 onNavigateBack = { navController.popBackStack() },
                 onShowMessage = {},
+                onBugReport = onBugReport,
             )
             playersGraph(
                 onNavigateToEdit = { personId -> navController.navigate(PlayerEditRoute(personId?.value)) },
                 onOpenGroupPicker = { navController.navigate(GroupPickerRoute) },
                 onNavigateBack = { navController.popBackStack() },
+                onBugReport = onBugReport,
             )
             scoringGraph(
                 onNavigateBack = { navController.popBackStack() },
@@ -134,18 +143,24 @@ fun TichuApp(
                 onNavigateToSetup = { navController.navigate(GameSetupRoute()) },
                 onNavigateHome = { navController.navigate(HomeRoute) { popUpTo(HomeRoute) { inclusive = false } } },
                 onNavigateToScoring = { gameId -> navController.navigate(ScoringRoute(gameId.value)) },
+                onBugReport = onBugReport,
             )
             historyGraph(
                 onNavigateToDetail = { gameId -> navController.navigate(GameDetailRoute(gameId.value)) },
                 onNavigateToScoring = { gameId -> navController.navigate(ScoringRoute(gameId.value)) },
                 onOpenGroupPicker = { navController.navigate(GroupPickerRoute) },
                 onNavigateBack = { navController.popBackStack() },
+                onBugReport = onBugReport,
             )
-            statisticsGraph(onOpenGroupPicker = { navController.navigate(GroupPickerRoute) })
+            statisticsGraph(
+                onOpenGroupPicker = { navController.navigate(GroupPickerRoute) },
+                onBugReport = onBugReport,
+            )
             settingsGraph(
                 onNavigateBack = { navController.popBackStack() },
                 onOpenGroupPicker = { navController.navigate(GroupPickerRoute) },
                 onOpenGroupManagement = { navController.navigate(GroupPickerRoute) },
+                onBugReport = onBugReport,
             )
             bugreportGraph(
                 onNavigateBack = { navController.popBackStack() },

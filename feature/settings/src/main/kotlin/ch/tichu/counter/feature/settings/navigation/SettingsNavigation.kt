@@ -9,12 +9,14 @@ fun NavGraphBuilder.settingsGraph(
     onNavigateBack: () -> Unit,
     onOpenGroupPicker: () -> Unit,
     onOpenGroupManagement: () -> Unit,
+    onBugReport: () -> Unit,
 ) {
     composable<SettingsRoute> {
         SettingsScreen(
             onNavigateBack = onNavigateBack,
             onOpenGroupPicker = onOpenGroupPicker,
             onOpenGroupManagement = onOpenGroupManagement,
+            onBugReport = onBugReport,
         )
     }
 }

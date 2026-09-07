@@ -40,6 +40,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import ch.tichu.counter.core.ui.component.BugReportActionButton
 import ch.tichu.counter.core.ui.util.CollectEffects
 import ch.tichu.counter.feature.players.R
 
@@ -47,6 +48,7 @@ import ch.tichu.counter.feature.players.R
 @Composable
 fun PlayerEditScreen(
     onNavigateBack: () -> Unit,
+    onBugReport: () -> Unit,
     viewModel: PlayerEditViewModel = hiltViewModel(),
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
@@ -75,6 +77,7 @@ fun PlayerEditScreen(
                     }
                 },
                 actions = {
+                    BugReportActionButton(onBugReport)
                     TextButton(onClick = { viewModel.onEvent(PlayerEditUiEvent.Save) }, enabled = state.canSave) {
                         Text(stringResource(R.string.feature_players_save))
                     }

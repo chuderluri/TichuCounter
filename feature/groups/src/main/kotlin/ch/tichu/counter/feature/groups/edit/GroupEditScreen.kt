@@ -39,6 +39,7 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import ch.tichu.counter.core.model.PersonId
+import ch.tichu.counter.core.ui.component.BugReportActionButton
 import ch.tichu.counter.core.ui.util.CollectEffects
 import ch.tichu.counter.feature.groups.R
 
@@ -47,6 +48,7 @@ import ch.tichu.counter.feature.groups.R
 fun GroupEditScreen(
     onNavigateBack: () -> Unit,
     onNavigateToPlayerEdit: (PersonId) -> Unit,
+    onBugReport: () -> Unit,
     viewModel: GroupEditViewModel = hiltViewModel(),
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
@@ -75,6 +77,7 @@ fun GroupEditScreen(
                     }
                 },
                 actions = {
+                    BugReportActionButton(onBugReport)
                     TextButton(onClick = { viewModel.onEvent(GroupEditUiEvent.Save) }, enabled = state.canSave) {
                         Text(stringResource(R.string.feature_groups_save))
                     }

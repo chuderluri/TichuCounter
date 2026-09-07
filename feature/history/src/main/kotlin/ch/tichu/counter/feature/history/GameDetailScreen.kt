@@ -25,6 +25,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import ch.tichu.counter.core.model.GameId
 import ch.tichu.counter.core.model.GameStatus
+import ch.tichu.counter.core.ui.component.BugReportActionButton
 import ch.tichu.counter.core.ui.component.RoundHistoryTable
 import ch.tichu.counter.core.ui.component.TeamHeader
 import ch.tichu.counter.core.ui.util.CollectEffects
@@ -35,6 +36,7 @@ import ch.tichu.counter.feature.history.R
 fun GameDetailScreen(
     onNavigateBack: () -> Unit,
     onNavigateToScoring: (GameId) -> Unit,
+    onBugReport: () -> Unit,
     viewModel: GameDetailViewModel = hiltViewModel(),
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
@@ -62,6 +64,7 @@ fun GameDetailScreen(
                             Icon(Icons.Default.Redo, contentDescription = null)
                         }
                     }
+                    BugReportActionButton(onBugReport)
                 },
             )
         },

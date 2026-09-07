@@ -2,6 +2,7 @@ package ch.tichu.counter.feature.bugreport
 
 import androidx.lifecycle.ViewModel
 import ch.tichu.counter.core.ui.util.CrashLogStore
+import ch.tichu.counter.core.ui.util.ScreenshotHolder
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -16,8 +17,13 @@ class BugReportViewModel @Inject constructor(
     private val crashLogStore: CrashLogStore,
 ) : ViewModel() {
 
+    private val capturedScreenshot = ScreenshotHolder.bitmap
+
     private val _state = MutableStateFlow(
-        BugReportUiState(hasCrashLog = crashLogStore.read()?.isNotBlank() == true),
+        BugReportUiState(
+            hasCrashLog = crashLogStore.read()?.isNotBlank() == true,
+            attachScreenshot = capturedScreenshot != null,
+        ),
     )
     val state: StateFlow<BugReportUiState> = _state.asStateFlow()
 
@@ -34,7 +40,7 @@ class BugReportViewModel @Inject constructor(
                 _effects.trySend(
                     BugReportUiEffect.PrepareEmail(
                         description = current.description,
-                        attachScreenshot = current.attachScreenshot,
+                        screenshot = if (current.attachScreenshot) capturedScreenshot else null,
                         crashLog = if (current.attachCrashLog && current.hasCrashLog) {
                             crashLogStore.read().orEmpty()
                         } else {

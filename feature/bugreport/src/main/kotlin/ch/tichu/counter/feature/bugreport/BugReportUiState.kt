@@ -23,7 +23,7 @@ sealed interface BugReportUiEvent {
 sealed interface BugReportUiEffect {
     data class PrepareEmail(
         val description: String,
-        val attachScreenshot: Boolean,
+        val screenshot: android.graphics.Bitmap?,
         val crashLog: String?,
     ) : BugReportUiEffect
 }

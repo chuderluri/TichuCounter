@@ -35,6 +35,7 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import ch.tichu.counter.core.model.PersonId
+import ch.tichu.counter.core.ui.component.BugReportActionButton
 import ch.tichu.counter.core.ui.component.EmptyState
 import ch.tichu.counter.core.ui.util.CollectEffects
 import ch.tichu.counter.core.ui.util.relativeDateText
@@ -45,6 +46,7 @@ import ch.tichu.counter.feature.players.R
 fun PlayerListScreen(
     onNavigateToEdit: (PersonId?) -> Unit,
     onOpenGroupPicker: () -> Unit,
+    onBugReport: () -> Unit,
     viewModel: PlayerListViewModel = hiltViewModel(),
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
@@ -67,6 +69,9 @@ fun PlayerListScreen(
                         )
                         Icon(Icons.Default.ArrowDropDown, contentDescription = null)
                     }
+                },
+                actions = {
+                    BugReportActionButton(onBugReport)
                 },
             )
         },

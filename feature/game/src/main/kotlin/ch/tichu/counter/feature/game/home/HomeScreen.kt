@@ -37,6 +37,7 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import ch.tichu.counter.core.model.GameId
+import ch.tichu.counter.core.ui.component.BugReportActionButton
 import ch.tichu.counter.core.ui.theme.TichuThemeDefaults
 import ch.tichu.counter.core.ui.util.CollectEffects
 import ch.tichu.counter.core.ui.util.relativeDateText
@@ -49,6 +50,7 @@ fun HomeScreen(
     onNavigateToScoring: (GameId) -> Unit,
     onOpenGroupPicker: () -> Unit,
     onOpenSettings: () -> Unit,
+    onBugReport: () -> Unit,
     viewModel: HomeViewModel = hiltViewModel(),
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
@@ -77,6 +79,7 @@ fun HomeScreen(
                     IconButton(onClick = { viewModel.onEvent(HomeUiEvent.SettingsClicked) }) {
                         Icon(Icons.Default.Settings, contentDescription = stringResource(R.string.feature_game_settings))
                     }
+                    BugReportActionButton(onBugReport)
                 },
             )
         },

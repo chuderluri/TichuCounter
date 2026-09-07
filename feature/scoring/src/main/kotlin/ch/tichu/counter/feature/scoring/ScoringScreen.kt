@@ -52,6 +52,7 @@ import ch.tichu.counter.core.model.GameId
 import ch.tichu.counter.core.model.Seat
 import ch.tichu.counter.core.model.Team
 import ch.tichu.counter.core.model.TichuType
+import ch.tichu.counter.core.ui.component.BugReportActionButton
 import ch.tichu.counter.core.ui.component.Keypad
 import ch.tichu.counter.core.ui.component.KeypadKey
 import ch.tichu.counter.core.ui.component.RoundHistoryTable
@@ -69,6 +70,7 @@ fun ScoringScreen(
     onNavigateToSetup: () -> Unit,
     onNavigateHome: () -> Unit,
     onNavigateToScoring: (GameId) -> Unit,
+    onBugReport: () -> Unit,
     viewModel: ScoringViewModel = hiltViewModel(),
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
@@ -90,7 +92,7 @@ fun ScoringScreen(
     }
     BackHandler(enabled = state.status == ScoringStatus.IN_PROGRESS) { onNavigateBack() }
     Scaffold(
-        topBar = { ScoringTopBar(state, viewModel::onEvent, onNavigateBack) },
+        topBar = { ScoringTopBar(state, viewModel::onEvent, onNavigateBack, onBugReport) },
         snackbarHost = { SnackbarHost(snackbar) },
     ) { padding ->
         ScoringContent(state, viewModel::onEvent, Modifier.padding(padding))
@@ -99,7 +101,12 @@ fun ScoringScreen(
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-private fun ScoringTopBar(state: ScoringUiState, onEvent: (ScoringUiEvent) -> Unit, onNavigateBack: () -> Unit) {
+private fun ScoringTopBar(
+    state: ScoringUiState,
+    onEvent: (ScoringUiEvent) -> Unit,
+    onNavigateBack: () -> Unit,
+    onBugReport: () -> Unit,
+) {
     var moreExpanded by remember { mutableStateOf(false) }
     TopAppBar(
         title = { Text(stringResource(R.string.feature_scoring_round, state.roundNumber)) },
@@ -115,6 +122,7 @@ private fun ScoringTopBar(state: ScoringUiState, onEvent: (ScoringUiEvent) -> Un
             IconButton(onClick = { onEvent(ScoringUiEvent.Redo) }, enabled = state.canRedo) {
                 Icon(Icons.Default.Redo, contentDescription = stringResource(R.string.feature_scoring_redo))
             }
+            BugReportActionButton(onBugReport)
             Box {
                 IconButton(onClick = { moreExpanded = true }) {
                     Icon(Icons.Default.MoreVert, contentDescription = stringResource(R.string.feature_scoring_more))

@@ -42,6 +42,7 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import ch.tichu.counter.core.model.GroupId
+import ch.tichu.counter.core.ui.component.BugReportActionButton
 import ch.tichu.counter.core.ui.util.CollectEffects
 import ch.tichu.counter.feature.groups.R
 
@@ -52,6 +53,7 @@ fun GroupPickerScreen(
     onNavigateToSetup: () -> Unit,
     onDismiss: () -> Unit,
     showBackButton: Boolean = false,
+    onBugReport: () -> Unit,
     viewModel: GroupPickerViewModel = hiltViewModel(),
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
@@ -70,6 +72,7 @@ fun GroupPickerScreen(
             modifier = Modifier.padding(padding),
             showBackButton = showBackButton,
             onBack = onDismiss,
+            onBugReport = onBugReport,
         )
     }
 }
@@ -81,12 +84,13 @@ fun GroupPickerContent(
     modifier: Modifier = Modifier,
     showBackButton: Boolean = false,
     onBack: (() -> Unit)? = null,
+    onBugReport: () -> Unit,
 ) {
     if (state.isLoading) return
     if (state.isFirstStart && state.groups.isEmpty()) {
-        FirstStartContent(state, onEvent, modifier, showBackButton, onBack)
+        FirstStartContent(state, onEvent, modifier, showBackButton, onBack, onBugReport)
     } else {
-        PickerContent(state, onEvent, modifier, showBackButton, onBack)
+        PickerContent(state, onEvent, modifier, showBackButton, onBack, onBugReport)
     }
 }
 
@@ -97,6 +101,7 @@ private fun FirstStartContent(
     modifier: Modifier,
     showBackButton: Boolean,
     onBack: (() -> Unit)?,
+    onBugReport: () -> Unit,
 ) {
     Column(
         modifier = modifier
@@ -117,6 +122,7 @@ private fun FirstStartContent(
                 style = MaterialTheme.typography.headlineLarge,
                 textAlign = TextAlign.Center,
             )
+            BugReportActionButton(onBugReport)
         }
         Spacer(Modifier.height(48.dp))
         ChoiceCard(
@@ -173,6 +179,7 @@ private fun PickerContent(
     modifier: Modifier,
     showBackButton: Boolean,
     onBack: (() -> Unit)?,
+    onBugReport: () -> Unit,
 ) {
     Column(modifier = modifier.fillMaxSize()) {
         Row(
@@ -184,7 +191,7 @@ private fun PickerContent(
                     Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = null)
                 }
             }
-            Column {
+            Column(Modifier.weight(1f)) {
                 Text(stringResource(R.string.feature_groups_picker_title), style = MaterialTheme.typography.headlineSmall)
                 Text(
                     stringResource(R.string.feature_groups_picker_subtitle),
@@ -192,6 +199,7 @@ private fun PickerContent(
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                 )
             }
+            BugReportActionButton(onBugReport)
         }
         LazyColumn(
             modifier = Modifier

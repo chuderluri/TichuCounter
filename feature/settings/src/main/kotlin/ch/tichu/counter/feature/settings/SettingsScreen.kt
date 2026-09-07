@@ -33,6 +33,7 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import ch.tichu.counter.core.model.ThemeMode
+import ch.tichu.counter.core.ui.component.BugReportActionButton
 import ch.tichu.counter.core.ui.util.CollectEffects
 import ch.tichu.counter.feature.settings.R
 
@@ -42,6 +43,7 @@ fun SettingsScreen(
     onNavigateBack: () -> Unit,
     onOpenGroupPicker: () -> Unit,
     onOpenGroupManagement: () -> Unit,
+    onBugReport: () -> Unit,
     viewModel: SettingsViewModel = hiltViewModel(),
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
@@ -66,6 +68,9 @@ fun SettingsScreen(
                     IconButton(onClick = onNavigateBack) {
                         Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = stringResource(R.string.feature_settings_back))
                     }
+                },
+                actions = {
+                    BugReportActionButton(onBugReport)
                 },
             )
         },

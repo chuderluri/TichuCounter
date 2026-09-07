@@ -32,6 +32,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import ch.tichu.counter.core.model.GameId
 import ch.tichu.counter.core.model.GameStatus
+import ch.tichu.counter.core.ui.component.BugReportActionButton
 import ch.tichu.counter.core.ui.component.EmptyState
 import ch.tichu.counter.core.ui.util.CollectEffects
 import ch.tichu.counter.core.ui.util.shortDateText
@@ -42,6 +43,7 @@ import ch.tichu.counter.feature.history.R
 fun GameListScreen(
     onNavigateToDetail: (GameId) -> Unit,
     onOpenGroupPicker: () -> Unit,
+    onBugReport: () -> Unit,
     viewModel: GameListViewModel = hiltViewModel(),
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
@@ -64,6 +66,9 @@ fun GameListScreen(
                         )
                         Icon(Icons.Default.ArrowDropDown, contentDescription = null)
                     }
+                },
+                actions = {
+                    BugReportActionButton(onBugReport)
                 },
             )
         },

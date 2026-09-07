@@ -15,6 +15,7 @@ fun NavGraphBuilder.groupsGraph(
     onNavigateToSetup: () -> Unit,
     onNavigateToPlayerEdit: (PersonId) -> Unit,
     onNavigateBack: () -> Unit,
+    onBugReport: () -> Unit,
 ) {
     composable<GroupPickerRoute> {
         GroupPickerScreen(
@@ -23,12 +24,14 @@ fun NavGraphBuilder.groupsGraph(
             onNavigateToSetup = onNavigateToSetup,
             onDismiss = onNavigateBack,
             showBackButton = true,
+            onBugReport = onBugReport,
         )
     }
     composable<GroupEditRoute> {
         GroupEditScreen(
             onNavigateBack = onNavigateBack,
             onNavigateToPlayerEdit = onNavigateToPlayerEdit,
+            onBugReport = onBugReport,
         )
     }
 }

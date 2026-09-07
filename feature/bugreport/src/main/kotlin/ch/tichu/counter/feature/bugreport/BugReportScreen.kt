@@ -33,6 +33,8 @@ import androidx.core.content.FileProvider
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import ch.tichu.counter.core.ui.util.CollectEffects
+import ch.tichu.counter.core.ui.util.ScreenshotHolder
+import ch.tichu.counter.core.ui.util.captureCurrentView
 import java.io.File
 import java.io.FileOutputStream
 
@@ -48,7 +50,10 @@ fun BugReportScreen(
     val context = LocalContext.current
     CollectEffects(viewModel.effects) { effect ->
         when (effect) {
-            is BugReportUiEffect.PrepareEmail -> prepareEmail(context, effect)
+            is BugReportUiEffect.PrepareEmail -> {
+                prepareEmail(context, effect)
+                ScreenshotHolder.clear()
+            }
         }
     }
     Scaffold(
@@ -123,12 +128,11 @@ private fun prepareEmail(
     val cacheDir = File(context.cacheDir, "bugreport").apply { mkdirs() }
     val attachmentUris = mutableListOf<Uri>()
 
-    if (effect.attachScreenshot) {
-        captureScreenshot(context)?.let { bitmap ->
-            val file = File(cacheDir, "screenshot.png")
-            FileOutputStream(file).use { bitmap.compress(Bitmap.CompressFormat.PNG, 100, it) }
-            attachmentUris += uriFor(context, file)
-        }
+    val screenshot = effect.screenshot ?: captureCurrentView(context)
+    if (screenshot != null) {
+        val file = File(cacheDir, "screenshot.png")
+        FileOutputStream(file).use { screenshot.compress(Bitmap.CompressFormat.PNG, 100, it) }
+        attachmentUris += uriFor(context, file)
     }
     if (!effect.crashLog.isNullOrBlank()) {
         val file = File(cacheDir, "crash_log.txt")
@@ -175,12 +179,4 @@ private fun appVersion(context: android.content.Context): String = try {
 } catch (e: android.content.pm.PackageManager.NameNotFoundException) {
     android.util.Log.w(TAG, "App version unavailable", e)
     "unknown"
-}
-
-private fun captureScreenshot(context: android.content.Context): Bitmap? {
-    val activity = (context as? android.app.Activity) ?: return null
-    val view = activity.window.decorView.rootView
-    val bitmap = Bitmap.createBitmap(view.width, view.height, Bitmap.Config.ARGB_8888)
-    view.draw(android.graphics.Canvas(bitmap))
-    return bitmap
 }

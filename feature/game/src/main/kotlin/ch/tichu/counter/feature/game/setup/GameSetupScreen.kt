@@ -62,6 +62,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import ch.tichu.counter.core.model.GameId
 import ch.tichu.counter.core.model.Seat
 import ch.tichu.counter.core.model.Team
+import ch.tichu.counter.core.ui.component.BugReportActionButton
 import ch.tichu.counter.core.ui.component.TeamColumnDivider
 import ch.tichu.counter.core.ui.theme.TichuThemeDefaults
 import ch.tichu.counter.core.ui.util.CollectEffects
@@ -74,6 +75,7 @@ fun GameSetupScreen(
     onNavigateBack: () -> Unit,
     onNavigateToScoring: (GameId) -> Unit,
     onOpenGroupPicker: () -> Unit,
+    onBugReport: () -> Unit,
     viewModel: GameSetupViewModel = hiltViewModel(),
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
@@ -99,6 +101,9 @@ fun GameSetupScreen(
                     IconButton(onClick = onNavigateBack) {
                         Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = stringResource(R.string.feature_game_back))
                     }
+                },
+                actions = {
+                    BugReportActionButton(onBugReport)
                 },
             )
         },

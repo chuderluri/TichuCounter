@@ -18,6 +18,7 @@ fun NavGraphBuilder.gameGraph(
     onOpenSettings: () -> Unit,
     onNavigateBack: () -> Unit,
     onShowMessage: (String) -> Unit,
+    onBugReport: () -> Unit,
 ) {
     composable<HomeRoute> {
         HomeScreen(
@@ -25,6 +26,7 @@ fun NavGraphBuilder.gameGraph(
             onNavigateToScoring = onNavigateToScoring,
             onOpenGroupPicker = onOpenGroupPicker,
             onOpenSettings = onOpenSettings,
+            onBugReport = onBugReport,
         )
     }
     composable<GameSetupRoute> {
@@ -32,6 +34,7 @@ fun NavGraphBuilder.gameGraph(
             onNavigateBack = onNavigateBack,
             onNavigateToScoring = onNavigateToScoring,
             onOpenGroupPicker = onOpenGroupPicker,
+            onBugReport = onBugReport,
         )
     }
     dialog<SwapPlayerRoute> {

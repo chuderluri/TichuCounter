@@ -19,6 +19,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewModelScope
 import ch.tichu.counter.core.domain.usecase.group.ObserveActiveGroupUseCase
+import ch.tichu.counter.core.ui.component.BugReportActionButton
 import ch.tichu.counter.core.ui.component.EmptyState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.SharingStarted
@@ -37,10 +38,20 @@ class StatisticsViewModel @Inject constructor(observeActiveGroup: ObserveActiveG
 @Composable
 fun StatisticsScreen(
     onOpenGroupPicker: () -> Unit,
+    onBugReport: () -> Unit,
     viewModel: StatisticsViewModel = hiltViewModel(),
 ) {
     val isQuickPlay by viewModel.isQuickPlay.collectAsStateWithLifecycle()
-    Scaffold(topBar = { TopAppBar(title = { Text(stringResource(R.string.feature_statistics_title)) }) }) { padding ->
+    Scaffold(
+        topBar = {
+            TopAppBar(
+                title = { Text(stringResource(R.string.feature_statistics_title)) },
+                actions = {
+                    BugReportActionButton(onBugReport)
+                },
+            )
+        },
+    ) { padding ->
         if (isQuickPlay) {
             EmptyState(
                 icon = Icons.Default.Groups,

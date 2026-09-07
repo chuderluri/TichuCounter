@@ -14,16 +14,18 @@ fun NavGraphBuilder.playersGraph(
     onNavigateToEdit: (PersonId?) -> Unit,
     onOpenGroupPicker: () -> Unit,
     onNavigateBack: () -> Unit,
+    onBugReport: () -> Unit,
 ) {
     navigation<PlayersGraphRoute>(startDestination = PlayerListRoute) {
         composable<PlayerListRoute> {
             PlayerListScreen(
                 onNavigateToEdit = onNavigateToEdit,
                 onOpenGroupPicker = onOpenGroupPicker,
+                onBugReport = onBugReport,
             )
         }
         composable<PlayerEditRoute> {
-            PlayerEditScreen(onNavigateBack = onNavigateBack)
+            PlayerEditScreen(onNavigateBack = onNavigateBack, onBugReport = onBugReport)
         }
     }
 }

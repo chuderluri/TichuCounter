@@ -7,10 +7,13 @@ import ch.tichu.counter.core.ui.navigation.LeaderboardRoute
 import ch.tichu.counter.core.ui.navigation.StatisticsGraphRoute
 import ch.tichu.counter.feature.statistics.StatisticsScreen
 
-fun NavGraphBuilder.statisticsGraph(onOpenGroupPicker: () -> Unit) {
+fun NavGraphBuilder.statisticsGraph(
+    onOpenGroupPicker: () -> Unit,
+    onBugReport: () -> Unit,
+) {
     navigation<StatisticsGraphRoute>(startDestination = LeaderboardRoute) {
         composable<LeaderboardRoute> {
-            StatisticsScreen(onOpenGroupPicker = onOpenGroupPicker)
+            StatisticsScreen(onOpenGroupPicker = onOpenGroupPicker, onBugReport = onBugReport)
         }
     }
 }
