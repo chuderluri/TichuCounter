@@ -98,8 +98,6 @@ sealed interface ScoringUiEvent {
 
     data object ToggleFinishedRoundList : ScoringUiEvent
 
-    data object RematchClicked : ScoringUiEvent
-
     data object NewGameClicked : ScoringUiEvent
 
     data object HomeClicked : ScoringUiEvent

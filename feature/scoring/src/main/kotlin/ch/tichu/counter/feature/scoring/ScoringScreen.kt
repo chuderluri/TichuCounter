@@ -372,9 +372,8 @@ private fun FinishedDialog(state: ScoringUiState, onEvent: (ScoringUiEvent) -> U
             }
         },
         confirmButton = {
-            Row {
-                TextButton(onClick = { onEvent(ScoringUiEvent.RematchClicked) }) { Text(stringResource(R.string.feature_scoring_rematch)) }
-                TextButton(onClick = { onEvent(ScoringUiEvent.NewGameClicked) }) { Text(stringResource(R.string.feature_scoring_new_game)) }
+            TextButton(onClick = { onEvent(ScoringUiEvent.NewGameClicked) }) {
+                Text(stringResource(R.string.feature_scoring_new_game))
             }
         },
         dismissButton = {

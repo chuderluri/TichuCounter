@@ -147,7 +147,7 @@ class ScoringViewModel @Inject constructor(
             }
             ScoringUiEvent.FinishedDialogDismissed -> draft.update { it.copy(showFinished = false) }
             ScoringUiEvent.ToggleFinishedRoundList -> draft.update { it.copy(roundsExpanded = !it.roundsExpanded) }
-            ScoringUiEvent.RematchClicked, ScoringUiEvent.NewGameClicked -> startNewGameWithSameLineUp()
+            ScoringUiEvent.NewGameClicked -> startNewGameWithSameLineUp()
             ScoringUiEvent.HomeClicked -> send(ScoringUiEffect.NavigateHome)
         }
     }
