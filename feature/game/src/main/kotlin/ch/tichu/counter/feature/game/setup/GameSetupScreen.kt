@@ -64,7 +64,6 @@ import ch.tichu.counter.core.model.Seat
 import ch.tichu.counter.core.model.Team
 import ch.tichu.counter.core.ui.component.TeamColumnDivider
 import ch.tichu.counter.core.ui.theme.TichuThemeDefaults
-import ch.tichu.counter.core.ui.theme.toColor
 import ch.tichu.counter.core.ui.util.CollectEffects
 import ch.tichu.counter.core.ui.util.relativeDateText
 import ch.tichu.counter.feature.game.R

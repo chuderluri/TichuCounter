@@ -53,7 +53,8 @@ data class ScoringUiState(
 ) {
     val isKeypadEnabled: Boolean get() = status == ScoringStatus.IN_PROGRESS && doubleWin == null
     val isConfirmEnabled: Boolean
-        get() = status == ScoringStatus.IN_PROGRESS && !validationError &&
+        get() = status == ScoringStatus.IN_PROGRESS &&
+            !validationError &&
             (doubleWin != null || enteredA.isNotBlank() || enteredB.isNotBlank())
 
     fun seat(seat: Seat): SeatUi? = seats.firstOrNull { it.seat == seat }

@@ -57,7 +57,6 @@ import ch.tichu.counter.core.ui.component.KeypadKey
 import ch.tichu.counter.core.ui.component.RoundHistoryTable
 import ch.tichu.counter.core.ui.component.TeamHeader
 import ch.tichu.counter.core.ui.theme.TichuThemeDefaults
-import ch.tichu.counter.core.ui.theme.toColor
 import ch.tichu.counter.core.ui.util.CollectEffects
 import ch.tichu.counter.core.ui.util.signed
 import ch.tichu.counter.feature.scoring.R
@@ -225,8 +224,7 @@ private fun PlayerSummaryNames(team: Team, state: ScoringUiState, modifier: Modi
     }
 }
 
-private fun DraftTichu.shortLabel(): String =
-    (if (type == TichuType.SMALL) "T" else "GT") + if (success) "✓" else "✗"
+private fun DraftTichu.shortLabel(): String = (if (type == TichuType.SMALL) "T" else "GT") + if (success) "✓" else "✗"
 
 @Composable
 private fun ExpandedRoundOptions(state: ScoringUiState, onEvent: (ScoringUiEvent) -> Unit) {

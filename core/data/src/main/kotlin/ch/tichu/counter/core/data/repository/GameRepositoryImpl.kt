@@ -32,7 +32,6 @@ import ch.tichu.counter.core.model.PersonId
 import ch.tichu.counter.core.model.RuleSet
 import ch.tichu.counter.core.model.SyncState
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.map

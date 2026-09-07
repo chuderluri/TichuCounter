@@ -212,8 +212,8 @@ private fun ScoreText(total: Int, modifier: Modifier) {
 @Composable
 private fun Badges(badges: ImmutableList<TichuBadgeUi>, doubleWin: Boolean, modifier: Modifier = Modifier) {
     Row(modifier = modifier, horizontalArrangement = Arrangement.spacedBy(4.dp)) {
-    if (doubleWin) DoubleWinBadge()
-    badges.forEach { TichuBadge(it.type, it.success) }
+        if (doubleWin) DoubleWinBadge()
+        badges.forEach { TichuBadge(it.type, it.success) }
     }
 }
 
