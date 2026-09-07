@@ -172,6 +172,58 @@ fun ScoringContent(state: ScoringUiState, onEvent: (ScoringUiEvent) -> Unit, mod
 @OptIn(androidx.compose.foundation.ExperimentalFoundationApi::class)
 @Composable
 private fun PlayerSection(state: ScoringUiState, onEvent: (ScoringUiEvent) -> Unit) {
+    CompactPlayerSummary(state, onEvent)
+    if (state.roundOptionsExpanded) {
+        ExpandedRoundOptions(state, onEvent)
+    }
+}
+
+@Composable
+private fun CompactPlayerSummary(state: ScoringUiState, onEvent: (ScoringUiEvent) -> Unit) {
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = 8.dp, vertical = 4.dp),
+        verticalAlignment = Alignment.CenterVertically,
+    ) {
+        PlayerSummaryNames(Team.A, state, Modifier.weight(1f))
+        Text("│ │", color = MaterialTheme.colorScheme.outlineVariant)
+        PlayerSummaryNames(Team.B, state, Modifier.weight(1f))
+    }
+    TextButton(
+        onClick = { onEvent(ScoringUiEvent.ToggleRoundOptions) },
+        modifier = Modifier.fillMaxWidth(),
+    ) {
+        Text(
+            stringResource(R.string.feature_scoring_tichu_double_win) +
+                if (state.roundOptionsExpanded) " ▴" else " ▾",
+        )
+    }
+}
+
+@Composable
+private fun PlayerSummaryNames(team: Team, state: ScoringUiState, modifier: Modifier) {
+    val players = Seat.forTeam(team).mapNotNull { state.seat(it) }
+    Row(modifier, horizontalArrangement = Arrangement.Center) {
+        players.forEachIndexed { index, player ->
+            if (index > 0) Text(" · ")
+            Text(player.name, fontStyle = if (player.isGuest) FontStyle.Italic else FontStyle.Normal)
+            player.tichu?.let { tichu ->
+                Text(
+                    " ${tichu.shortLabel()}",
+                    color = if (tichu.success) TichuThemeDefaults.colors.success else TichuThemeDefaults.colors.failure,
+                    fontWeight = FontWeight.Bold,
+                )
+            }
+        }
+    }
+}
+
+private fun DraftTichu.shortLabel(): String =
+    (if (type == TichuType.SMALL) "T" else "GT") + if (success) "✓" else "✗"
+
+@Composable
+private fun ExpandedRoundOptions(state: ScoringUiState, onEvent: (ScoringUiEvent) -> Unit) {
     val colors = TichuThemeDefaults.colors
     Row(Modifier.fillMaxWidth()) {
         PlayerColumn(Team.A, colors.teamA, state, onEvent, Modifier.weight(1f))

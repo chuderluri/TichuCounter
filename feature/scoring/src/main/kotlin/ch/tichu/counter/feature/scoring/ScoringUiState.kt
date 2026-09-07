@@ -41,6 +41,7 @@ data class ScoringUiState(
     val doubleWin: Team? = null,
     val bonusA: Int = 0,
     val bonusB: Int = 0,
+    val roundOptionsExpanded: Boolean = false,
     val canUndo: Boolean = false,
     val canRedo: Boolean = false,
     val validationError: Boolean = false,
@@ -77,6 +78,8 @@ sealed interface ScoringUiEvent {
     data class DoubleWin(val team: Team?) : ScoringUiEvent
 
     data class TichuToggled(val seat: Seat, val type: TichuType) : ScoringUiEvent
+
+    data object ToggleRoundOptions : ScoringUiEvent
 
     data object ConfirmRound : ScoringUiEvent
 

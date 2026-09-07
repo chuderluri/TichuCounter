@@ -63,6 +63,7 @@ class ScoringViewModel @Inject constructor(
         val activeTeam: Team = Team.A,
         val doubleWin: Team? = null,
         val tichus: Map<Seat, DraftTichu> = emptyMap(),
+        val roundOptionsExpanded: Boolean = false,
         val showAbandon: Boolean = false,
         val showFinished: Boolean = false,
         val roundsExpanded: Boolean = false,
@@ -114,6 +115,7 @@ class ScoringViewModel @Inject constructor(
             doubleWin = draft.doubleWin,
             bonusA = bonusA,
             bonusB = bonusB,
+            roundOptionsExpanded = draft.roundOptionsExpanded,
             canUndo = game.canUndo,
             canRedo = game.canRedo,
             validationError = validation is ValidationResult.Invalid,
@@ -133,6 +135,9 @@ class ScoringViewModel @Inject constructor(
             is ScoringUiEvent.SwitchTeam -> draft.update { it.copy(activeTeam = event.team) }
             is ScoringUiEvent.DoubleWin -> draft.update { it.copy(doubleWin = if (it.doubleWin == event.team) null else event.team) }
             is ScoringUiEvent.TichuToggled -> toggleTichu(event.seat, event.type)
+            ScoringUiEvent.ToggleRoundOptions -> draft.update {
+                it.copy(roundOptionsExpanded = !it.roundOptionsExpanded)
+            }
             ScoringUiEvent.ConfirmRound -> confirmRound()
             ScoringUiEvent.Undo -> viewModelScope.launch { undo(gameId) }
             ScoringUiEvent.Redo -> viewModelScope.launch { redo(gameId) }
