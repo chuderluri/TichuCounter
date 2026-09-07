@@ -1,6 +1,12 @@
 package ch.tichu.counter.feature.scoring
 
 import androidx.activity.compose.BackHandler
+import androidx.compose.animation.core.RepeatMode
+import androidx.compose.animation.core.animateFloat
+import androidx.compose.animation.core.infiniteRepeatable
+import androidx.compose.animation.core.rememberInfiniteTransition
+import androidx.compose.animation.core.tween
+import androidx.compose.foundation.background
 import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -9,6 +15,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.material.icons.Icons
@@ -40,6 +47,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
@@ -54,7 +62,9 @@ import ch.tichu.counter.core.model.TichuType
 import ch.tichu.counter.core.ui.component.BugReportActionButton
 import ch.tichu.counter.core.ui.component.Keypad
 import ch.tichu.counter.core.ui.component.KeypadKey
+import ch.tichu.counter.core.ui.component.RoundColumnWidth
 import ch.tichu.counter.core.ui.component.RoundHistoryTable
+import ch.tichu.counter.core.ui.component.TeamColumnDivider
 import ch.tichu.counter.core.ui.component.TeamHeader
 import ch.tichu.counter.core.ui.theme.TichuThemeDefaults
 import ch.tichu.counter.core.ui.util.CollectEffects
@@ -184,6 +194,7 @@ private fun PlayerSection(state: ScoringUiState, onEvent: (ScoringUiEvent) -> Un
 
 @Composable
 private fun CompactPlayerSummary(state: ScoringUiState) {
+    if (!hasSummaryContent(Team.A, state) && !hasSummaryContent(Team.B, state)) return
     Row(
         modifier = Modifier
             .fillMaxWidth()
@@ -191,10 +202,15 @@ private fun CompactPlayerSummary(state: ScoringUiState) {
         verticalAlignment = Alignment.CenterVertically,
     ) {
         PlayerSummaryNames(Team.A, state, Modifier.weight(1f))
-        Text("│ │", color = MaterialTheme.colorScheme.outlineVariant)
+        TeamColumnDivider()
+        Box(Modifier.width(RoundColumnWidth))
+        TeamColumnDivider()
         PlayerSummaryNames(Team.B, state, Modifier.weight(1f))
     }
 }
+
+private fun hasSummaryContent(team: Team, state: ScoringUiState): Boolean = state.doubleWin == team ||
+    Seat.forTeam(team).any { seat -> state.seat(seat)?.tichu != null }
 
 @Composable
 private fun RoundOptionsButton(expanded: Boolean, onEvent: (ScoringUiEvent) -> Unit) {
@@ -223,12 +239,7 @@ private fun PlayerSummaryNames(team: Team, state: ScoringUiState, modifier: Modi
                 val player = state.seat(seat) ?: return@mapNotNull null
                 player.tichu?.let { it to player }
             }
-            if (holders.isEmpty()) {
-                Text(
-                    stringResource(if (team == Team.A) R.string.feature_scoring_team_a else R.string.feature_scoring_team_b),
-                    color = MaterialTheme.colorScheme.onSurfaceVariant,
-                )
-            } else {
+            if (holders.isNotEmpty()) {
                 holders.forEachIndexed { index, (tichu, player) ->
                     if (index > 0) Text(" · ")
                     Text(player.name, fontStyle = if (player.isGuest) FontStyle.Italic else FontStyle.Normal)
@@ -339,6 +350,7 @@ private fun RoundInput(state: ScoringUiState, onEvent: (ScoringUiEvent) -> Unit)
             value = state.enteredA,
             bonus = state.bonusA,
             active = state.activeTeam == Team.A,
+            keypadEnabled = state.isKeypadEnabled,
             color = colors.teamA,
             modifier = Modifier.weight(1f),
             onClick = { onEvent(ScoringUiEvent.SwitchTeam(Team.A)) },
@@ -348,6 +360,7 @@ private fun RoundInput(state: ScoringUiState, onEvent: (ScoringUiEvent) -> Unit)
             value = state.enteredB,
             bonus = state.bonusB,
             active = state.activeTeam == Team.B,
+            keypadEnabled = state.isKeypadEnabled,
             color = colors.teamB,
             modifier = Modifier.weight(1f),
             onClick = { onEvent(ScoringUiEvent.SwitchTeam(Team.B)) },
@@ -361,10 +374,20 @@ private fun ScoreInputCell(
     value: String,
     bonus: Int,
     active: Boolean,
+    keypadEnabled: Boolean,
     color: Color,
     modifier: Modifier,
     onClick: () -> Unit,
 ) {
+    val showCursor = active && keypadEnabled
+    val transition = rememberInfiniteTransition(label = "cursor")
+    val cursorAlpha by transition.animateFloat(
+        initialValue = 1f,
+        targetValue = 0.1f,
+        animationSpec = infiniteRepeatable(tween(500), RepeatMode.Reverse),
+        label = "cursorAlpha",
+    )
+    val cursorHeight = with(LocalDensity.current) { MaterialTheme.typography.titleLarge.lineHeight.toDp() }
     Row(
         modifier = modifier.combinedClickable(onClick = onClick, onLongClick = {}),
         verticalAlignment = Alignment.CenterVertically,
@@ -374,12 +397,29 @@ private fun ScoreInputCell(
             border = androidx.compose.foundation.BorderStroke(if (active) 2.dp else 1.dp, color),
             colors = androidx.compose.material3.CardDefaults.cardColors(containerColor = Color.Transparent),
         ) {
-            Text(
-                value.ifBlank { "—" },
+            Row(
                 modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp),
-                style = MaterialTheme.typography.titleLarge,
-                textAlign = TextAlign.Center,
-            )
+                verticalAlignment = Alignment.CenterVertically,
+            ) {
+                if (!showCursor) {
+                    Text(
+                        value.ifBlank { "—" },
+                        style = MaterialTheme.typography.titleLarge,
+                        textAlign = TextAlign.Center,
+                    )
+                } else {
+                    if (value.isNotBlank()) {
+                        Text(value, style = MaterialTheme.typography.titleLarge, textAlign = TextAlign.Center)
+                        Spacer(Modifier.width(2.dp))
+                    }
+                    Box(
+                        Modifier
+                            .width(2.dp)
+                            .height(cursorHeight)
+                            .background(color.copy(alpha = cursorAlpha)),
+                    )
+                }
+            }
         }
         if (bonus != 0) {
             Spacer(Modifier.width(4.dp))

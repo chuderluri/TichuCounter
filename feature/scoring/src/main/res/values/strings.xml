@@ -4,8 +4,6 @@
     <string name="feature_scoring_undo">Undo</string>
     <string name="feature_scoring_redo">Redo</string>
     <string name="feature_scoring_more">More options</string>
-    <string name="feature_scoring_team_a">Team A</string>
-    <string name="feature_scoring_team_b">Team B</string>
     <string name="feature_scoring_double_win_a">Double win A</string>
     <string name="feature_scoring_double_win_b">Double win B</string>
     <string name="feature_scoring_double_win">Double win</string>
