@@ -244,7 +244,7 @@ class ScoringViewModel @Inject constructor(
 
     private fun complementText(value: String): String {
         val parsed = value.toIntOrNull() ?: return ""
-        return (100 - parsed).toString()
+        return (100 - parsed).takeIf { it in -25..125 && it.mod(5) == 0 }?.toString().orEmpty()
     }
 
     private fun GameStatus.toUiStatus(): ScoringStatus = when (this) {

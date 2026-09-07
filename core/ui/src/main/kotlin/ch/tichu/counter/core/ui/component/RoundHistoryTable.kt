@@ -182,34 +182,39 @@ private fun TeamCell(
     modifier: Modifier,
 ) {
     Row(
-        modifier = modifier.padding(horizontal = 8.dp, vertical = 6.dp),
+        modifier = modifier.padding(vertical = 6.dp),
         verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.spacedBy(4.dp),
     ) {
         if (alignBadgesStart) {
-            Badges(badges, doubleWin)
-            Text(
-                total.toString(),
-                modifier = Modifier.weight(1f),
-                style = MaterialTheme.typography.bodyLarge,
-                textAlign = TextAlign.Center,
-            )
+            Box(Modifier.weight(1f)) {
+                Badges(badges, doubleWin, Modifier.align(Alignment.CenterStart))
+                ScoreText(total, Modifier.align(Alignment.Center))
+            }
         } else {
-            Text(
-                total.toString(),
-                modifier = Modifier.weight(1f),
-                style = MaterialTheme.typography.bodyLarge,
-                textAlign = TextAlign.Center,
-            )
-            Badges(badges, doubleWin)
+            Box(Modifier.weight(1f)) {
+                ScoreText(total, Modifier.align(Alignment.Center))
+                Badges(badges, doubleWin, Modifier.align(Alignment.CenterEnd))
+            }
         }
     }
 }
 
 @Composable
-private fun Badges(badges: ImmutableList<TichuBadgeUi>, doubleWin: Boolean) {
+private fun ScoreText(total: Int, modifier: Modifier) {
+    Text(
+        total.toString(),
+        modifier = modifier,
+        style = MaterialTheme.typography.bodyLarge,
+        textAlign = TextAlign.Center,
+    )
+}
+
+@Composable
+private fun Badges(badges: ImmutableList<TichuBadgeUi>, doubleWin: Boolean, modifier: Modifier = Modifier) {
+    Row(modifier = modifier, horizontalArrangement = Arrangement.spacedBy(4.dp)) {
     if (doubleWin) DoubleWinBadge()
     badges.forEach { TichuBadge(it.type, it.success) }
+    }
 }
 
 @Composable
