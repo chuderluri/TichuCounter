@@ -11,6 +11,7 @@ import ch.tichu.counter.feature.game.home.HomeScreen
 import ch.tichu.counter.feature.game.setup.GameSetupScreen
 import ch.tichu.counter.feature.game.swap.SwapPlayerDialog
 
+@Suppress("LongParameterList")
 fun NavGraphBuilder.gameGraph(
     onNavigateToSetup: (abandonCurrent: Boolean) -> Unit,
     onNavigateToScoring: (GameId) -> Unit,

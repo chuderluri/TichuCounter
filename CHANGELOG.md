@@ -2,6 +2,28 @@
 
 All notable changes to this project are documented in this file.
 
+## [0.3.0] - 2026-09-08
+
+### Added
+- Dedicated group creation page (name first, then members).
+- Group switcher on the Play tab via a modal bottom sheet; active group is
+  highlighted and a "New group" entry jumps to creation.
+
+### Changed
+- App now starts on the Play tab; the first launch lands there directly.
+- Play tab redesigned into two cards: group game and quick play. Quick play
+  starts an instant all-guest game straight to the counter.
+- Group picker on Play no longer falls back to quick play; without a group it
+  shows "No group" and offers group creation.
+- "Just play" renamed to "Quick play" across the app.
+- Tichu entry reworked into a compact table: horizontal headers
+  (Player / Tichu / Grand Tichu), player names in their team colour, and
+  clickable per-cell made/lost/off cycling.
+
+### Fixed
+- Quick play starting immediately no longer left an active game behind; the
+  empty-player summary no longer queries persons.
+
 ## [0.2.0] - 2026-09-07
 
 ### Added
