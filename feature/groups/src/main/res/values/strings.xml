@@ -6,8 +6,11 @@
     <string name="feature_groups_members_games">%1$d members · %2$d games</string>
     <string name="feature_groups_create_group">Create group</string>
     <string name="feature_groups_or">or</string>
-    <string name="feature_groups_just_play">Just play</string>
+    <string name="feature_groups_quick_play">Quick play</string>
     <string name="feature_groups_just_play_subtitle">Count points without registering players. No statistics.</string>
+    <string name="feature_groups_abandon_title">Abandon current game?</string>
+    <string name="feature_groups_abandon_confirm">Abandon &amp; play</string>
+    <string name="feature_groups_quick_play_error">Could not start the game</string>
     <string name="feature_groups_create_group_subtitle">Register players, keep history and statistics.</string>
     <string name="feature_groups_group_name">Group name</string>
     <string name="feature_groups_name_error">Enter a unique name (max. 30 characters)</string>

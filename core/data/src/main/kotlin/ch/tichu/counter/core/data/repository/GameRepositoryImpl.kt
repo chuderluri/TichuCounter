@@ -208,9 +208,13 @@ class GameRepositoryImpl @Inject constructor(
             val currentIds = lineUp.registeredPersons().map { it.value }
             emit((participantIds + currentIds).distinct())
         }.flatMapLatest { personIds ->
-            personDao.observePersons(personIds).map { persons ->
-                entity.toSummary(lineUp, persons.associate { PersonId(it.id) to it.toDomain() })
+            if (personIds.isEmpty()) {
+                flowOf(emptyList())
+            } else {
+                personDao.observePersons(personIds)
             }
+        }.map { persons ->
+            entity.toSummary(lineUp, persons.associate { PersonId(it.id) to it.toDomain() })
         }
     }
 

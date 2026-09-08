@@ -18,6 +18,7 @@ import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.PlayArrow
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
@@ -29,10 +30,13 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
@@ -51,21 +55,28 @@ fun GroupPickerScreen(
     onNavigateToHome: () -> Unit,
     onNavigateToGroupEdit: (GroupId?) -> Unit,
     onNavigateToSetup: () -> Unit,
+    onNavigateToScoring: (ch.tichu.counter.core.model.GameId) -> Unit,
     onDismiss: () -> Unit,
     showBackButton: Boolean = false,
     onBugReport: () -> Unit,
     viewModel: GroupPickerViewModel = hiltViewModel(),
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
+    val snackbar = remember { SnackbarHostState() }
+    val quickPlayError = stringResource(R.string.feature_groups_quick_play_error)
     CollectEffects(viewModel.effects) { effect ->
         when (effect) {
             GroupPickerUiEffect.NavigateToHome -> onNavigateToHome()
             is GroupPickerUiEffect.NavigateToGroupEdit -> onNavigateToGroupEdit(effect.groupId)
             GroupPickerUiEffect.NavigateToSetup -> onNavigateToSetup()
+            is GroupPickerUiEffect.NavigateToScoring -> onNavigateToScoring(effect.gameId)
+            GroupPickerUiEffect.ShowQuickPlayError -> snackbar.showSnackbar(quickPlayError)
             GroupPickerUiEffect.Dismiss -> onDismiss()
         }
     }
-    Scaffold { padding ->
+    Scaffold(
+        snackbarHost = { SnackbarHost(snackbar) },
+    ) { padding ->
         GroupPickerContent(
             state = state,
             onEvent = viewModel::onEvent,
@@ -73,6 +84,22 @@ fun GroupPickerScreen(
             showBackButton = showBackButton,
             onBack = onDismiss,
             onBugReport = onBugReport,
+        )
+    }
+    if (state.showAbandonConfirmation) {
+        AlertDialog(
+            onDismissRequest = { viewModel.onEvent(GroupPickerUiEvent.AbandonDismissed) },
+            title = { Text(stringResource(R.string.feature_groups_abandon_title)) },
+            confirmButton = {
+                TextButton(onClick = { viewModel.onEvent(GroupPickerUiEvent.AbandonConfirmed) }) {
+                    Text(stringResource(R.string.feature_groups_abandon_confirm))
+                }
+            },
+            dismissButton = {
+                TextButton(onClick = { viewModel.onEvent(GroupPickerUiEvent.AbandonDismissed) }) {
+                    Text(stringResource(R.string.feature_groups_cancel))
+                }
+            },
         )
     }
 }
@@ -127,10 +154,10 @@ private fun FirstStartContent(
         Spacer(Modifier.height(48.dp))
         ChoiceCard(
             icon = Icons.Default.PlayArrow,
-            title = stringResource(R.string.feature_groups_just_play).uppercase(),
+            title = stringResource(R.string.feature_groups_quick_play).uppercase(),
             subtitle = stringResource(R.string.feature_groups_just_play_subtitle),
             primary = true,
-            onClick = { onEvent(GroupPickerUiEvent.JustPlayClicked) },
+            onClick = { onEvent(GroupPickerUiEvent.QuickPlayClicked) },
         )
         Spacer(Modifier.height(16.dp))
         if (state.isCreating) {
@@ -236,10 +263,10 @@ private fun PickerContent(
                 HorizontalDivider(Modifier.weight(1f))
             }
             Spacer(Modifier.height(8.dp))
-            TextButton(onClick = { onEvent(GroupPickerUiEvent.JustPlayClicked) }, modifier = Modifier.fillMaxWidth()) {
+            TextButton(onClick = { onEvent(GroupPickerUiEvent.QuickPlayClicked) }, modifier = Modifier.fillMaxWidth()) {
                 Icon(Icons.Default.PlayArrow, contentDescription = null)
                 Spacer(Modifier.width(8.dp))
-                Text(stringResource(R.string.feature_groups_just_play) + " (" + stringResource(R.string.feature_groups_just_play_subtitle).lowercase().substringBefore('.') + ")")
+                Text(stringResource(R.string.feature_groups_quick_play) + " (" + stringResource(R.string.feature_groups_just_play_subtitle).lowercase().substringBefore('.') + ")")
             }
         }
     }

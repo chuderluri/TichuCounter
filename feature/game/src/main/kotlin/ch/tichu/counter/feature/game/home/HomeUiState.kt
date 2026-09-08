@@ -27,8 +27,12 @@ data class HomeUiState(
     val isLoading: Boolean = true,
 )
 
+enum class PendingNewGameAction { SETUP, QUICK_PLAY }
+
 sealed interface HomeUiEvent {
     data object NewGameClicked : HomeUiEvent
+
+    data object QuickPlayClicked : HomeUiEvent
 
     data object ResumeGame : HomeUiEvent
 

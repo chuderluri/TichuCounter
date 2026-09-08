@@ -120,6 +120,7 @@ fun TichuApp(
                 onNavigateToHome = { navController.navigate(HomeRoute) { popUpTo(GroupPickerRoute) { inclusive = true } } },
                 onNavigateToGroupEdit = { groupId -> navController.navigate(GroupEditRoute(groupId?.value)) },
                 onNavigateToSetup = { navController.navigate(GameSetupRoute()) },
+                onNavigateToScoring = { gameId -> navController.navigate(ScoringRoute(gameId.value)) },
                 onNavigateToPlayerEdit = { personId -> navController.navigate(PlayerEditRoute(personId.value)) },
                 onNavigateBack = { navController.popBackStack() },
                 onBugReport = onBugReport,

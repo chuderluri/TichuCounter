@@ -2,10 +2,14 @@ package ch.tichu.counter.feature.game.home
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import ch.tichu.counter.core.common.Result
 import ch.tichu.counter.core.domain.usecase.game.ObserveCurrentGameUseCase
+import ch.tichu.counter.core.domain.usecase.game.StartGameUseCase
 import ch.tichu.counter.core.domain.usecase.group.ObserveActiveGroupUseCase
 import ch.tichu.counter.core.domain.usecase.group.ObserveGroupUseCase
+import ch.tichu.counter.core.domain.usecase.preferences.ObservePreferencesUseCase
 import ch.tichu.counter.core.model.GameSummary
+import ch.tichu.counter.core.model.LineUp
 import ch.tichu.counter.core.model.Team
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.channels.Channel
@@ -13,6 +17,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.receiveAsFlow
@@ -25,9 +30,12 @@ class HomeViewModel @Inject constructor(
     observeActiveGroup: ObserveActiveGroupUseCase,
     observeCurrentGame: ObserveCurrentGameUseCase,
     observeGroup: ObserveGroupUseCase,
+    private val observePreferences: ObservePreferencesUseCase,
+    private val startGame: StartGameUseCase,
 ) : ViewModel() {
 
     private val showAbandon = MutableStateFlow(false)
+    private val pendingAction = MutableStateFlow<PendingNewGameAction?>(null)
     private val _effects = Channel<HomeUiEffect>(Channel.BUFFERED)
     val effects = _effects.receiveAsFlow()
 
@@ -58,19 +66,46 @@ class HomeViewModel @Inject constructor(
         when (event) {
             HomeUiEvent.NewGameClicked -> {
                 if (state.value.currentGame != null) {
+                    pendingAction.value = PendingNewGameAction.SETUP
                     showAbandon.value = true
                 } else {
                     send(HomeUiEffect.NavigateToSetup(abandonCurrent = false))
                 }
             }
+            HomeUiEvent.QuickPlayClicked -> {
+                if (state.value.currentGame != null) {
+                    pendingAction.value = PendingNewGameAction.QUICK_PLAY
+                    showAbandon.value = true
+                } else {
+                    startQuickPlay(abandonCurrent = false)
+                }
+            }
             HomeUiEvent.ResumeGame -> state.value.currentGame?.let { send(HomeUiEffect.NavigateToScoring(it.gameId)) }
             HomeUiEvent.AbandonAndStartConfirmed -> {
                 showAbandon.value = false
-                send(HomeUiEffect.NavigateToSetup(abandonCurrent = true))
+                when (pendingAction.value) {
+                    PendingNewGameAction.SETUP -> send(HomeUiEffect.NavigateToSetup(abandonCurrent = true))
+                    PendingNewGameAction.QUICK_PLAY -> startQuickPlay(abandonCurrent = true)
+                    null -> Unit
+                }
+                pendingAction.value = null
             }
-            HomeUiEvent.AbandonDismissed -> showAbandon.value = false
+            HomeUiEvent.AbandonDismissed -> {
+                showAbandon.value = false
+                pendingAction.value = null
+            }
             HomeUiEvent.SwitchGroupClicked -> send(HomeUiEffect.OpenGroupPicker)
             HomeUiEvent.SettingsClicked -> send(HomeUiEffect.OpenSettings)
+        }
+    }
+
+    private fun startQuickPlay(abandonCurrent: Boolean) {
+        viewModelScope.launch {
+            val ruleSet = observePreferences().first().defaultRuleSet()
+            when (val result = startGame(null, LineUp.allGuests(), ruleSet, abandonCurrent)) {
+                is Result.Success -> send(HomeUiEffect.NavigateToScoring(result.value))
+                is Result.Failure -> Unit
+            }
         }
     }
 

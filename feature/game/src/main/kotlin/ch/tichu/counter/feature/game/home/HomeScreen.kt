@@ -103,31 +103,45 @@ fun HomeContent(
 ) {
     if (state.isLoading) return
     val game = state.currentGame
-    if (game == null) {
-        Box(modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-            Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                Text(
-                    stringResource(R.string.feature_game_no_game),
-                    style = MaterialTheme.typography.bodyLarge,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant,
-                )
-                Spacer(Modifier.height(16.dp))
-                Button(onClick = { onEvent(HomeUiEvent.NewGameClicked) }) {
-                    Icon(Icons.Default.PlayArrow, contentDescription = null)
-                    Spacer(Modifier.width(8.dp))
-                    Text(stringResource(R.string.feature_game_start_new_game), style = MaterialTheme.typography.titleMedium)
+    Column(modifier.fillMaxSize()) {
+        Box(Modifier.weight(1f).fillMaxWidth()) {
+            if (game == null) {
+                Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                    Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                        Text(
+                            stringResource(R.string.feature_game_no_game),
+                            style = MaterialTheme.typography.bodyLarge,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant,
+                        )
+                        Spacer(Modifier.height(16.dp))
+                        Button(onClick = { onEvent(HomeUiEvent.NewGameClicked) }) {
+                            Icon(Icons.Default.PlayArrow, contentDescription = null)
+                            Spacer(Modifier.width(8.dp))
+                            Text(stringResource(R.string.feature_game_start_new_game), style = MaterialTheme.typography.titleMedium)
+                        }
+                    }
+                }
+            } else {
+                Column(Modifier.fillMaxSize().padding(16.dp)) {
+                    Text(
+                        stringResource(R.string.feature_game_current_game).uppercase(),
+                        style = MaterialTheme.typography.labelLarge,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    )
+                    Spacer(Modifier.height(8.dp))
+                    CurrentGameCard(game, onClick = { onEvent(HomeUiEvent.ResumeGame) })
                 }
             }
         }
-    } else {
-        Column(modifier.padding(16.dp)) {
-            Text(
-                stringResource(R.string.feature_game_current_game).uppercase(),
-                style = MaterialTheme.typography.labelLarge,
-                color = MaterialTheme.colorScheme.onSurfaceVariant,
-            )
-            Spacer(Modifier.height(8.dp))
-            CurrentGameCard(game, onClick = { onEvent(HomeUiEvent.ResumeGame) })
+        Column(Modifier.fillMaxWidth().padding(16.dp)) {
+            Button(
+                onClick = { onEvent(HomeUiEvent.QuickPlayClicked) },
+                modifier = Modifier.fillMaxWidth().height(52.dp),
+            ) {
+                Icon(Icons.Default.PlayArrow, contentDescription = null)
+                Spacer(Modifier.width(8.dp))
+                Text(stringResource(R.string.feature_game_quick_play).uppercase(), style = MaterialTheme.typography.titleMedium)
+            }
         }
     }
 

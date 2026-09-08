@@ -1,6 +1,7 @@
 package ch.tichu.counter.feature.groups.picker
 
 import androidx.compose.runtime.Immutable
+import ch.tichu.counter.core.model.GameId
 import ch.tichu.counter.core.model.GroupId
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.persistentListOf
@@ -22,6 +23,7 @@ data class GroupPickerUiState(
     val isCreating: Boolean = false,
     val newGroupName: String = "",
     val nameError: Boolean = false,
+    val showAbandonConfirmation: Boolean = false,
 )
 
 sealed interface GroupPickerUiEvent {
@@ -37,7 +39,11 @@ sealed interface GroupPickerUiEvent {
 
     data object CancelCreateGroup : GroupPickerUiEvent
 
-    data object JustPlayClicked : GroupPickerUiEvent
+    data object QuickPlayClicked : GroupPickerUiEvent
+
+    data object AbandonConfirmed : GroupPickerUiEvent
+
+    data object AbandonDismissed : GroupPickerUiEvent
 }
 
 sealed interface GroupPickerUiEffect {
@@ -46,6 +52,10 @@ sealed interface GroupPickerUiEffect {
     data class NavigateToGroupEdit(val groupId: GroupId?) : GroupPickerUiEffect
 
     data object NavigateToSetup : GroupPickerUiEffect
+
+    data class NavigateToScoring(val gameId: GameId) : GroupPickerUiEffect
+
+    data object ShowQuickPlayError : GroupPickerUiEffect
 
     data object Dismiss : GroupPickerUiEffect
 }

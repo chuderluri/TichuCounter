@@ -2,6 +2,7 @@ package ch.tichu.counter.feature.groups.navigation
 
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.compose.composable
+import ch.tichu.counter.core.model.GameId
 import ch.tichu.counter.core.model.GroupId
 import ch.tichu.counter.core.model.PersonId
 import ch.tichu.counter.core.ui.navigation.GroupEditRoute
@@ -13,6 +14,7 @@ fun NavGraphBuilder.groupsGraph(
     onNavigateToHome: () -> Unit,
     onNavigateToGroupEdit: (GroupId?) -> Unit,
     onNavigateToSetup: () -> Unit,
+    onNavigateToScoring: (GameId) -> Unit,
     onNavigateToPlayerEdit: (PersonId) -> Unit,
     onNavigateBack: () -> Unit,
     onBugReport: () -> Unit,
@@ -22,6 +24,7 @@ fun NavGraphBuilder.groupsGraph(
             onNavigateToHome = onNavigateToHome,
             onNavigateToGroupEdit = onNavigateToGroupEdit,
             onNavigateToSetup = onNavigateToSetup,
+            onNavigateToScoring = onNavigateToScoring,
             onDismiss = onNavigateBack,
             showBackButton = true,
             onBugReport = onBugReport,
