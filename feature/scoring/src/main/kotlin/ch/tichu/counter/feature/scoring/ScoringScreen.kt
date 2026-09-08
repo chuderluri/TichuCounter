@@ -7,6 +7,7 @@ import androidx.compose.animation.core.infiniteRepeatable
 import androidx.compose.animation.core.rememberInfiniteTransition
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -299,75 +300,103 @@ private fun DraftTichu.shortLabel(): String = (if (type == TichuType.SMALL) "T" 
 
 @Composable
 private fun ExpandedRoundOptions(state: ScoringUiState, onEvent: (ScoringUiEvent) -> Unit) {
-    val colors = TichuThemeDefaults.colors
-    Row(Modifier.fillMaxWidth()) {
-        PlayerColumn(Team.A, colors.teamA, state, onEvent, Modifier.weight(1f))
-        Spacer(Modifier.width(8.dp))
-        PlayerColumn(Team.B, colors.teamB, state, onEvent, Modifier.weight(1f))
-    }
-}
-
-@OptIn(androidx.compose.foundation.ExperimentalFoundationApi::class)
-@Composable
-private fun PlayerColumn(
-    team: Team,
-    teamColor: Color,
-    state: ScoringUiState,
-    onEvent: (ScoringUiEvent) -> Unit,
-    modifier: Modifier,
-) {
-    Column(modifier.padding(horizontal = 8.dp, vertical = 6.dp)) {
-        Seat.forTeam(team).forEach { seat ->
+    Column(
+        Modifier
+            .fillMaxWidth()
+            .padding(vertical = 4.dp),
+    ) {
+        TichuTableHeader()
+        (Seat.forTeam(Team.A) + Seat.forTeam(Team.B)).forEach { seat ->
             val player = state.seat(seat) ?: return@forEach
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .combinedClickable(
-                        onClick = {},
-                        onLongClick = { onEvent(ScoringUiEvent.SwapPlayerRequested(seat)) },
-                    )
-                    .padding(vertical = 3.dp),
-                verticalAlignment = Alignment.CenterVertically,
-            ) {
-                Text(
-                    player.name,
-                    modifier = Modifier.weight(1f),
-                    style = MaterialTheme.typography.bodyMedium,
-                    fontStyle = if (player.isGuest) FontStyle.Italic else FontStyle.Normal,
-                    maxLines = 1,
-                )
-                TichuToggle("T", player.tichu?.takeIf { it.type == TichuType.SMALL }, teamColor) {
-                    onEvent(ScoringUiEvent.TichuToggled(seat, TichuType.SMALL))
-                }
-                Spacer(Modifier.width(2.dp))
-                TichuToggle("GT", player.tichu?.takeIf { it.type == TichuType.GRAND }, teamColor) {
-                    onEvent(ScoringUiEvent.TichuToggled(seat, TichuType.GRAND))
-                }
-            }
+            TichuTableRow(seat, player, onEvent)
         }
     }
 }
 
 @Composable
-private fun TichuToggle(label: String, state: DraftTichu?, teamColor: Color, onClick: () -> Unit) {
-    val color = when (state?.success) {
-        true -> TichuThemeDefaults.colors.success
-        false -> TichuThemeDefaults.colors.failure
-        null -> teamColor
-    }
-    TextButton(onClick = onClick, contentPadding = androidx.compose.foundation.layout.PaddingValues(horizontal = 4.dp)) {
+private fun TichuTableHeader() {
+    Row(
+        Modifier
+            .fillMaxWidth()
+            .padding(horizontal = 16.dp, vertical = 4.dp),
+        verticalAlignment = Alignment.CenterVertically,
+    ) {
         Text(
-            text = label + when (state?.success) {
-                true -> "✓"
-                false -> "✗"
-                null -> ""
-            },
+            stringResource(R.string.feature_scoring_player),
+            modifier = Modifier.weight(1.2f),
+            style = MaterialTheme.typography.labelSmall,
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
+        )
+        Text(
+            stringResource(R.string.feature_scoring_small_tichu),
+            modifier = Modifier.weight(1f),
+            style = MaterialTheme.typography.labelSmall,
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
+            textAlign = TextAlign.Center,
+        )
+        Text(
+            stringResource(R.string.feature_scoring_grand_tichu),
+            modifier = Modifier.weight(1f),
+            style = MaterialTheme.typography.labelSmall,
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
+            textAlign = TextAlign.Center,
+        )
+    }
+}
+
+@OptIn(androidx.compose.foundation.ExperimentalFoundationApi::class)
+@Composable
+private fun TichuTableRow(seat: Seat, player: SeatUi, onEvent: (ScoringUiEvent) -> Unit) {
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .combinedClickable(
+                onClick = {},
+                onLongClick = { onEvent(ScoringUiEvent.SwapPlayerRequested(seat)) },
+            )
+            .padding(horizontal = 16.dp, vertical = 2.dp),
+        verticalAlignment = Alignment.CenterVertically,
+    ) {
+        Text(
+            player.name,
+            modifier = Modifier.weight(1.2f),
+            style = MaterialTheme.typography.bodyMedium,
+            color = TichuThemeDefaults.teamColor(seat.team),
+            fontStyle = if (player.isGuest) FontStyle.Italic else FontStyle.Normal,
+            maxLines = 1,
+        )
+        TichuCell(player.tichu?.takeIf { it.type == TichuType.SMALL }, Modifier.weight(1f)) {
+            onEvent(ScoringUiEvent.TichuToggled(seat, TichuType.SMALL))
+        }
+        TichuCell(player.tichu?.takeIf { it.type == TichuType.GRAND }, Modifier.weight(1f)) {
+            onEvent(ScoringUiEvent.TichuToggled(seat, TichuType.GRAND))
+        }
+    }
+}
+
+@Composable
+private fun TichuCell(state: DraftTichu?, modifier: Modifier = Modifier, onClick: () -> Unit) {
+    val (symbol, color) = when (state?.success) {
+        true -> "✓" to TichuThemeDefaults.colors.success
+        false -> "✗" to TichuThemeDefaults.colors.failure
+        null -> "·" to MaterialTheme.colorScheme.onSurfaceVariant
+    }
+    Box(
+        modifier = modifier
+            .height(TichuCellHeight)
+            .clickable(onClick = onClick),
+        contentAlignment = Alignment.Center,
+    ) {
+        Text(
+            symbol,
             color = color,
-            style = MaterialTheme.typography.labelMedium,
+            style = MaterialTheme.typography.titleMedium,
             fontWeight = FontWeight.Bold,
         )
     }
 }
+
+private val TichuCellHeight = 32.dp
 
 @Composable
 private fun RoundInput(state: ScoringUiState, onEvent: (ScoringUiEvent) -> Unit) {

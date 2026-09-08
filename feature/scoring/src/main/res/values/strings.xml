@@ -7,8 +7,9 @@
     <string name="feature_scoring_double_win_a">Double win A</string>
     <string name="feature_scoring_double_win_b">Double win B</string>
     <string name="feature_scoring_tichu">Tichu</string>
-    <string name="feature_scoring_small_tichu">T</string>
-    <string name="feature_scoring_grand_tichu">GT</string>
+    <string name="feature_scoring_small_tichu">Tichu</string>
+    <string name="feature_scoring_grand_tichu">Grand Tichu</string>
+    <string name="feature_scoring_player">Player</string>
     <string name="feature_scoring_tichu_state">%1$s: %2$s</string>
     <string name="feature_scoring_tichu_off">off</string>
     <string name="feature_scoring_tichu_made">made</string>
