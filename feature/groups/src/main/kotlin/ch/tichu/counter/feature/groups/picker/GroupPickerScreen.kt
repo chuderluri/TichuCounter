@@ -22,7 +22,6 @@ import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -41,7 +40,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -114,89 +112,7 @@ fun GroupPickerContent(
     onBugReport: () -> Unit,
 ) {
     if (state.isLoading) return
-    if (state.isFirstStart && state.groups.isEmpty()) {
-        FirstStartContent(state, onEvent, modifier, showBackButton, onBack, onBugReport)
-    } else {
-        PickerContent(state, onEvent, modifier, showBackButton, onBack, onBugReport)
-    }
-}
-
-@Composable
-private fun FirstStartContent(
-    state: GroupPickerUiState,
-    onEvent: (GroupPickerUiEvent) -> Unit,
-    modifier: Modifier,
-    showBackButton: Boolean,
-    onBack: (() -> Unit)?,
-    onBugReport: () -> Unit,
-) {
-    Column(
-        modifier = modifier
-            .fillMaxSize()
-            .padding(24.dp),
-        horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.Center,
-    ) {
-        Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
-            if (showBackButton && onBack != null) {
-                IconButton(onClick = onBack) {
-                    Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = null)
-                }
-            }
-            Text(
-                stringResource(R.string.feature_groups_app_name),
-                modifier = Modifier.weight(1f),
-                style = MaterialTheme.typography.headlineLarge,
-                textAlign = TextAlign.Center,
-            )
-            BugReportActionButton(onBugReport)
-        }
-        Spacer(Modifier.height(48.dp))
-        ChoiceCard(
-            icon = Icons.Default.PlayArrow,
-            title = stringResource(R.string.feature_groups_quick_play).uppercase(),
-            subtitle = stringResource(R.string.feature_groups_just_play_subtitle),
-            primary = true,
-            onClick = { onEvent(GroupPickerUiEvent.QuickPlayClicked) },
-        )
-        Spacer(Modifier.height(16.dp))
-        if (state.isCreating) {
-            CreateGroupInline(state, onEvent)
-        } else {
-            ChoiceCard(
-                icon = Icons.Default.Add,
-                title = stringResource(R.string.feature_groups_create_group).uppercase(),
-                subtitle = stringResource(R.string.feature_groups_create_group_subtitle),
-                primary = false,
-                onClick = { onEvent(GroupPickerUiEvent.CreateGroupClicked) },
-            )
-        }
-    }
-}
-
-@Composable
-private fun ChoiceCard(
-    icon: androidx.compose.ui.graphics.vector.ImageVector,
-    title: String,
-    subtitle: String,
-    primary: Boolean,
-    onClick: () -> Unit,
-) {
-    val colors = if (primary) {
-        CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.primaryContainer)
-    } else {
-        CardDefaults.cardColors()
-    }
-    ElevatedCard(onClick = onClick, modifier = Modifier.fillMaxWidth(), colors = colors) {
-        Row(Modifier.padding(20.dp), verticalAlignment = Alignment.CenterVertically) {
-            Icon(icon, contentDescription = null)
-            Spacer(Modifier.width(16.dp))
-            Column {
-                Text(title, style = MaterialTheme.typography.titleMedium)
-                Text(subtitle, style = MaterialTheme.typography.bodyMedium)
-            }
-        }
-    }
+    PickerContent(state, onEvent, modifier, showBackButton, onBack, onBugReport)
 }
 
 @Composable

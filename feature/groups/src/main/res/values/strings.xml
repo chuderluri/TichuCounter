@@ -33,4 +33,8 @@
     <string name="feature_groups_new_person_name">Name</string>
     <string name="feature_groups_add">Add</string>
     <string name="feature_groups_saved">Saved</string>
+    <string name="feature_groups_create_name_title">Give your group a name</string>
+    <string name="feature_groups_create_and_continue">Create &amp; continue</string>
+    <string name="feature_groups_done">Done</string>
+    <string name="feature_groups_create_error">Could not create the group</string>
 </resources>

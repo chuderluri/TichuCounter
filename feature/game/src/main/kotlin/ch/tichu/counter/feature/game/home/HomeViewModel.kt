@@ -7,11 +7,14 @@ import ch.tichu.counter.core.domain.usecase.game.ObserveCurrentGameUseCase
 import ch.tichu.counter.core.domain.usecase.game.StartGameUseCase
 import ch.tichu.counter.core.domain.usecase.group.ObserveActiveGroupUseCase
 import ch.tichu.counter.core.domain.usecase.group.ObserveGroupUseCase
+import ch.tichu.counter.core.domain.usecase.group.ObserveGroupsUseCase
+import ch.tichu.counter.core.domain.usecase.group.SetActiveGroupUseCase
 import ch.tichu.counter.core.domain.usecase.preferences.ObservePreferencesUseCase
 import ch.tichu.counter.core.model.GameSummary
 import ch.tichu.counter.core.model.LineUp
 import ch.tichu.counter.core.model.Team
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.collections.immutable.toImmutableList
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
@@ -30,6 +33,8 @@ class HomeViewModel @Inject constructor(
     observeActiveGroup: ObserveActiveGroupUseCase,
     observeCurrentGame: ObserveCurrentGameUseCase,
     observeGroup: ObserveGroupUseCase,
+    observeGroups: ObserveGroupsUseCase,
+    private val setActiveGroup: SetActiveGroupUseCase,
     private val observePreferences: ObservePreferencesUseCase,
     private val startGame: StartGameUseCase,
 ) : ViewModel() {
@@ -50,13 +55,25 @@ class HomeViewModel @Inject constructor(
 
     val state: StateFlow<HomeUiState> = combine(
         observeActiveGroup(),
+        observeGroups(),
         currentGameWithGroup,
         showAbandon,
-    ) { active, (summary, gameGroupName), showAbandon ->
+    ) { active, groups, (summary, gameGroupName), showAbandon ->
+        val groupGame = summary
+            ?.takeIf { it.game.groupId != null }
+            ?.toUi(gameGroupName, isOtherGroup = summary.game.groupId != active.group?.id)
+        val quickPlayGame = summary
+            ?.takeIf { it.game.groupId == null }
+            ?.toUi(groupName = null, isOtherGroup = false)
         HomeUiState(
             groupName = active.group?.name,
+            groups = groups.map {
+                GroupUi(id = it.group.id, name = it.group.name, isActive = it.group.id == active.group?.id)
+            }.toImmutableList(),
             isQuickPlay = active.isQuickPlay,
-            currentGame = summary?.toUi(gameGroupName, isOtherGroup = summary.game.groupId != active.group?.id),
+            groupGame = groupGame,
+            quickPlayGame = quickPlayGame,
+            gameInProgress = summary != null,
             showAbandonConfirmation = showAbandon,
             isLoading = false,
         )
@@ -65,7 +82,7 @@ class HomeViewModel @Inject constructor(
     fun onEvent(event: HomeUiEvent) {
         when (event) {
             HomeUiEvent.NewGameClicked -> {
-                if (state.value.currentGame != null) {
+                if (state.value.gameInProgress) {
                     pendingAction.value = PendingNewGameAction.SETUP
                     showAbandon.value = true
                 } else {
@@ -73,14 +90,15 @@ class HomeViewModel @Inject constructor(
                 }
             }
             HomeUiEvent.QuickPlayClicked -> {
-                if (state.value.currentGame != null) {
+                if (state.value.gameInProgress) {
                     pendingAction.value = PendingNewGameAction.QUICK_PLAY
                     showAbandon.value = true
                 } else {
                     startQuickPlay(abandonCurrent = false)
                 }
             }
-            HomeUiEvent.ResumeGame -> state.value.currentGame?.let { send(HomeUiEffect.NavigateToScoring(it.gameId)) }
+            HomeUiEvent.ResumeGame -> state.value.groupGame?.let { send(HomeUiEffect.NavigateToScoring(it.gameId)) }
+            HomeUiEvent.ResumeQuickPlay -> state.value.quickPlayGame?.let { send(HomeUiEffect.NavigateToScoring(it.gameId)) }
             HomeUiEvent.AbandonAndStartConfirmed -> {
                 showAbandon.value = false
                 when (pendingAction.value) {
@@ -94,7 +112,10 @@ class HomeViewModel @Inject constructor(
                 showAbandon.value = false
                 pendingAction.value = null
             }
-            HomeUiEvent.SwitchGroupClicked -> send(HomeUiEffect.OpenGroupPicker)
+            is HomeUiEvent.GroupSelected -> viewModelScope.launch {
+                setActiveGroup(event.groupId)
+            }
+            HomeUiEvent.CreateGroupClicked -> send(HomeUiEffect.NavigateToGroupCreate)
             HomeUiEvent.SettingsClicked -> send(HomeUiEffect.OpenSettings)
         }
     }

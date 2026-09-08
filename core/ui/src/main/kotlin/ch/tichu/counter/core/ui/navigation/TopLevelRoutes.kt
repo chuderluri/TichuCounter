@@ -9,6 +9,9 @@ data object GroupPickerRoute
 data class GroupEditRoute(val groupId: String? = null)
 
 @Serializable
+data object GroupCreateRoute
+
+@Serializable
 data object HomeRoute
 
 @Serializable

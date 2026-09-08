@@ -37,7 +37,7 @@ data class GroupEditUiState(
     val newPersonName: String = "",
     val newPersonError: Boolean = false,
 ) {
-    val canSave: Boolean get() = name.isNotBlank() && name != originalName
+    val canSave: Boolean get() = name.isNotBlank()
 }
 
 sealed interface GroupEditUiEvent {

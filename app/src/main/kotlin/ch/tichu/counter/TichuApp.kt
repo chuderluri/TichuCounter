@@ -28,10 +28,12 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import ch.tichu.counter.core.domain.usecase.preferences.ObservePreferencesUseCase
+import ch.tichu.counter.core.domain.usecase.preferences.UpdatePreferencesUseCase
 import ch.tichu.counter.core.ui.navigation.BugReportRoute
 import ch.tichu.counter.core.ui.navigation.GameDetailRoute
 import ch.tichu.counter.core.ui.navigation.GameListRoute
 import ch.tichu.counter.core.ui.navigation.GameSetupRoute
+import ch.tichu.counter.core.ui.navigation.GroupCreateRoute
 import ch.tichu.counter.core.ui.navigation.GroupEditRoute
 import ch.tichu.counter.core.ui.navigation.GroupPickerRoute
 import ch.tichu.counter.core.ui.navigation.HomeRoute
@@ -54,8 +56,10 @@ import ch.tichu.counter.feature.statistics.navigation.statisticsGraph
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 private data class BottomDestination<T : Any>(
@@ -113,7 +117,7 @@ fun TichuApp(
     ) { padding ->
         NavHost(
             navController = navController,
-            startDestination = if (onboardingDone == true) HomeRoute else GroupPickerRoute,
+            startDestination = HomeRoute,
             modifier = Modifier.padding(padding),
         ) {
             groupsGraph(
@@ -129,6 +133,7 @@ fun TichuApp(
                 onNavigateToSetup = { abandon -> navController.navigate(GameSetupRoute(abandon)) },
                 onNavigateToScoring = { gameId -> navController.navigate(ScoringRoute(gameId.value)) },
                 onOpenGroupPicker = { navController.navigate(GroupPickerRoute) },
+                onNavigateToGroupCreate = { navController.navigate(GroupCreateRoute) },
                 onOpenSettings = { navController.navigate(SettingsRoute) },
                 onNavigateBack = { navController.popBackStack() },
                 onShowMessage = {},
@@ -173,10 +178,21 @@ fun TichuApp(
 }
 
 @HiltViewModel
-class AppViewModel @Inject constructor(observePreferences: ObservePreferencesUseCase) : ViewModel() {
+class AppViewModel @Inject constructor(
+    observePreferences: ObservePreferencesUseCase,
+    private val updatePreferences: UpdatePreferencesUseCase,
+) : ViewModel() {
     val onboardingDone: StateFlow<Boolean?> = observePreferences()
         .map { it.onboardingDone }
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), null)
+
+    init {
+        viewModelScope.launch {
+            if (!observePreferences().first().onboardingDone) {
+                updatePreferences.setOnboardingDone(true)
+            }
+        }
+    }
 }
 
 private fun NavDestination.isBottomDestination(): Boolean = hasRoute<HomeRoute>() || hasRoute<PlayerListRoute>() || hasRoute<GameListRoute>() || hasRoute<LeaderboardRoute>() || hasRoute<BugReportRoute>()

@@ -20,4 +20,6 @@ class UpdatePreferencesUseCase @Inject constructor(private val repository: Prefe
     suspend fun keepScreenOn(enabled: Boolean) = repository.setKeepScreenOn(enabled)
 
     suspend fun hapticFeedback(enabled: Boolean) = repository.setHapticFeedback(enabled)
+
+    suspend fun setOnboardingDone(done: Boolean) = repository.setOnboardingDone(done)
 }

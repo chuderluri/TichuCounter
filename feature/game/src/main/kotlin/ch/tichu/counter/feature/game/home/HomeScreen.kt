@@ -10,16 +10,19 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
-import androidx.compose.material.icons.filled.ArrowDropDown
 import androidx.compose.material.icons.filled.PlayArrow
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
+import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.FloatingActionButton
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -29,6 +32,9 @@ import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
@@ -38,6 +44,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import ch.tichu.counter.core.model.GameId
 import ch.tichu.counter.core.ui.component.BugReportActionButton
+import ch.tichu.counter.core.ui.component.GroupSelectorBar
 import ch.tichu.counter.core.ui.theme.TichuThemeDefaults
 import ch.tichu.counter.core.ui.util.CollectEffects
 import ch.tichu.counter.core.ui.util.relativeDateText
@@ -49,6 +56,7 @@ fun HomeScreen(
     onNavigateToSetup: (abandonCurrent: Boolean) -> Unit,
     onNavigateToScoring: (GameId) -> Unit,
     onOpenGroupPicker: () -> Unit,
+    onNavigateToGroupCreate: () -> Unit,
     onOpenSettings: () -> Unit,
     onBugReport: () -> Unit,
     viewModel: HomeViewModel = hiltViewModel(),
@@ -59,6 +67,7 @@ fun HomeScreen(
             is HomeUiEffect.NavigateToSetup -> onNavigateToSetup(effect.abandonCurrent)
             is HomeUiEffect.NavigateToScoring -> onNavigateToScoring(effect.gameId)
             HomeUiEffect.OpenGroupPicker -> onOpenGroupPicker()
+            HomeUiEffect.NavigateToGroupCreate -> onNavigateToGroupCreate()
             HomeUiEffect.OpenSettings -> onOpenSettings()
         }
     }
@@ -66,14 +75,11 @@ fun HomeScreen(
         topBar = {
             TopAppBar(
                 title = {
-                    TextButton(onClick = { viewModel.onEvent(HomeUiEvent.SwitchGroupClicked) }) {
-                        Text(
-                            state.groupName ?: stringResource(R.string.feature_game_quick_play),
-                            style = MaterialTheme.typography.titleLarge,
-                            color = MaterialTheme.colorScheme.onSurface,
-                        )
-                        Icon(Icons.Default.ArrowDropDown, contentDescription = null)
-                    }
+                    Text(
+                        stringResource(R.string.feature_game_play_title),
+                        style = MaterialTheme.typography.titleLarge,
+                        color = MaterialTheme.colorScheme.onSurface,
+                    )
                 },
                 actions = {
                     IconButton(onClick = { viewModel.onEvent(HomeUiEvent.SettingsClicked) }) {
@@ -82,13 +88,6 @@ fun HomeScreen(
                     BugReportActionButton(onBugReport)
                 },
             )
-        },
-        floatingActionButton = {
-            if (state.currentGame != null) {
-                FloatingActionButton(onClick = { viewModel.onEvent(HomeUiEvent.NewGameClicked) }) {
-                    Icon(Icons.Default.Add, contentDescription = stringResource(R.string.feature_game_new_game))
-                }
-            }
         },
     ) { padding ->
         HomeContent(state, viewModel::onEvent, Modifier.padding(padding))
@@ -102,45 +101,124 @@ fun HomeContent(
     modifier: Modifier = Modifier,
 ) {
     if (state.isLoading) return
-    val game = state.currentGame
+    val groupGame = state.groupGame
+    val quickPlayGame = state.quickPlayGame
+    var menuExpanded by remember { mutableStateOf(false) }
     Column(modifier.fillMaxSize()) {
-        Box(Modifier.weight(1f).fillMaxWidth()) {
-            if (game == null) {
-                Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                    Column(horizontalAlignment = Alignment.CenterHorizontally) {
+        Column(
+            Modifier
+                .weight(1f)
+                .fillMaxWidth()
+                .verticalScroll(rememberScrollState()),
+        ) {
+            Text(
+                stringResource(R.string.feature_game_group_game).uppercase(),
+                style = MaterialTheme.typography.labelLarge,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                modifier = Modifier.padding(horizontal = 16.dp),
+            )
+            HorizontalDivider(Modifier.padding(horizontal = 16.dp, vertical = 8.dp))
+
+            Box(Modifier.padding(horizontal = 16.dp)) {
+                GroupSelectorBar(
+                    groupName = state.groupName,
+                    subtitle = if (state.groupName != null) stringResource(R.string.feature_game_group_selector_hint) else null,
+                    onClick = { menuExpanded = true },
+                )
+                DropdownMenu(expanded = menuExpanded, onDismissRequest = { menuExpanded = false }) {
+                    state.groups.forEach { group ->
+                        DropdownMenuItem(
+                            text = { Text(if (group.isActive) "✓ ${group.name}" else group.name) },
+                            onClick = {
+                                menuExpanded = false
+                                onEvent(HomeUiEvent.GroupSelected(group.id))
+                            },
+                        )
+                    }
+                    HorizontalDivider()
+                    DropdownMenuItem(
+                        text = { Text(stringResource(R.string.feature_game_new_group)) },
+                        onClick = {
+                            menuExpanded = false
+                            onEvent(HomeUiEvent.CreateGroupClicked)
+                        },
+                    )
+                }
+            }
+            Spacer(Modifier.height(16.dp))
+
+            if (groupGame == null) {
+                Column(
+                    Modifier.fillMaxWidth().padding(horizontal = 16.dp),
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                ) {
+                    if (state.groupName != null) {
                         Text(
                             stringResource(R.string.feature_game_no_game),
                             style = MaterialTheme.typography.bodyLarge,
                             color = MaterialTheme.colorScheme.onSurfaceVariant,
                         )
                         Spacer(Modifier.height(16.dp))
-                        Button(onClick = { onEvent(HomeUiEvent.NewGameClicked) }) {
+                    }
+                    if (state.groupName == null) {
+                        Button(
+                            onClick = { onEvent(HomeUiEvent.CreateGroupClicked) },
+                            modifier = Modifier.fillMaxWidth().height(52.dp),
+                        ) {
+                            Icon(Icons.Default.Add, contentDescription = null)
+                            Spacer(Modifier.width(8.dp))
+                            Text(stringResource(R.string.feature_game_create_group).uppercase(), style = MaterialTheme.typography.titleMedium)
+                        }
+                    } else {
+                        Button(
+                            onClick = { onEvent(HomeUiEvent.NewGameClicked) },
+                            modifier = Modifier.fillMaxWidth().height(52.dp),
+                        ) {
                             Icon(Icons.Default.PlayArrow, contentDescription = null)
                             Spacer(Modifier.width(8.dp))
-                            Text(stringResource(R.string.feature_game_start_new_game), style = MaterialTheme.typography.titleMedium)
+                            Text(stringResource(R.string.feature_game_start_new_game).uppercase(), style = MaterialTheme.typography.titleMedium)
                         }
                     }
+                    Spacer(Modifier.height(8.dp))
                 }
             } else {
-                Column(Modifier.fillMaxSize().padding(16.dp)) {
-                    Text(
-                        stringResource(R.string.feature_game_current_game).uppercase(),
-                        style = MaterialTheme.typography.labelLarge,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant,
-                    )
-                    Spacer(Modifier.height(8.dp))
-                    CurrentGameCard(game, onClick = { onEvent(HomeUiEvent.ResumeGame) })
-                }
+                CurrentGameCard(groupGame, onClick = { onEvent(HomeUiEvent.ResumeGame) }, modifier = Modifier.padding(horizontal = 16.dp))
             }
+            Spacer(Modifier.height(16.dp))
         }
-        Column(Modifier.fillMaxWidth().padding(16.dp)) {
-            Button(
-                onClick = { onEvent(HomeUiEvent.QuickPlayClicked) },
-                modifier = Modifier.fillMaxWidth().height(52.dp),
-            ) {
-                Icon(Icons.Default.PlayArrow, contentDescription = null)
-                Spacer(Modifier.width(8.dp))
-                Text(stringResource(R.string.feature_game_quick_play).uppercase(), style = MaterialTheme.typography.titleMedium)
+
+        HorizontalDivider()
+        Column(
+            Modifier
+                .fillMaxWidth()
+                .padding(start = 16.dp, end = 16.dp, top = 16.dp),
+            horizontalAlignment = Alignment.CenterHorizontally,
+        ) {
+            Text(
+                stringResource(R.string.feature_game_quick_play).uppercase(),
+                style = MaterialTheme.typography.labelLarge,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                modifier = Modifier.fillMaxWidth(),
+            )
+            Spacer(Modifier.height(8.dp))
+            if (quickPlayGame != null) {
+                CurrentGameCard(quickPlayGame, onClick = { onEvent(HomeUiEvent.ResumeQuickPlay) })
+            } else {
+                Text(
+                    stringResource(R.string.feature_game_quick_play_hint),
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    textAlign = TextAlign.Center,
+                )
+                Spacer(Modifier.height(8.dp))
+                Button(
+                    onClick = { onEvent(HomeUiEvent.QuickPlayClicked) },
+                    modifier = Modifier.fillMaxWidth().height(52.dp),
+                ) {
+                    Icon(Icons.Default.PlayArrow, contentDescription = null)
+                    Spacer(Modifier.width(8.dp))
+                    Text(stringResource(R.string.feature_game_quick_play).uppercase(), style = MaterialTheme.typography.titleMedium)
+                }
             }
         }
     }
@@ -164,9 +242,9 @@ fun HomeContent(
 }
 
 @Composable
-private fun CurrentGameCard(game: CurrentGameUi, onClick: () -> Unit) {
+private fun CurrentGameCard(game: CurrentGameUi, onClick: () -> Unit, modifier: Modifier = Modifier) {
     val colors = TichuThemeDefaults.colors
-    ElevatedCard(onClick = onClick, modifier = Modifier.fillMaxWidth()) {
+    ElevatedCard(onClick = onClick, modifier = modifier.fillMaxWidth()) {
         Column(Modifier.padding(16.dp)) {
             Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceEvenly) {
                 Column(horizontalAlignment = Alignment.CenterHorizontally, modifier = Modifier.weight(1f)) {

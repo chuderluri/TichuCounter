@@ -18,7 +18,6 @@ data class GroupUi(
 @Immutable
 data class GroupPickerUiState(
     val groups: ImmutableList<GroupUi> = persistentListOf(),
-    val isFirstStart: Boolean = false,
     val isLoading: Boolean = true,
     val isCreating: Boolean = false,
     val newGroupName: String = "",

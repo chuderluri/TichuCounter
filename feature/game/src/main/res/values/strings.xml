@@ -1,6 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="feature_game_quick_play">Quick play</string>
+    <string name="feature_game_play_title">Play</string>
+    <string name="feature_game_group_game">Group game</string>
+    <string name="feature_game_group_selector_hint">Switch group</string>
+    <string name="feature_game_create_group">Create group</string>
+    <string name="feature_game_new_group">New group</string>
     <string name="feature_game_settings">Settings</string>
     <string name="feature_game_current_game">Current game</string>
     <string name="feature_game_team_a">Team A</string>

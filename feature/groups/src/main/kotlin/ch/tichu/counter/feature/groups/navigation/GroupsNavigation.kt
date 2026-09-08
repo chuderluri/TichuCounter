@@ -5,8 +5,10 @@ import androidx.navigation.compose.composable
 import ch.tichu.counter.core.model.GameId
 import ch.tichu.counter.core.model.GroupId
 import ch.tichu.counter.core.model.PersonId
+import ch.tichu.counter.core.ui.navigation.GroupCreateRoute
 import ch.tichu.counter.core.ui.navigation.GroupEditRoute
 import ch.tichu.counter.core.ui.navigation.GroupPickerRoute
+import ch.tichu.counter.feature.groups.create.GroupCreateScreen
 import ch.tichu.counter.feature.groups.edit.GroupEditScreen
 import ch.tichu.counter.feature.groups.picker.GroupPickerScreen
 
@@ -27,6 +29,13 @@ fun NavGraphBuilder.groupsGraph(
             onNavigateToScoring = onNavigateToScoring,
             onDismiss = onNavigateBack,
             showBackButton = true,
+            onBugReport = onBugReport,
+        )
+    }
+    composable<GroupCreateRoute> {
+        GroupCreateScreen(
+            onNavigateBack = onNavigateBack,
+            onNavigateToHome = onNavigateToHome,
             onBugReport = onBugReport,
         )
     }

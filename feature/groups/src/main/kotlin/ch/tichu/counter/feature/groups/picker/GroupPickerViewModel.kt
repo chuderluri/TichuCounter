@@ -61,7 +61,6 @@ class GroupPickerViewModel @Inject constructor(
                     isActive = it.group.id == active.group?.id,
                 )
             }.toImmutableList(),
-            isFirstStart = active.needsOnboarding,
             isLoading = false,
             isCreating = draft.isCreating || (active.needsOnboarding && groups.isEmpty() && draft.isCreating),
             newGroupName = draft.name,

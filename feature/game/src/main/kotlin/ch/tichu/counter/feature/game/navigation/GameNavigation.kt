@@ -15,6 +15,7 @@ fun NavGraphBuilder.gameGraph(
     onNavigateToSetup: (abandonCurrent: Boolean) -> Unit,
     onNavigateToScoring: (GameId) -> Unit,
     onOpenGroupPicker: () -> Unit,
+    onNavigateToGroupCreate: () -> Unit,
     onOpenSettings: () -> Unit,
     onNavigateBack: () -> Unit,
     onShowMessage: (String) -> Unit,
@@ -25,6 +26,7 @@ fun NavGraphBuilder.gameGraph(
             onNavigateToSetup = onNavigateToSetup,
             onNavigateToScoring = onNavigateToScoring,
             onOpenGroupPicker = onOpenGroupPicker,
+            onNavigateToGroupCreate = onNavigateToGroupCreate,
             onOpenSettings = onOpenSettings,
             onBugReport = onBugReport,
         )

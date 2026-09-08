@@ -10,7 +10,6 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
-import androidx.compose.material.icons.filled.ArrowDropDown
 import androidx.compose.material.icons.filled.Group
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material.icons.filled.SportsEsports
@@ -37,6 +36,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import ch.tichu.counter.core.model.PersonId
 import ch.tichu.counter.core.ui.component.BugReportActionButton
 import ch.tichu.counter.core.ui.component.EmptyState
+import ch.tichu.counter.core.ui.component.GroupSelectorBar
 import ch.tichu.counter.core.ui.util.CollectEffects
 import ch.tichu.counter.core.ui.util.relativeDateText
 import ch.tichu.counter.feature.players.R
@@ -60,15 +60,11 @@ fun PlayerListScreen(
         topBar = {
             TopAppBar(
                 title = {
-                    TextButton(onClick = { viewModel.onEvent(PlayerListUiEvent.SwitchGroupClicked) }) {
-                        Text(
-                            stringResource(R.string.feature_players_title) + " · " +
-                                (state.groupName ?: stringResource(R.string.feature_players_quick_play)),
-                            style = MaterialTheme.typography.titleLarge,
-                            color = MaterialTheme.colorScheme.onSurface,
-                        )
-                        Icon(Icons.Default.ArrowDropDown, contentDescription = null)
-                    }
+                    Text(
+                        stringResource(R.string.feature_players_title),
+                        style = MaterialTheme.typography.titleLarge,
+                        color = MaterialTheme.colorScheme.onSurface,
+                    )
                 },
                 actions = {
                     BugReportActionButton(onBugReport)
@@ -99,20 +95,32 @@ fun PlayerListContent(
 ) {
     if (state.isLoading) return
     if (state.isQuickPlay) {
-        EmptyState(
-            icon = Icons.Default.Group,
-            title = stringResource(R.string.feature_players_quick_play_title),
-            description = stringResource(R.string.feature_players_quick_play_description),
-            modifier = modifier,
-            action = {
-                Button(onClick = { onEvent(PlayerListUiEvent.SwitchGroupClicked) }) {
-                    Text(stringResource(R.string.feature_players_create_group))
-                }
-            },
-        )
+        Column(modifier.fillMaxSize()) {
+            GroupSelectorBar(
+                groupName = state.groupName,
+                onClick = { onEvent(PlayerListUiEvent.SwitchGroupClicked) },
+                modifier = Modifier.padding(16.dp),
+            )
+            EmptyState(
+                icon = Icons.Default.Group,
+                title = stringResource(R.string.feature_players_quick_play_title),
+                description = stringResource(R.string.feature_players_quick_play_description),
+                modifier = Modifier.weight(1f),
+                action = {
+                    Button(onClick = { onEvent(PlayerListUiEvent.SwitchGroupClicked) }) {
+                        Text(stringResource(R.string.feature_players_create_group))
+                    }
+                },
+            )
+        }
         return
     }
     Column(modifier.fillMaxSize()) {
+        GroupSelectorBar(
+            groupName = state.groupName,
+            onClick = { onEvent(PlayerListUiEvent.SwitchGroupClicked) },
+            modifier = Modifier.padding(16.dp),
+        )
         OutlinedTextField(
             value = state.query,
             onValueChange = { onEvent(PlayerListUiEvent.QueryChanged(it)) },
