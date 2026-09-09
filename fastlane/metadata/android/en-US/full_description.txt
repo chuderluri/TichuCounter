@@ -1,0 +1,19 @@
+Tichu Counter replaces the paper score sheet for the card game Tichu. It
+tracks the running score of the two teams and records the outcome of every
+round.
+
+Key features:
+
+- Organise your players in groups; games, history and statistics are scoped
+  to the active group.
+- Compose two teams of two per game and swap players between rounds.
+- Quick play: start an instant all-guest game and jump straight into scoring.
+- Enter the score with a calculator-style keypad; the other team's score is
+  complemented to 100 automatically.
+- Record Small and Grand Tichu per player as made or lost, and double wins.
+- Undo and redo every scoring action, even after restarting the app.
+- Per-player statistics: games, wins, Tichu rate, average points and more.
+- Fully offline: everything is stored locally on your device.
+
+Tichu Counter is free software, distributed under the GNU Affero General
+Public License v3 or later.

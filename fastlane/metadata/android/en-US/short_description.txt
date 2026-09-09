@@ -1,0 +1,1 @@
+Tichu scorekeeper for your group: quick play, undo, Tichu tracking.

@@ -148,3 +148,10 @@ can restore it. This also makes the future statistics feature reliable.
 - User-interface sketches: [`docs/architecture/07-ui-navigation.md`](docs/architecture/07-ui-navigation.md)
 - Development roadmap: [`docs/architecture/10-roadmap.md`](docs/architecture/10-roadmap.md)
 - Rules for AI coding agents: [`AGENTS.md`](AGENTS.md)
+
+## License
+
+Tichu Counter is free software: you can redistribute it and/or modify it under
+the terms of the GNU Affero General Public License as published by the Free
+Software Foundation, either version 3 of the License, or (at your option) any
+later version. See [`LICENSE`](LICENSE) for the full license text.

@@ -1,0 +1,49 @@
+# F-Droid metadata draft for Tichu Counter.
+# Submit this as metadata/ch.tichu.counter.yml in the fdroiddata repository
+# (https://gitlab.com/fdroid/fdroiddata) via a merge request.
+
+Categories:
+  - Games
+License: AGPL-3.0-or-later
+AuthorName: Christophe Buerki
+WebSite: https://github.com/chuderluri/TichuCounter
+SourceCode: https://github.com/chuderluri/TichuCounter
+IssueTracker: https://github.com/chuderluri/TichuCounter/issues
+Changelog: https://github.com/chuderluri/TichuCounter/blob/master/CHANGELOG.md
+
+AutoName: Tichu Counter
+Summary: Scorekeeper for the card game Tichu
+Description: |
+  Tichu Counter replaces the paper score sheet for the card game Tichu.
+  It tracks the running score of the two teams and records the outcome
+  of every round.
+
+  Organise your players in groups, compose two teams of two per game and
+  swap players between rounds. Quick play starts an instant all-guest game
+  and jumps straight into scoring. Enter the score with a calculator-style
+  keypad (the other team's score is complemented to 100 automatically),
+  record Small and Grand Tichu per player as made or lost, and double wins.
+  Undo and redo every scoring action, even after restarting the app.
+  Per-player statistics and fully offline operation.
+
+RepoType: git
+Repo: https://github.com/chuderluri/TichuCounter.git
+
+Builds:
+  - versionName: '0.3.0'
+    versionCode: 3
+    commit: v0.3.0
+    subdir: app
+    gradle:
+      - assembleRelease
+
+AutoUpdateMode: Version
+UpdateCheckMode: Tags
+CurrentVersion: '0.3.0'
+CurrentVersionCode: 3
+
+MaintainerNotes: |-
+  Uses Gradle convention plugins under build-logic/ and a version catalog.
+  The release build is unsigned (F-Droid signs it). Requires JDK 21 on the
+  build host (see RELEASE.md); add a sudo block installing openjdk-21 if
+  the default toolchain does not satisfy the build.
