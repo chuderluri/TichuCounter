@@ -36,6 +36,7 @@ import ch.tichu.counter.core.model.ThemeMode
 import ch.tichu.counter.core.ui.BuildConfig
 import ch.tichu.counter.core.ui.component.BugReportActionButton
 import ch.tichu.counter.core.ui.util.CollectEffects
+import ch.tichu.counter.core.ui.util.appVersionName
 import ch.tichu.counter.feature.settings.R
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -80,6 +81,8 @@ fun SettingsScreen(
 
 @Composable
 fun SettingsContent(state: SettingsUiState, onEvent: (SettingsUiEvent) -> Unit, modifier: Modifier = Modifier) {
+    val context = LocalContext.current
+    val versionName = appVersionName(context) ?: "?"
     Column(
         modifier
             .fillMaxSize()
@@ -129,7 +132,7 @@ fun SettingsContent(state: SettingsUiState, onEvent: (SettingsUiEvent) -> Unit, 
         ListItem(
             headlineContent = {
                 Text(
-                    stringResource(R.string.feature_settings_version) +
+                    stringResource(R.string.feature_settings_version, versionName) +
                         " (" + BuildConfig.GIT_COMMIT_HASH + ")",
                 )
             },
