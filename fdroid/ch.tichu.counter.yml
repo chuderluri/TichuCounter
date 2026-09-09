@@ -1,7 +1,3 @@
-# F-Droid metadata draft for Tichu Counter.
-# Submit this as metadata/ch.tichu.counter.yml in the fdroiddata repository
-# (https://gitlab.com/fdroid/fdroiddata) via a merge request.
-
 Categories:
   - Games
 License: AGPL-3.0-or-later
@@ -34,14 +30,20 @@ Builds:
     versionCode: 3
     commit: v0.3.0
     subdir: app
+    sudo:
+      - apt-get update || apt-get update
+      - apt-get install -y openjdk-21-jdk-headless
     gradle:
-      - assembleRelease
+      - yes
   - versionName: '0.4.0'
     versionCode: 4
     commit: v0.4.0
     subdir: app
+    sudo:
+      - apt-get update || apt-get update
+      - apt-get install -y openjdk-21-jdk-headless
     gradle:
-      - assembleRelease
+      - yes
 
 AutoUpdateMode: Version
 UpdateCheckMode: Tags
@@ -49,7 +51,7 @@ CurrentVersion: '0.4.0'
 CurrentVersionCode: 4
 
 MaintainerNotes: |-
-  Uses Gradle convention plugins under build-logic/ and a version catalog.
-  The release build is unsigned (F-Droid signs it). Requires JDK 21 on the
-  build host (see RELEASE.md); add a sudo block installing openjdk-21 if
-  the default toolchain does not satisfy the build.
+  Multi-module Gradle build: app code targets Java 17, the build-logic
+  convention plugins require JDK 21 (openjdk-21 installed via sudo). The
+  release build is unsigned; F-Droid signs it. Version catalog and
+  build-logic/ convention plugins are used.
