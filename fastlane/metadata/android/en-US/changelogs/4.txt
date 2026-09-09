@@ -1,0 +1,3 @@
+- New app icon and AGPL-3.0 open-source license.
+- Settings show the live app version.
+- F-Droid store metadata (descriptions, screenshots, changelog) added.

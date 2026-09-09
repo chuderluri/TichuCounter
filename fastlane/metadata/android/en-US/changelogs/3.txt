@@ -1,4 +1,0 @@
-- App starts on the Play tab with group game and quick play cards.
-- New group switcher via a modal bottom sheet; group creation page.
-- Tichu entry reworked into a compact table with player names in team colours.
-- Quick play starts an all-guest game immediately.

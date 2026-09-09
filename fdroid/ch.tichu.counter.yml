@@ -36,11 +36,17 @@ Builds:
     subdir: app
     gradle:
       - assembleRelease
+  - versionName: '0.4.0'
+    versionCode: 4
+    commit: v0.4.0
+    subdir: app
+    gradle:
+      - assembleRelease
 
 AutoUpdateMode: Version
 UpdateCheckMode: Tags
-CurrentVersion: '0.3.0'
-CurrentVersionCode: 3
+CurrentVersion: '0.4.0'
+CurrentVersionCode: 4
 
 MaintainerNotes: |-
   Uses Gradle convention plugins under build-logic/ and a version catalog.

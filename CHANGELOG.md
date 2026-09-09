@@ -2,6 +2,21 @@
 
 All notable changes to this project are documented in this file.
 
+## [0.4.0] - 2026-09-08
+
+### Added
+- App icon: launcher (legacy + adaptive + round) rendered from the new master
+  artwork in `art/`.
+- GNU AGPL-3.0-or-later license; README license section.
+- F-Droid store metadata (fastlane structure) with short/full description,
+  changelog, icon and phone screenshots; fdroiddata metadata draft.
+
+### Changed
+- Settings now shows the live app version read from the package info instead
+  of a hard-coded string (the version no longer goes stale).
+- Release process now covers every version carrier (fdroid metadata, fastlane
+  changelog) and publishes the GitHub release via `gh`.
+
 ## [0.3.0] - 2026-09-08
 
 ### Added
