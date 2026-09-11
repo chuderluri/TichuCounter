@@ -118,7 +118,7 @@ Write-Step "2/7 Bump version in app/build.gradle.kts"
 $content = Get-Utf8NoBom $buildFile
 $newContent = $content -replace '(?m)^(\s*versionCode = )\d+', ('${1}' + $VersionCode)
 $newContent = $newContent -replace '(?m)^(\s*versionName = ")[^"]*(")', ('${1}' + $Version + '${2}')
-if ($newContent -eq $content) {
+if (-not ($content -match '(?m)^\s*versionCode = \d+') -or -not ($content -match '(?m)^\s*versionName = "')) {
     Fail "Could not find versionCode/versionName in $buildFile"
 }
 if (-not $WhatIf) { Set-Utf8NoBom $buildFile $newContent }
