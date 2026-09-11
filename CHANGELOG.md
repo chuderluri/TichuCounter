@@ -2,6 +2,18 @@
 
 All notable changes to this project are documented in this file.
 
+## [0.5.0] - 2026-09-11
+
+### Added
+
+- Release automation scripts:
+  - `tools/release-github.ps1` runs the full GitHub release pipeline (version bump, changelog, verify, commit, tag, push, GitHub release with APK).
+  - `tools/release-store.ps1` prepares the F-Droid store metadata (fdroid builds entry, fastlane changelog) and prints the GitLab merge-request instructions.
+
+### Changed
+
+- Release process documented in `RELEASE.md` now references the scripts; store and GitHub releases can be done independently.
+
 ## [0.4.0] - 2026-09-08
 
 ### Added
