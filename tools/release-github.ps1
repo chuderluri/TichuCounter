@@ -136,13 +136,14 @@ $section = "## [$Version] - $date$nl$nl" +
     "### Fixed$nl- $nl$nl"
 $changelogContent = Get-Utf8NoBom $changelog
 if ($changelogContent.Contains("## [$Version] -")) {
-    Fail "CHANGELOG already has an entry for $Version"
+    Write-Host "CHANGELOG already has an entry for $Version; reusing it."
+} else {
+    if (-not $WhatIf) {
+        Set-Utf8NoBom $changelog ($changelogContent.Replace($intro + $nl, $intro + $nl + $nl + $section))
+    }
+    Write-Host "Added placeholder header: ## [$Version] - $date"
 }
-if (-not $WhatIf) {
-    Set-Utf8NoBom $changelog ($changelogContent.Replace($intro + $nl, $intro + $nl + $nl + $section))
-}
-Write-Host "Added placeholder header: ## [$Version] - $date"
-Write-Host "Please fill in the Added/Changed/Fixed notes in $changelog now."
+Write-Host "Please make sure the Added/Changed/Fixed notes in $changelog are complete."
 Pause-Step "CHANGELOG notes"
 
 # ------------------------------------------------------------- verify
