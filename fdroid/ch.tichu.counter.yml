@@ -12,7 +12,7 @@ RepoType: git
 Repo: https://github.com/chuderluri/TichuCounter.git
 
 Builds:
-  - versionName: '0.5.1'
+  - versionName: 0.5.1
     versionCode: 6
     commit: v0.5.1
     subdir: app
@@ -22,11 +22,6 @@ Builds:
     gradle:
       - yes
 
-AutoUpdateMode: Version
-UpdateCheckMode: Tags
-CurrentVersion: '0.5.1'
-CurrentVersionCode: 6
-
 MaintainerNotes: |-
   Multi-module Gradle build (app + core + feature modules, convention plugins
   in build-logic/). Everything compiles with JDK 21, installed via sudo; the
@@ -34,3 +29,8 @@ MaintainerNotes: |-
   keep openjdk-21 available. Summary, description, icon, screenshots and
   changelog live in the app's own fastlane/metadata folder and are picked up
   from the tagged revision. The release build is unsigned; F-Droid signs it.
+
+AutoUpdateMode: Version
+UpdateCheckMode: Tags
+CurrentVersion: 0.5.1
+CurrentVersionCode: 6

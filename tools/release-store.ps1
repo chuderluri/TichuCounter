@@ -89,7 +89,7 @@ $content = Get-Utf8NoBom $fdroidFile
 $nl = $(if ($content.Contains("`r`n")) { "`r`n" } else { "`n" })
 
 $entry = @(
-    "  - versionName: '$Version'",
+    "  - versionName: $Version",
     "    versionCode: $VersionCode",
     "    commit: $tag",
     "    subdir: app",
@@ -109,9 +109,19 @@ $newContent = $content -replace "(?m)^Builds:\r?\n", ("Builds:" + $nl + $entry +
 if ($newContent -eq $content) {
     Fail "Could not find 'Builds:' in $fdroidFile"
 }
-# Bump CurrentVersion / CurrentVersionCode.
-$newContent = $newContent -replace "(?m)^CurrentVersion: '[^']*'", "CurrentVersion: '$Version'"
-$newContent = $newContent -replace "(?m)^CurrentVersionCode: \d+", "CurrentVersionCode: $VersionCode"
+# Drop the version/update lines and re-append them at the end of the file with
+# fresh values. F-Droid's rewritemeta requires AutoUpdateMode, UpdateCheckMode,
+# CurrentVersion and CurrentVersionCode after MaintainerNotes, and version names
+# unquoted.
+$lines = $newContent -split "\r?\n" |
+    Where-Object { $_ -notmatch '^(AutoUpdateMode|UpdateCheckMode|CurrentVersion|CurrentVersionCode):' }
+$trailer = @(
+    "AutoUpdateMode: Version",
+    "UpdateCheckMode: Tags",
+    "CurrentVersion: $Version",
+    "CurrentVersionCode: $VersionCode"
+) -join $nl
+$newContent = ($lines -join $nl).TrimEnd() + $nl + $nl + $trailer + $nl
 
 if (-not $WhatIf) { Set-Utf8NoBom $fdroidFile $newContent }
 Write-Host "Added Builds entry for $tag and bumped CurrentVersion."
