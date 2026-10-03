@@ -2,6 +2,15 @@
 
 All notable changes to this project are documented in this file.
 
+## [0.5.1] - 2026-09-15
+
+### Fixed
+
+- F-Droid build compatibility: removed the Gradle toolchain auto-download
+  resolver (rejected by F-Droid's source scanner) and moved the pure-JVM
+  modules from a JDK 17 to a JDK 21 toolchain. The bytecode target is still
+  Java 17.
+
 ## [0.5.0] - 2026-09-11
 
 ### Added

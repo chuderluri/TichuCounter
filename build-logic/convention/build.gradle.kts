@@ -6,8 +6,9 @@ group = "ch.tichu.counter.buildlogic"
 
 java {
     toolchain {
-        // Build logic runs with Android Studio's installed JDK 21. Android code
-        // itself still targets Java 17 in KotlinAndroid.kt.
+        // Build logic compiles with JDK 21: locally via Android Studio's jbr, on
+        // F-Droid via openjdk-21 (installed through sudo). Android code itself
+        // still targets Java 17 in KotlinAndroid.kt.
         languageVersion.set(JavaLanguageVersion.of(21))
     }
 }

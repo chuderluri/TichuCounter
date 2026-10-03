@@ -4,6 +4,7 @@ build/
 **/build/
 !build-logic/**/src/**/build/
 .kotlin/
+gradle/gradle-daemon-jvm.properties
 
 # Android
 local.properties
