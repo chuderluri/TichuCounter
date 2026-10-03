@@ -1,0 +1,1 @@
+F-Droid build compatibility: removed the Gradle toolchain auto-download resolver (rejected by F-Droid's source scanner) and moved the pure-JVM modules from a JDK 17 to a JDK 21 toolchain. Bytecode target stays Java 17.

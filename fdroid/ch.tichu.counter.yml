@@ -1,5 +1,5 @@
 Categories:
-  - Games
+  - Card Game
 License: AGPL-3.0-or-later
 WebSite: https://github.com/chuderluri/TichuCounter
 SourceCode: https://github.com/chuderluri/TichuCounter
@@ -7,45 +7,14 @@ IssueTracker: https://github.com/chuderluri/TichuCounter/issues
 Changelog: https://github.com/chuderluri/TichuCounter/blob/master/CHANGELOG.md
 
 AutoName: Tichu Counter
-Summary: Scorekeeper for the card game Tichu
-Description: |
-  Tichu Counter replaces the paper score sheet for the card game Tichu.
-  It tracks the running score of the two teams and records the outcome
-  of every round.
-
-  Organise your players in groups, compose two teams of two per game and
-  swap players between rounds. Quick play starts an instant all-guest game
-  and jumps straight into scoring. Enter the score with a calculator-style
-  keypad (the other team's score is complemented to 100 automatically),
-  record Small and Grand Tichu per player as made or lost, and double wins.
-  Undo and redo every scoring action, even after restarting the app.
-  Per-player statistics and fully offline operation.
 
 RepoType: git
 Repo: https://github.com/chuderluri/TichuCounter.git
 
 Builds:
-  - versionName: '0.5.0'
-    versionCode: 5
-    commit: v0.5.0
-    subdir: app
-    sudo:
-      - apt-get update || apt-get update
-      - apt-get install -y openjdk-21-jdk-headless
-    gradle:
-      - yes
-  - versionName: '0.3.0'
-    versionCode: 3
-    commit: v0.3.0
-    subdir: app
-    sudo:
-      - apt-get update || apt-get update
-      - apt-get install -y openjdk-21-jdk-headless
-    gradle:
-      - yes
-  - versionName: '0.4.0'
-    versionCode: 4
-    commit: v0.4.0
+  - versionName: '0.5.1'
+    versionCode: 6
+    commit: v0.5.1
     subdir: app
     sudo:
       - apt-get update || apt-get update
@@ -55,11 +24,13 @@ Builds:
 
 AutoUpdateMode: Version
 UpdateCheckMode: Tags
-CurrentVersion: '0.5.0'
-CurrentVersionCode: 5
+CurrentVersion: '0.5.1'
+CurrentVersionCode: 6
 
 MaintainerNotes: |-
-  Multi-module Gradle build: app code targets Java 17, the build-logic
-  convention plugins require JDK 21 (openjdk-21 installed via sudo). The
-  release build is unsigned; F-Droid signs it. Version catalog and
-  build-logic/ convention plugins are used.
+  Multi-module Gradle build (app + core + feature modules, convention plugins
+  in build-logic/). Everything compiles with JDK 21, installed via sudo; the
+  bytecode target is Java 17. There is no toolchain auto-download, so please
+  keep openjdk-21 available. Summary, description, icon, screenshots and
+  changelog live in the app's own fastlane/metadata folder and are picked up
+  from the tagged revision. The release build is unsigned; F-Droid signs it.
