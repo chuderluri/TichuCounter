@@ -120,11 +120,46 @@ To change the notes or assets later:
 gh release edit v<version> --notes-file release-notes.md
 ```
 
+## Release signing
+
+The release key is **not** part of the repository. `assembleRelease` stays
+unsigned until the four Gradle properties below are present, so a checkout
+without them builds the unsigned APK that F-Droid expects.
+
+Create `~/.gradle/gradle.properties` (global, never in the project):
+
+```properties
+tichu.storeFile=C:/Users/<you>/.secrets/tichu-release.jks
+tichu.storePassword=<store password>
+tichu.keyAlias=tichu
+tichu.keyPassword=<key password>
+```
+
+Use forward slashes; backslashes are escape characters in properties files.
+Keep the keystore outside the repository and back it up (KeePass attachment).
+The key cannot be replaced without users having to reinstall.
+
+With the properties set, `assembleRelease` additionally writes
+`app/build/outputs/apk/release/app-release.apk`, signed with that key. Verify
+the signature with:
+
+```powershell
+$apksigner = "$env:LOCALAPPDATA\Android\Sdk\build-tools\35.0.0\apksigner.bat"
+& $apksigner verify --print-certs app\build\outputs\apk\release\app-release.apk
+```
+
+Reproducible builds (F-Droid) need the reference APK to be built from the
+tagged commit in a clean tree, because AGP embeds the commit hash in
+`META-INF/version-control-info.textproto`. Only `app-release.apk` qualifies,
+never `app-release-unsigned.apk`.
+
 ## Notes
 
-- The attached APK is the unsigned release build (`app-release-unsigned.apk`);
-  it is fine for sideloading from GitHub. F-Droid builds from source and signs
-  with its own key, so no signing config is required.
+- Two JDKs are installed on this machine: `java`/`keytool` on `PATH` are JDK 17,
+  `JAVA_HOME` points to JDK 21. Always set `JAVA_HOME` explicitly (see step 0),
+  both for reproducible builds and because Gradle resolves `java` from `PATH`.
+- Without signing properties the attached APK is the unsigned build; F-Droid
+  builds from source and signs it with its own key.
 - Update `docs/architecture/10-roadmap.md` when a phase item is completed.
 - F-Droid picks up new versions from the version tags (see step 6); keep the
   tagging scheme consistent (`v` prefix).

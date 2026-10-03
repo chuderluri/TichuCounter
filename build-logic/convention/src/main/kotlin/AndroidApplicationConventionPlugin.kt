@@ -1,5 +1,6 @@
 import ch.tichu.counter.buildlogic.TichuSdk
 import ch.tichu.counter.buildlogic.configureKotlinAndroid
+import ch.tichu.counter.buildlogic.configureReleaseSigning
 import com.android.build.api.dsl.ApplicationExtension
 import org.gradle.api.Plugin
 import org.gradle.api.Project
@@ -13,12 +14,14 @@ class AndroidApplicationConventionPlugin : Plugin<Project> {
 
             extensions.configure<ApplicationExtension> {
                 configureKotlinAndroid(this)
+                configureReleaseSigning(this)
                 defaultConfig.targetSdk = TichuSdk.TARGET
                 defaultConfig.testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
                 buildTypes {
                     release {
                         isMinifyEnabled = true
                         isShrinkResources = true
+                        signingConfig = signingConfigs.findByName("tichu")
                         proguardFiles(
                             getDefaultProguardFile("proguard-android-optimize.txt"),
                             "proguard-rules.pro",
