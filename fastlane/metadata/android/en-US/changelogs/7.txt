@@ -1,0 +1,1 @@
+Release builds are now signed with a dedicated release key, which makes reproducible builds possible: F-Droid can ship builds signed with the upstream key instead of its own. The store icon is derived from the artwork in art/, and the non-deterministic ART baseline profile plus Kotlin debug tooling metadata are no longer part of the release APK.

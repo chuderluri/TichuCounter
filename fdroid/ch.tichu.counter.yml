@@ -12,25 +12,38 @@ RepoType: git
 Repo: https://github.com/chuderluri/TichuCounter.git
 
 Builds:
-  - versionName: 0.5.1
-    versionCode: 6
-    commit: v0.5.1
+  - versionName: 0.6.0
+    versionCode: 7
+    commit: v0.6.0
     subdir: app
     sudo:
       - apt-get update || apt-get update
       - apt-get install -y openjdk-21-jdk-headless
     gradle:
       - yes
+    binary: 
+      https://github.com/chuderluri/TichuCounter/releases/download/v0.6.0/app-release.apk
+    gradleprops:
+      - org.gradle.java.home=/usr/lib/jvm/java-21-openjdk-amd64
+
+AllowedAPKSigningKeys: 
+  43eadfbc004585ed0070df54cb5542b423a12a7fb017f99d19d5f8954bc2c008
 
 MaintainerNotes: |-
   Multi-module Gradle build (app + core + feature modules, convention plugins
-  in build-logic/). Everything compiles with JDK 21, installed via sudo; the
-  bytecode target is Java 17. There is no toolchain auto-download, so please
-  keep openjdk-21 available. Summary, description, icon, screenshots and
-  changelog live in the app's own fastlane/metadata folder and are picked up
-  from the tagged revision. The release build is unsigned; F-Droid signs it.
+  in build-logic/). Everything compiles with JDK 21; org.gradle.java.home
+  pins the daemon to openjdk-21 (installed via sudo), the bytecode target is
+  Java 17. There is no toolchain auto-download. Summary, description, icon,
+  screenshots and changelog live in the app's own fastlane/metadata folder and
+  are picked up from the tagged revision.
+
+  Reproducible builds are enabled: the app is signed with the upstream release
+  key (SHA-256 43ea...c008) and F-Droid verifies the rebuilt APK against the
+  published one. If verification fails, the build is skipped rather than
+  published. Nothing is signed in the repo, so a checkout without signing
+  properties still produces the unsigned APK that F-Droid needs.
 
 AutoUpdateMode: Version
 UpdateCheckMode: Tags
-CurrentVersion: 0.5.1
-CurrentVersionCode: 6
+CurrentVersion: 0.6.0
+CurrentVersionCode: 7
