@@ -4,5 +4,6 @@
   "skills": {
     "paths": [".opencode/skills"]
   },
+  "plugin": ["@dietrichgebert/ponytail"],
   "permission": "allow"
 }
