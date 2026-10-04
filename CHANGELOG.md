@@ -2,6 +2,15 @@
 
 All notable changes to this project are documented in this file.
 
+## [0.6.2] - 2026-10-04
+
+### Fixed
+
+- The release APK no longer embeds `META-INF/version-control-info.textproto`.
+  That file pins the APK to the exact commit it was built from, so the build
+  only stayed reproducible as long as the APK was built after the release
+  commit. F-Droid compares it, so a build in the wrong order failed.
+
 ## [0.6.1] - 2026-10-04
 
 ### Fixed
