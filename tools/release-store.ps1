@@ -93,6 +93,10 @@ $binaryUrl = "https://github.com/chuderluri/TichuCounter/releases/download/$tag/
 # rewritemeta produces. binary: points at the signed APK of this release and
 # gradleprops pins the Gradle daemon to the same JDK the upstream release was
 # built with, both are required for reproducible builds.
+#
+# rewritemeta folds long values onto their own line and leaves a trailing space
+# after "binary:", so it has to be written that way or the CI job fails with
+# "These files need rewritemeta".
 $entry = @(
     "  - versionName: $Version",
     "    versionCode: $VersionCode",
@@ -103,7 +107,8 @@ $entry = @(
     "      - apt-get install -y openjdk-21-jdk-headless",
     "    gradle:",
     "      - yes",
-    "    binary: $binaryUrl",
+    "    binary: ",
+    "      $binaryUrl",
     "    gradleprops:",
     "      - org.gradle.java.home=/usr/lib/jvm/java-21-openjdk-amd64"
 ) -join $nl

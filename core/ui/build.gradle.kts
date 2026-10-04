@@ -7,12 +7,6 @@ plugins {
 
 android {
     namespace = "ch.tichu.counter.core.ui"
-    buildFeatures {
-        buildConfig = true
-    }
-    defaultConfig {
-        buildConfigField("String", "GIT_COMMIT_HASH", "\"${gitCommitHash()}\"")
-    }
 }
 
 dependencies {
@@ -24,17 +18,3 @@ dependencies {
     implementation(libs.kotlinx.datetime)
     implementation(libs.kotlinx.serialization.json)
 }
-
-fun gitCommitHash(): String =
-    try {
-        providers
-            .exec {
-                commandLine("git", "rev-parse", "--short", "HEAD")
-            }.standardOutput.asText
-            .get()
-            .trim()
-            .ifBlank { "unknown" }
-    } catch (e: Exception) {
-        println("git commit hash unavailable: ${e.message}")
-        "unknown"
-    }

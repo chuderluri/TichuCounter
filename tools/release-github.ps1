@@ -1,12 +1,16 @@
 #Requires -Version 5.1
 <#
 .SYNOPSIS
-    Create a GitHub release for Tichu Counter: bump version, verify, commit,
-    tag, push and publish via gh.
+    Create a GitHub release for Tichu Counter: format, bump version, verify,
+    commit, tag, build, push and publish via gh.
 
 .DESCRIPTION
     Interactive by default (pauses between steps). Use -Auto to run without
     pauses and -WhatIf to dry-run (no writes, no git/gh mutations).
+
+    The tag is created before the build and pushed only after the APK has been
+    verified. Anything in the APK that depends on the working tree then matches
+    the tagged commit, which is what F-Droid rebuilds.
 
 .EXAMPLE
     .\tools\release-github.ps1 -Version "0.5.0" -VersionCode 5
@@ -32,6 +36,7 @@ $gradlew = Join-Path $root "gradlew.bat"
 $buildFile = Join-Path $root "app\build.gradle.kts"
 $changelog = Join-Path $root "CHANGELOG.md"
 $apk = Join-Path $root "app\build\outputs\apk\release\app-release.apk"
+$verify = Join-Path $root "tools\verify-apk.ps1"
 $tag = "v$Version"
 $notesFile = Join-Path $env:TEMP "release-notes-$Version.md"
 
@@ -90,7 +95,7 @@ function Invoke-Git {
 }
 
 # ---------------------------------------------------------------- prereq
-Write-Step "1/7 Prerequisites"
+Write-Step "1/9 Prerequisites"
 if (-not $Version -match '^\d+\.\d+\.\d+$') { Fail "Version must be x.y.z" }
 
 $gh = Get-GhPath
@@ -113,8 +118,26 @@ Write-Host "gh: $gh"
 Write-Host "Release: $tag (versionCode $VersionCode)"
 Pause-Step "prerequisites"
 
+# ------------------------------------------------------------- formatting
+Write-Step "2/9 Formatting (spotless)"
+# Formatting runs before the version bump so the commit in step 5 captures it and
+# the tagged source stays identical to the source the APK is built from.
+if (-not $WhatIf) {
+    & $gradlew spotlessApply
+    if ($LASTEXITCODE -ne 0) { Fail "spotlessApply failed" }
+    git diff --quiet
+    if ($LASTEXITCODE -ne 0) {
+        Fail "spotless reformatted source files. Commit them and run this script again."
+    }
+    # ktlint rewrites line endings, which shows up as a modification with an
+    # empty diff. Drop that noise so the tree is clean for the commit.
+    git checkout -- .
+    Write-Host "Formatting is up to date."
+}
+Pause-Step "formatting"
+
 # ------------------------------------------------------------- version bump
-Write-Step "2/7 Bump version in app/build.gradle.kts"
+Write-Step "3/9 Bump version in app/build.gradle.kts"
 $content = Get-Utf8NoBom $buildFile
 $newContent = $content -replace '(?m)^(\s*versionCode = )\d+', ('${1}' + $VersionCode)
 $newContent = $newContent -replace '(?m)^(\s*versionName = ")[^"]*(")', ('${1}' + $Version + '${2}')
@@ -126,7 +149,7 @@ Write-Host "versionCode = $VersionCode"
 Write-Host "versionName = $Version"
 
 # ------------------------------------------------------------- changelog
-Write-Step "3/7 Add CHANGELOG header (fill in the notes manually)"
+Write-Step "4/9 Add CHANGELOG header (fill in the notes manually)"
 $date = Get-Date -Format "yyyy-MM-dd"
 $nl = Get-DetectNewline $content
 $intro = "All notable changes to this project are documented in this file."
@@ -146,13 +169,28 @@ if ($changelogContent.Contains("## [$Version] -")) {
 Write-Host "Please make sure the Added/Changed/Fixed notes in $changelog are complete."
 Pause-Step "CHANGELOG notes"
 
-# ------------------------------------------------------------- verify
-Write-Step "4/7 Verify (tests, spotless, detekt, builds)"
+# ------------------------------------------------------------- commit
+Write-Step "5/9 Commit and tag (local only)"
+# The tag is created before the build on purpose. Anything that reaches the APK
+# and depends on the working tree then matches the tagged commit, which is what
+# F-Droid rebuilds. Tag first, build second, push last: nothing leaves the
+# machine until the APK has been verified.
 if (-not $WhatIf) {
-    & $gradlew spotlessApply
-    if ($LASTEXITCODE -ne 0) { Fail "spotlessApply failed" }
-    & $gradlew testDebugUnitTest detekt assembleDebug assembleRelease
-    if ($LASTEXITCODE -ne 0) { Fail "Verification failed" }
+    Invoke-Git add app/build.gradle.kts CHANGELOG.md
+    Invoke-Git commit -m "Prepare $Version release with changelog"
+    Invoke-Git tag $tag
+    Write-Host "Tagged $tag. Nothing has been pushed yet."
+} else {
+    Write-Host "[WhatIf] would run: git add/commit/tag"
+}
+Pause-Step "commit and tag"
+
+# ------------------------------------------------------------- verify
+Write-Step "6/9 Build and verify the release APK"
+if (-not $WhatIf) {
+    & $gradlew --stop
+    & $gradlew clean testDebugUnitTest detekt assembleDebug assembleRelease
+    if ($LASTEXITCODE -ne 0) { Fail "Build failed. The local tag $tag exists, delete it with: git tag -d $tag" }
 }
 $stale = Get-ChildItem -Path $root -Recurse -Filter strings.xml -File -ErrorAction SilentlyContinue |
     Select-String -Pattern 'Version [0-9]+\.[0-9]+\.[0-9]+'
@@ -163,23 +201,24 @@ if ($stale) {
 } else {
     Write-Host "No stale hard-coded versions in strings.xml."
 }
+if (-not $WhatIf) {
+    & powershell.exe -NoProfile -ExecutionPolicy Bypass -File $verify -ExpectVersionCode $VersionCode
+    if ($LASTEXITCODE -ne 0) { Fail "verify-apk.ps1 failed. The local tag $tag exists, delete it with: git tag -d $tag" }
+}
 Pause-Step "verification"
 
-# ------------------------------------------------------------- commit
-Write-Step "5/7 Commit, tag and push"
+# ------------------------------------------------------------- push
+Write-Step "7/9 Push tag and master"
 if (-not $WhatIf) {
-    Invoke-Git add app/build.gradle.kts CHANGELOG.md
-    Invoke-Git commit -m "Prepare $Version release with changelog"
-    Invoke-Git tag $tag
     Invoke-Git push origin $tag
     Invoke-Git push origin master
 } else {
-    Write-Host "[WhatIf] would run: git add/commit/tag/push"
+    Write-Host "[WhatIf] would run: git push origin $tag; git push origin master"
 }
-Pause-Step "commit, tag and push"
+Pause-Step "push"
 
 # ------------------------------------------------------------- release notes
-Write-Step "6/7 Build release notes"
+Write-Step "8/9 Build release notes"
 $changelogText = Get-Utf8NoBom $changelog
 $escaped = [regex]::Escape($Version)
 $match = [regex]::Match(
@@ -201,7 +240,7 @@ Write-Host "Release notes written to $notesFile"
 Pause-Step "release notes"
 
 # ------------------------------------------------------------- gh release
-Write-Step "7/7 Create GitHub release"
+Write-Step "9/9 Create GitHub release"
 if (-not (Test-Path $apk)) {
     Fail "Release APK not found: $apk. Without release signing properties Gradle " +
          "writes app-release-unsigned.apk instead, and a reproducible release is " +

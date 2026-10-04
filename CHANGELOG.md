@@ -2,6 +2,21 @@
 
 All notable changes to this project are documented in this file.
 
+## [0.6.4] - 2026-10-04
+
+### Changed
+
+- Settings and the bug report no longer show the git commit hash. It was baked
+  into the APK as a string constant, so the APK depended on the commit it was
+  built from and failed F-Droid's reproducible build check. Version name and
+  version code still identify the build.
+
+### Fixed
+
+- The release script now formats, commits and tags before building the APK, and
+  pushes only after the APK has been verified. Anything in the APK that depends
+  on the working tree therefore matches the tagged commit F-Droid rebuilds.
+
 ## [0.6.3] - 2026-10-04
 
 ### Fixed

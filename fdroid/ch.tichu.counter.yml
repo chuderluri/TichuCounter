@@ -21,7 +21,8 @@ Builds:
       - apt-get install -y openjdk-21-jdk-headless
     gradle:
       - yes
-    binary: https://github.com/chuderluri/TichuCounter/releases/download/v0.6.3/app-release.apk
+    binary: 
+      https://github.com/chuderluri/TichuCounter/releases/download/v0.6.3/app-release.apk
     gradleprops:
       - org.gradle.java.home=/usr/lib/jvm/java-21-openjdk-amd64
 
