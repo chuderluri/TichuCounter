@@ -31,7 +31,7 @@ Set-Location $root
 $gradlew = Join-Path $root "gradlew.bat"
 $buildFile = Join-Path $root "app\build.gradle.kts"
 $changelog = Join-Path $root "CHANGELOG.md"
-$apk = Join-Path $root "app\build\outputs\apk\release\app-release-unsigned.apk"
+$apk = Join-Path $root "app\build\outputs\apk\release\app-release.apk"
 $tag = "v$Version"
 $notesFile = Join-Path $env:TEMP "release-notes-$Version.md"
 
@@ -203,7 +203,9 @@ Pause-Step "release notes"
 # ------------------------------------------------------------- gh release
 Write-Step "7/7 Create GitHub release"
 if (-not (Test-Path $apk)) {
-    Fail "Release APK not found: $apk"
+    Fail "Release APK not found: $apk. Without release signing properties Gradle " +
+         "writes app-release-unsigned.apk instead, and a reproducible release is " +
+         "not possible then."
 }
 if (-not $WhatIf) {
     & $gh release create $tag $apk --title "Tichu Counter $Version" --notes-file $notesFile
