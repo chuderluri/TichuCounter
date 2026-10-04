@@ -24,19 +24,6 @@ Builds:
     binary: https://github.com/chuderluri/TichuCounter/releases/download/v0.6.3/app-release.apk
     gradleprops:
       - org.gradle.java.home=/usr/lib/jvm/java-21-openjdk-amd64
-  - versionName: 0.6.0
-    versionCode: 7
-    commit: v0.6.0
-    subdir: app
-    sudo:
-      - apt-get update || apt-get update
-      - apt-get install -y openjdk-21-jdk-headless
-    gradle:
-      - yes
-    binary: 
-      https://github.com/chuderluri/TichuCounter/releases/download/v0.6.0/app-release.apk
-    gradleprops:
-      - org.gradle.java.home=/usr/lib/jvm/java-21-openjdk-amd64
 
 AllowedAPKSigningKeys: 43eadfbc004585ed5070df54cb5542b423a12a7fb017f99d19d5f8954bc2c008
 
