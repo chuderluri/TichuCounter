@@ -89,14 +89,18 @@ $nl = $(if ($content.Contains("`r`n")) { "`r`n" } else { "`n" })
 $binaryUrl = "https://github.com/chuderluri/TichuCounter/releases/download/$tag/app-release.apk"
 
 # F-Droid wants the full commit hash, not a tag, and it reads the fastlane
-# metadata from that same commit. release-github.ps1 writes the store changelog
+# metadata from that same commit. release-github.ps1 checks the store changelog
 # before tagging, so the tagged commit carries it and both requirements agree.
-$commitHash = (& git rev-parse "$tag^{commit}" 2>$null)
-if ($LASTEXITCODE -ne 0 -or -not $commitHash) {
-    Fail "Tag $tag does not resolve to a commit. Run release-github.ps1 first."
+#
+# git writes to stderr when the tag is unknown, and with ErrorActionPreference
+# Stop that would abort with a raw git error, so relax it just for this call.
+$strict = $ErrorActionPreference
+$ErrorActionPreference = "Continue"
+$commitHash = (& git rev-parse "$tag^{commit}" 2>&1 | Out-String).Trim()
+$ErrorActionPreference = $strict
+if ($commitHash -notmatch '^[0-9a-f]{40}$') {
+    Fail "Tag $tag does not resolve to a commit ($commitHash). Run release-github.ps1 first."
 }
-$commitHash = $commitHash.Trim()
-if ($commitHash -notmatch '^[0-9a-f]{40}$') { Fail "git rev-parse returned '$commitHash', expected a full 40 character hash." }
 Write-Host "commit: $commitHash"
 
 # The order of gradle, binary and gradleprops matches what F-Droid's
