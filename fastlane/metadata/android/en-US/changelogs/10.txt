@@ -1,1 +1,0 @@
-- The release APK no longer embeds `META-INF/version-control-info.textproto`. That file pins the APK to the commit it was built from, so the build only stayed reproducible as long as the APK was built after the release commit. F-Droid compares the entry, so building in the wrong order failed.

@@ -12,6 +12,19 @@ RepoType: git
 Repo: https://github.com/chuderluri/TichuCounter.git
 
 Builds:
+  - versionName: 0.6.4
+    versionCode: 11
+    commit: v0.6.4
+    subdir: app
+    sudo:
+      - apt-get update || apt-get update
+      - apt-get install -y openjdk-21-jdk-headless
+    gradle:
+      - yes
+    binary: 
+      https://github.com/chuderluri/TichuCounter/releases/download/v0.6.4/app-release.apk
+    gradleprops:
+      - org.gradle.java.home=/usr/lib/jvm/java-21-openjdk-amd64
   - versionName: 0.6.3
     versionCode: 10
     commit: v0.6.3
@@ -44,5 +57,5 @@ MaintainerNotes: |-
 
 AutoUpdateMode: Version
 UpdateCheckMode: Tags
-CurrentVersion: 0.6.3
-CurrentVersionCode: 10
+CurrentVersion: 0.6.4
+CurrentVersionCode: 11
