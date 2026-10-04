@@ -33,7 +33,19 @@ class AndroidApplicationConventionPlugin : Plugin<Project> {
                         "META-INF/LICENSE*",
                         "META-INF/AL2.0",
                         "META-INF/LGPL2.1",
+                        "DebugProbesKt.bin",
+                        "kotlin-tooling-metadata.json",
+                        "kotlin/**",
                     )
+                }
+            }
+
+            // baseline.prof/profm embed data that varies with CPU count and toolchain,
+            // which breaks F-Droid reproducible builds. Trade-off: slightly slower
+            // cold start without ART profile warmup.
+            tasks.whenTaskAdded {
+                if (name.contains("ArtProfile")) {
+                    enabled = false
                 }
             }
         }

@@ -2,6 +2,27 @@
 
 All notable changes to this project are documented in this file.
 
+## [0.6.0] - 2026-10-04
+
+### Added
+
+- Release builds are signed with a dedicated release key (configured through
+  Gradle properties, the key itself stays outside the repository). This makes
+  reproducible builds possible, so F-Droid can publish builds signed with the
+  upstream key instead of its own.
+
+### Changed
+
+- The store icon is derived from the artwork in `art/`, so launcher icon and
+  F-Droid listing always show the same artwork.
+
+### Fixed
+
+- Removed non-deterministic and non-release content from the release APK: the
+  ART baseline profile (`baseline.prof`, `baseline.profm`) and Kotlin debug
+  tooling metadata. Trade-off: slightly slower cold start without profile
+  warmup.
+
 ## [0.5.1] - 2026-09-15
 
 ### Fixed
