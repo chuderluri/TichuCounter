@@ -11,8 +11,9 @@
         0x504B4453); F-Droid's scanner rejects it
       - prints the SHA-256 of the APK, needed for the reproducible build check
 
-    The "Dependency metadata" block is stored as the FourCC "PKDS", never as
-    readable text. Searching for the readable name gives a false "clean" result.
+    The "Dependency metadata" block never appears as readable text. It is the
+    FourCC 0x504B4453 written little-endian, so it appears as "SDKP" in the
+    bytes. Searching for the readable name gives a false "clean" result.
 
 .EXAMPLE
     .\tools\verify-apk.ps1
@@ -55,16 +56,19 @@ $text = $latin1.GetString($bytes)
 
 if ($text.Contains("APK Sig Block 42")) { Ok "APK signing block present (v2/v3 signed)" } else { Fail "no APK signing block, APK is not v2/v3 signed" }
 
-$pkds = @()
-$offset = 0
-while (($offset = $text.IndexOf("PKDS", $offset)) -ge 0) {
-    $pkds += $offset
-    $offset += 4
+$fourcc = @("SDKP", "PKDS")   # 0x504B4453, stored little-endian in the APK
+$found = @()
+foreach ($f in $fourcc) {
+    $offset = 0
+    while (($offset = $text.IndexOf($f, $offset)) -ge 0) {
+        $found += "$f@$offset"
+        $offset += 4
+    }
 }
-if ($pkds.Count -eq 0) {
-    Ok "no dependency metadata signing block (PKDS/0x504B4453)"
+if ($found.Count -eq 0) {
+    Ok "no dependency metadata signing block (0x504B4453)"
 } else {
-    Fail "dependency metadata signing block at offset $($pkds -join ', ') - set dependenciesInfo.includeInApk = false in app/build.gradle.kts"
+    Fail "dependency metadata signing block found ($($found -join ', ')) - set dependenciesInfo.includeInApk = false in app/build.gradle.kts"
 }
 
 # --- signer certificate against AllowedAPKSigningKeys ---
