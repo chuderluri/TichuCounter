@@ -26,8 +26,7 @@ Builds:
     gradleprops:
       - org.gradle.java.home=/usr/lib/jvm/java-21-openjdk-amd64
 
-AllowedAPKSigningKeys: 
-  43eadfbc004585ed0070df54cb5542b423a12a7fb017f99d19d5f8954bc2c008
+AllowedAPKSigningKeys: 43eadfbc004585ed5070df54cb5542b423a12a7fb017f99d19d5f8954bc2c008
 
 MaintainerNotes: |-
   Multi-module Gradle build (app + core + feature modules, convention plugins

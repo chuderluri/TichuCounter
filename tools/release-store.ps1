@@ -87,7 +87,12 @@ Pause-Step "prerequisites"
 Write-Step "2/4 Update fdroid/ch.tichu.counter.yml"
 $content = Get-Utf8NoBom $fdroidFile
 $nl = $(if ($content.Contains("`r`n")) { "`r`n" } else { "`n" })
+$binaryUrl = "https://github.com/chuderluri/TichuCounter/releases/download/$tag/app-release.apk"
 
+# The order of gradle, binary and gradleprops matches what F-Droid's
+# rewritemeta produces. binary: points at the signed APK of this release and
+# gradleprops pins the Gradle daemon to the same JDK the upstream release was
+# built with, both are required for reproducible builds.
 $entry = @(
     "  - versionName: $Version",
     "    versionCode: $VersionCode",
@@ -97,7 +102,10 @@ $entry = @(
     "      - apt-get update || apt-get update",
     "      - apt-get install -y openjdk-21-jdk-headless",
     "    gradle:",
-    "      - yes"
+    "      - yes",
+    "    binary: $binaryUrl",
+    "    gradleprops:",
+    "      - org.gradle.java.home=/usr/lib/jvm/java-21-openjdk-amd64"
 ) -join $nl
 
 if ($content.Contains("    commit: $tag")) {
@@ -122,6 +130,18 @@ $trailer = @(
     "CurrentVersionCode: $VersionCode"
 ) -join $nl
 $newContent = ($lines -join $nl).TrimEnd() + $nl + $nl + $trailer + $nl
+
+$updateKeys = @("AutoUpdateMode", "UpdateCheckMode", "CurrentVersion", "CurrentVersionCode")
+foreach ($key in $updateKeys) {
+    $count = ([regex]::Matches($newContent, "(?m)^[ \t]*${key}:")).Count
+    if ($count -ne 1) {
+        Fail "${key} occurs $count time(s) in $fdroidFile, expected exactly 1. The block belongs at the end of the file, after MaintainerNotes, and each key must be a top-level field."
+    }
+}
+
+if ($newContent -notmatch "(?m)^AllowedAPKSigningKeys:") {
+    Fail "The new build entry sets binary:, so $fdroidFile needs AllowedAPKSigningKeys (the SHA-256 of the release key, lower case, no colons). Without it F-Droid does not verify the upstream signature."
+}
 
 if (-not $WhatIf) { Set-Utf8NoBom $fdroidFile $newContent }
 Write-Host "Added Builds entry for $tag and bumped CurrentVersion."
