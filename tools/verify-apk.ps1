@@ -71,6 +71,17 @@ if ($found.Count -eq 0) {
     Fail "dependency metadata signing block found ($($found -join ', ')) - set dependenciesInfo.includeInApk = false in app/build.gradle.kts"
 }
 
+# --- VCS info must be stripped, it pins the APK to one commit ---
+Add-Type -AssemblyName System.IO.Compression.FileSystem
+$zip = [System.IO.Compression.ZipFile]::OpenRead((Resolve-Path $ApkPath))
+$vcs = @($zip.Entries | Where-Object { $_.FullName -like "*version-control-info*" })
+$zip.Dispose()
+if ($vcs.Count -eq 0) {
+    Ok "no version-control-info entry"
+} else {
+    Fail "$($vcs[0].FullName) pins the APK to the commit it was built from - add it to packaging.resources.excludes"
+}
+
 # --- signer certificate against AllowedAPKSigningKeys ---
 $apksigner = Get-ChildItem "$env:LOCALAPPDATA\Android\Sdk\build-tools" -Directory -ErrorAction SilentlyContinue |
     Sort-Object Name -Descending |

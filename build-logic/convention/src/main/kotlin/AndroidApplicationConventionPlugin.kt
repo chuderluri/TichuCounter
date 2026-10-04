@@ -36,6 +36,9 @@ class AndroidApplicationConventionPlugin : Plugin<Project> {
                         "DebugProbesKt.bin",
                         "kotlin-tooling-metadata.json",
                         "kotlin/**",
+                        // Embeds the commit the APK was built from, so it differs
+                        // whenever the build runs before the release commit.
+                        "META-INF/version-control-info.textproto",
                     )
                 }
             }
