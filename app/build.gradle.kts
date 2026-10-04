@@ -8,6 +8,13 @@ plugins {
 android {
     namespace = "ch.tichu.counter"
 
+    // AGP writes a "Dependency metadata" signing block (FourCC 0x504B4453) by
+    // default. F-Droid's APK scanner rejects it, and its reproducibility check
+    // strips it before comparing, so the block makes builds differ unnoticed.
+    dependenciesInfo {
+        includeInApk = false
+    }
+
     defaultConfig {
         applicationId = "ch.tichu.counter"
         versionCode = 7
