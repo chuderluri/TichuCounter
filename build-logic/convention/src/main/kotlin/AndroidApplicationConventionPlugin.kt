@@ -36,18 +36,21 @@ class AndroidApplicationConventionPlugin : Plugin<Project> {
                         "DebugProbesKt.bin",
                         "kotlin-tooling-metadata.json",
                         "kotlin/**",
-                        // Embeds the commit the APK was built from, so it differs
-                        // whenever the build runs before the release commit.
-                        "META-INF/version-control-info.textproto",
                     )
                 }
             }
 
-            // baseline.prof/profm embed data that varies with CPU count and toolchain,
-            // which breaks F-Droid reproducible builds. Trade-off: slightly slower
-            // cold start without ART profile warmup.
+            // Two AGP outputs break F-Droid reproducible builds:
+//
+// baseline.prof/profm embed data that varies with CPU count and toolchain.
+// Trade-off: slightly slower cold start without ART profile warmup.
+//
+// extract<Variant>VersionControlInfo writes META-INF/version-control-info.textproto,
+// which pins the APK to the commit it was built from. AGP publishes it as its own
+// artifact kind, so packaging.resources.excludes cannot remove it. F-Droid
+// compares the entry, so the APK only matches when it is built after tagging.
             tasks.whenTaskAdded {
-                if (name.contains("ArtProfile")) {
+                if (name.contains("ArtProfile") || name.contains("VersionControlInfo")) {
                     enabled = false
                 }
             }
