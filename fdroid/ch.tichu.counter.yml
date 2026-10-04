@@ -1,6 +1,7 @@
 Categories:
   - Card Game
 License: AGPL-3.0-or-later
+AuthorName: chuderluri
 WebSite: https://github.com/chuderluri/TichuCounter
 SourceCode: https://github.com/chuderluri/TichuCounter
 IssueTracker: https://github.com/chuderluri/TichuCounter/issues
@@ -14,7 +15,7 @@ Repo: https://github.com/chuderluri/TichuCounter.git
 Builds:
   - versionName: 0.6.4
     versionCode: 11
-    commit: v0.6.4
+    commit: 4920212c6d5c0eedbf56bc7d446156ede1e9f756
     subdir: app
     sudo:
       - apt-get update || apt-get update
