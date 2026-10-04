@@ -2,6 +2,17 @@
 
 All notable changes to this project are documented in this file.
 
+## [0.6.1] - 2026-10-04
+
+### Fixed
+
+- The release APK no longer carries the "Dependency metadata" signing block
+  that AGP adds by default (FourCC `0x504B4453`). F-Droid's APK scanner
+  rejected it, while its reproducible build check strips signing blocks before
+  comparing and therefore did not see the difference.
+- The GitHub release script uploads the signed APK again instead of failing on
+  the unsigned file, which no longer exists now that release builds are signed.
+
 ## [0.6.0] - 2026-10-04
 
 ### Added
