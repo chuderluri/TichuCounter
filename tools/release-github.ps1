@@ -188,8 +188,16 @@ Pause-Step "commit and tag"
 # ------------------------------------------------------------- verify
 Write-Step "6/9 Build and verify the release APK"
 if (-not $WhatIf) {
-    & $gradlew --stop
     & $gradlew clean testDebugUnitTest detekt assembleDebug assembleRelease
+    if ($LASTEXITCODE -ne 0) {
+        # On Windows clean fails while a Gradle or Kotlin daemon still holds a
+        # jar under build/intermediates/lint-cache. Stopping the daemons and
+        # retrying once is enough, and far cheaper than stopping them upfront.
+        Write-Warning "Build failed, retrying once after stopping the Gradle daemons."
+        & $gradlew --stop
+        Start-Sleep -Seconds 3
+        & $gradlew clean testDebugUnitTest detekt assembleDebug assembleRelease
+    }
     if ($LASTEXITCODE -ne 0) { Fail "Build failed. The local tag $tag exists, delete it with: git tag -d $tag" }
 }
 $stale = Get-ChildItem -Path $root -Recurse -Filter strings.xml -File -ErrorAction SilentlyContinue |
