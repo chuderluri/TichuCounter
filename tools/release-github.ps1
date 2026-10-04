@@ -35,6 +35,7 @@ Set-Location $root
 $gradlew = Join-Path $root "gradlew.bat"
 $buildFile = Join-Path $root "app\build.gradle.kts"
 $changelog = Join-Path $root "CHANGELOG.md"
+$changelogDir = Join-Path $root "fastlane\metadata\android\en-US\changelogs"
 $apk = Join-Path $root "app\build\outputs\apk\release\app-release.apk"
 $verify = Join-Path $root "tools\verify-apk.ps1"
 $tag = "v$Version"
@@ -95,7 +96,7 @@ function Invoke-Git {
 }
 
 # ---------------------------------------------------------------- prereq
-Write-Step "1/9 Prerequisites"
+Write-Step "1/10 Prerequisites"
 if (-not $Version -match '^\d+\.\d+\.\d+$') { Fail "Version must be x.y.z" }
 
 $gh = Get-GhPath
@@ -119,7 +120,7 @@ Write-Host "Release: $tag (versionCode $VersionCode)"
 Pause-Step "prerequisites"
 
 # ------------------------------------------------------------- formatting
-Write-Step "2/9 Formatting (spotless)"
+Write-Step "2/10 Formatting (spotless)"
 # Formatting runs before the version bump so the commit in step 5 captures it and
 # the tagged source stays identical to the source the APK is built from.
 if (-not $WhatIf) {
@@ -137,7 +138,7 @@ if (-not $WhatIf) {
 Pause-Step "formatting"
 
 # ------------------------------------------------------------- version bump
-Write-Step "3/9 Bump version in app/build.gradle.kts"
+Write-Step "3/10 Bump version in app/build.gradle.kts"
 $content = Get-Utf8NoBom $buildFile
 $newContent = $content -replace '(?m)^(\s*versionCode = )\d+', ('${1}' + $VersionCode)
 $newContent = $newContent -replace '(?m)^(\s*versionName = ")[^"]*(")', ('${1}' + $Version + '${2}')
@@ -149,7 +150,7 @@ Write-Host "versionCode = $VersionCode"
 Write-Host "versionName = $Version"
 
 # ------------------------------------------------------------- changelog
-Write-Step "4/9 Add CHANGELOG header (fill in the notes manually)"
+Write-Step "4/10 Add CHANGELOG header (fill in the notes manually)"
 $date = Get-Date -Format "yyyy-MM-dd"
 $nl = Get-DetectNewline $content
 $intro = "All notable changes to this project are documented in this file."
@@ -169,14 +170,36 @@ if ($changelogContent.Contains("## [$Version] -")) {
 Write-Host "Please make sure the Added/Changed/Fixed notes in $changelog are complete."
 Pause-Step "CHANGELOG notes"
 
+# ------------------------------------------------- fastlane store changelog
+# F-Droid reads the store metadata from the tagged revision, so the changelog for
+# the new versionCode has to exist before the tag is created. It is written by
+# hand on purpose: 500 characters is far too few for the full CHANGELOG entry,
+# and deriving it mechanically cut whole sections off without saying so.
+Write-Step "5/10 Check fastlane store changelog"
+$storeFile = Join-Path $changelogDir "$VersionCode.txt"
+if (-not $WhatIf) {
+    if (-not (Test-Path $storeFile)) {
+        Fail "Missing $storeFile. F-Droid reads the store metadata from the tagged revision, so write the store changelog before running this script."
+    }
+    $storeText = (Get-Utf8NoBom $storeFile).Trim()
+    if (-not $storeText) { Fail "$storeFile is empty." }
+    if ($storeText.Length -gt 500) {
+        Fail "$storeFile is $($storeText.Length) characters. F-Droid allows 500 for a store changelog."
+    }
+    Write-Host "Store changelog: $storeFile ($($storeText.Length) characters)"
+} else {
+    Write-Host "[WhatIf] would check $storeFile"
+}
+Pause-Step "fastlane changelog"
+
 # ------------------------------------------------------------- commit
-Write-Step "5/9 Commit and tag (local only)"
+Write-Step "6/10 Commit and tag (local only)"
 # The tag is created before the build on purpose. Anything that reaches the APK
 # and depends on the working tree then matches the tagged commit, which is what
 # F-Droid rebuilds. Tag first, build second, push last: nothing leaves the
 # machine until the APK has been verified.
 if (-not $WhatIf) {
-    Invoke-Git add app/build.gradle.kts CHANGELOG.md
+    Invoke-Git add app/build.gradle.kts CHANGELOG.md "fastlane/metadata/android/en-US/changelogs/"
     Invoke-Git commit -m "Prepare $Version release with changelog"
     Invoke-Git tag $tag
     Write-Host "Tagged $tag. Nothing has been pushed yet."
@@ -186,7 +209,7 @@ if (-not $WhatIf) {
 Pause-Step "commit and tag"
 
 # ------------------------------------------------------------- verify
-Write-Step "6/9 Build and verify the release APK"
+Write-Step "7/10 Build and verify the release APK"
 if (-not $WhatIf) {
     & $gradlew clean testDebugUnitTest detekt assembleDebug assembleRelease
     if ($LASTEXITCODE -ne 0) {
@@ -216,7 +239,7 @@ if (-not $WhatIf) {
 Pause-Step "verification"
 
 # ------------------------------------------------------------- push
-Write-Step "7/9 Push tag and master"
+Write-Step "8/10 Push tag and master"
 if (-not $WhatIf) {
     Invoke-Git push origin $tag
     Invoke-Git push origin master
@@ -226,7 +249,7 @@ if (-not $WhatIf) {
 Pause-Step "push"
 
 # ------------------------------------------------------------- release notes
-Write-Step "8/9 Build release notes"
+Write-Step "9/10 Build release notes"
 $changelogText = Get-Utf8NoBom $changelog
 $escaped = [regex]::Escape($Version)
 $match = [regex]::Match(
@@ -248,7 +271,7 @@ Write-Host "Release notes written to $notesFile"
 Pause-Step "release notes"
 
 # ------------------------------------------------------------- gh release
-Write-Step "9/9 Create GitHub release"
+Write-Step "10/10 Create GitHub release"
 if (-not (Test-Path $apk)) {
     Fail "Release APK not found: $apk. Without release signing properties Gradle " +
          "writes app-release-unsigned.apk instead, and a reproducible release is " +

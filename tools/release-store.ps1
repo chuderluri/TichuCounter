@@ -1,14 +1,15 @@
 #Requires -Version 5.1
 <#
 .SYNOPSIS
-    Prepare the F-Droid store metadata for a release (fdroid metadata draft +
-    fastlane changelog). The GitLab merge request is submitted manually.
+    Prepare the F-Droid store metadata for a release. The GitLab merge request
+    is submitted manually.
 
 .DESCRIPTION
-    Updates fdroid/ch.tichu.counter.yml (new Builds entry + CurrentVersion)
-    and the fastlane changelog file, then commits the store-only changes.
-    Does not touch app/build.gradle.kts, tags or GitHub. Run this only when
-    you actually want the new version published on F-Droid.
+    Updates fdroid/ch.tichu.counter.yml (new Builds entry + CurrentVersion) and
+    commits the store-only change. The Builds entry points at the full hash of
+    the release tag, as F-Droid requires, and at the signed APK of that release.
+    Does not touch app/build.gradle.kts, the fastlane metadata, tags or GitHub.
+    Run this only when you actually want the new version published on F-Droid.
 
 .EXAMPLE
     .\tools\release-store.ps1 -Version "0.5.0" -VersionCode 5
@@ -31,8 +32,6 @@ $root = Split-Path -Parent $PSScriptRoot
 Set-Location $root
 
 $fdroidFile = Join-Path $root "fdroid\ch.tichu.counter.yml"
-$changelogDir = Join-Path $root "fastlane\metadata\android\en-US\changelogs"
-$changelog = Join-Path $root "CHANGELOG.md"
 $tag = "v$Version"
 
 function Write-Step([string]$message) {
@@ -69,7 +68,7 @@ function Invoke-Git {
 }
 
 # ---------------------------------------------------------------- prereq
-Write-Step "1/4 Prerequisites"
+Write-Step "1/3 Prerequisites"
 if (-not $Version -match '^\d+\.\d+\.\d+$') { Fail "Version must be x.y.z" }
 
 $dirty = & git status --porcelain
@@ -84,10 +83,21 @@ Write-Host "Store metadata for release $Version (versionCode $VersionCode)"
 Pause-Step "prerequisites"
 
 # ------------------------------------------------------------- fdroid yml
-Write-Step "2/4 Update fdroid/ch.tichu.counter.yml"
+Write-Step "2/3 Update fdroid/ch.tichu.counter.yml"
 $content = Get-Utf8NoBom $fdroidFile
 $nl = $(if ($content.Contains("`r`n")) { "`r`n" } else { "`n" })
 $binaryUrl = "https://github.com/chuderluri/TichuCounter/releases/download/$tag/app-release.apk"
+
+# F-Droid wants the full commit hash, not a tag, and it reads the fastlane
+# metadata from that same commit. release-github.ps1 writes the store changelog
+# before tagging, so the tagged commit carries it and both requirements agree.
+$commitHash = (& git rev-parse "$tag^{commit}" 2>$null)
+if ($LASTEXITCODE -ne 0 -or -not $commitHash) {
+    Fail "Tag $tag does not resolve to a commit. Run release-github.ps1 first."
+}
+$commitHash = $commitHash.Trim()
+if ($commitHash -notmatch '^[0-9a-f]{40}$') { Fail "git rev-parse returned '$commitHash', expected a full 40 character hash." }
+Write-Host "commit: $commitHash"
 
 # The order of gradle, binary and gradleprops matches what F-Droid's
 # rewritemeta produces. binary: points at the signed APK of this release and
@@ -100,7 +110,7 @@ $binaryUrl = "https://github.com/chuderluri/TichuCounter/releases/download/$tag/
 $entry = @(
     "  - versionName: $Version",
     "    versionCode: $VersionCode",
-    "    commit: $tag",
+    "    commit: $commitHash",
     "    subdir: app",
     "    sudo:",
     "      - apt-get update || apt-get update",
@@ -113,8 +123,8 @@ $entry = @(
     "      - org.gradle.java.home=/usr/lib/jvm/java-21-openjdk-amd64"
 ) -join $nl
 
-if ($content.Contains("    commit: $tag")) {
-    Fail "fdroid metadata already has an entry for $tag"
+if ($content -match "(?m)^\s+versionCode: $VersionCode\s*$") {
+    Fail "fdroid metadata already has a build with versionCode $VersionCode"
 }
 
 # Insert the new Builds entry right after the "Builds:" line.
@@ -149,41 +159,13 @@ if ($newContent -notmatch "(?m)^AllowedAPKSigningKeys:") {
 }
 
 if (-not $WhatIf) { Set-Utf8NoBom $fdroidFile $newContent }
-Write-Host "Added Builds entry for $tag and bumped CurrentVersion."
+Write-Host "Added Builds entry for $tag ($commitHash) and bumped CurrentVersion."
 Pause-Step "fdroid metadata"
 
-# ------------------------------------------------------------- fastlane
-Write-Step "3/4 Update fastlane changelog"
-# Read the changelog entry from CHANGELOG.md.
-$changelogText = Get-Utf8NoBom $changelog
-$escaped = [regex]::Escape($Version)
-$match = [regex]::Match(
-    $changelogText,
-    "(?ms)^## \[$escaped\] - .*?\r?\n(.*?)(?=^## \[|\z)"
-)
-if (-not $match.Success) { Fail "No CHANGELOG entry found for $Version" }
-
-# Fastlane changelogs are plain text (max 500 bytes, ASCII). Strip headings.
-$lines = $match.Groups[1].Value -split "`r?`n" |
-    ForEach-Object { $_.Trim() } |
-    Where-Object { $_ -and -not $_.StartsWith("#") }
-$text = ($lines -join " ").Trim()
-if ($text.Length -gt 500) {
-    $text = $text.Substring(0, 497) + "..."
-}
-$target = Join-Path $changelogDir "$VersionCode.txt"
-if (-not $WhatIf) {
-    Get-ChildItem -Path $changelogDir -Filter "*.txt" -File -ErrorAction SilentlyContinue |
-        Remove-Item -Force
-    Set-Utf8NoBom $target $text
-}
-Write-Host "Wrote $target ($($text.Length) chars)"
-Pause-Step "fastlane changelog"
-
 # ------------------------------------------------------------- commit
-Write-Step "4/4 Commit store metadata"
+Write-Step "3/3 Commit store metadata"
 if (-not $WhatIf) {
-    Invoke-Git add fdroid/ch.tichu.counter.yml fastlane/metadata/android/en-US/changelogs/
+    Invoke-Git add fdroid/ch.tichu.counter.yml
     Invoke-Git commit -m "Add $Version store metadata"
 } else {
     Write-Host "[WhatIf] would run: git add + commit 'Add $Version store metadata'"
