@@ -124,13 +124,21 @@ data class RoundDraft(
 )
 ```
 
-Per-player Tichu entry: each seat has a Small and a Grand button. Tapping
-cycles `none -> made -> lost -> none` for that type (setting one type clears
-the other type for the same seat). The state is part of the draft only and is
-written into `RoundScored.tichuCalls` on confirm.
+Per-player Tichu entry: tapping a player cell opens a sheet with the five
+states (`No call`, Small made/lost, Grand made/lost); picking one sets that
+seat's `TichuCall` in the draft. A long press cycles the Small states
+(`No call -> made -> lost -> No call`); a Grand call is replaced by `Small
+made`. The state is part of the draft only and is written into
+`RoundScored.tichuCalls` on confirm.
+
+Double win: entering the double-win value (`RuleSet.doubleWinValue`) on the
+keypad activates the double win for the active team. Deselecting the button
+clears the entered card points; leaving the double win through Backspace keeps
+them, so a mistyped `200` can be trimmed back to `20`.
 
 Keypad events: `Digit(n)`, `Backspace`, `ToggleSign`, `Clear`, `SwitchTeam`,
-`TichuToggled(seat, type)`, `Confirm`. On every change the ViewModel calls
+`TichuOptionSelected(seat, TichuCall?)`, `TichuQuickSetRequested(seat)`,
+`Confirm`. On every change the ViewModel calls
 `ValidateRoundUseCase` (wraps `ScoringEngine.validate`) and shows the preview
 totals computed by `PreviewRoundUseCase` (wraps `ScoringEngine.score`) so the
 user sees the resulting running score before confirming.

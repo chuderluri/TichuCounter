@@ -63,7 +63,7 @@ class ScoringViewModel @Inject constructor(
         val activeTeam: Team = Team.A,
         val doubleWin: Team? = null,
         val tichus: Map<Seat, DraftTichu> = emptyMap(),
-        val roundOptionsExpanded: Boolean = false,
+        val tichuEditorSeat: Seat? = null,
         val showAbandon: Boolean = false,
         val finishedDialogDismissed: Boolean = false,
     )
@@ -99,6 +99,16 @@ class ScoringViewModel @Inject constructor(
         }.toImmutableList()
         val bonusA = input.tichuCalls.filter { it.seat.team == Team.A }.sumOf { if (it.success) game.ruleSet.tichuValue(it.type) else -game.ruleSet.tichuValue(it.type) }
         val bonusB = input.tichuCalls.filter { it.seat.team == Team.B }.sumOf { if (it.success) game.ruleSet.tichuValue(it.type) else -game.ruleSet.tichuValue(it.type) }
+        val tichuEditor = draft.tichuEditorSeat?.let { seat ->
+            seats.firstOrNull { it.seat == seat }?.let { player ->
+                TichuEditorUi(
+                    seat = seat,
+                    name = player.name,
+                    current = player.tichu,
+                    madeAllowed = draft.doubleWin == null || draft.doubleWin == seat.team,
+                )
+            }
+        }
         ScoringUiState(
             gameId = game.gameId,
             status = game.status.toUiStatus(),
@@ -112,9 +122,10 @@ class ScoringViewModel @Inject constructor(
             enteredB = if (draft.doubleWin != null) if (draft.doubleWin == Team.B) "200" else "0" else draft.enteredB,
             activeTeam = draft.activeTeam,
             doubleWin = draft.doubleWin,
+            doubleWinValue = game.ruleSet.doubleWinValue,
             bonusA = bonusA,
             bonusB = bonusB,
-            roundOptionsExpanded = draft.roundOptionsExpanded,
+            tichuEditor = tichuEditor,
             canUndo = game.canUndo,
             canRedo = game.canRedo,
             validationError = validation is ValidationResult.Invalid,
@@ -131,15 +142,21 @@ class ScoringViewModel @Inject constructor(
             ScoringUiEvent.Backspace -> backspace()
             ScoringUiEvent.ToggleSign -> toggleSign()
             is ScoringUiEvent.SwitchTeam -> draft.update { it.copy(activeTeam = event.team) }
-            is ScoringUiEvent.DoubleWin -> draft.update { it.copy(doubleWin = if (it.doubleWin == event.team) null else event.team) }
-            is ScoringUiEvent.TichuToggled -> toggleTichu(event.seat, event.type)
-            ScoringUiEvent.ToggleRoundOptions -> draft.update {
-                it.copy(roundOptionsExpanded = !it.roundOptionsExpanded)
+            is ScoringUiEvent.DoubleWin -> setDoubleWin(event.team)
+            is ScoringUiEvent.PlayerClicked -> draft.update { it.copy(tichuEditorSeat = event.seat) }
+            is ScoringUiEvent.TichuOptionSelected -> {
+                selectTichu(event.seat, event.call)
+                draft.update { it.copy(tichuEditorSeat = null) }
             }
+            is ScoringUiEvent.TichuQuickSetRequested -> quickSetTichu(event.seat)
+            ScoringUiEvent.TichuEditorDismissed -> draft.update { it.copy(tichuEditorSeat = null) }
             ScoringUiEvent.ConfirmRound -> confirmRound()
             ScoringUiEvent.Undo -> viewModelScope.launch { undo(gameId) }
             ScoringUiEvent.Redo -> viewModelScope.launch { redo(gameId) }
-            is ScoringUiEvent.SwapPlayerRequested -> send(ScoringUiEffect.NavigateToSwapDialog(gameId, event.seat))
+            is ScoringUiEvent.SwapPlayerRequested -> {
+                draft.update { it.copy(tichuEditorSeat = null) }
+                send(ScoringUiEffect.NavigateToSwapDialog(gameId, event.seat))
+            }
             is ScoringUiEvent.RoundRowClicked -> Unit
             ScoringUiEvent.AbandonGameRequested -> draft.update { it.copy(showAbandon = true) }
             ScoringUiEvent.AbandonDismissed -> draft.update { it.copy(showAbandon = false) }
@@ -156,21 +173,27 @@ class ScoringViewModel @Inject constructor(
 
     private fun appendDigit(digit: Int) {
         if (!state.value.isKeypadEnabled) return
+        val doubleWinValue = state.value.doubleWinValue
         draft.update { current ->
             val value = if (current.activeTeam == Team.A) current.enteredA else current.enteredB
             val negative = value.startsWith('-')
             val raw = value.removePrefix("-")
             if (raw.length >= 3) return@update current
             val next = (if (negative) "-" else "") + (raw + digit).trimStart('0').ifBlank { "0" }
-            if (current.activeTeam == Team.A) {
-                current.copy(enteredA = next, enteredB = complementText(next))
-            } else {
-                current.copy(enteredB = next, enteredA = complementText(next))
+            when {
+                // Typing the double-win value is a shortcut for the double win of the active team.
+                next.toIntOrNull() == doubleWinValue -> current.copy(doubleWin = current.activeTeam)
+                current.activeTeam == Team.A -> current.copy(enteredA = next, enteredB = complementText(next))
+                else -> current.copy(enteredB = next, enteredA = complementText(next))
             }
         }
     }
 
     private fun backspace() {
+        if (draft.value.doubleWin != null) {
+            draft.update { it.copy(doubleWin = null) }
+            return
+        }
         if (!state.value.isKeypadEnabled) return
         draft.update { current ->
             val value = if (current.activeTeam == Team.A) current.enteredA else current.enteredB
@@ -200,13 +223,45 @@ class ScoringViewModel @Inject constructor(
         }
     }
 
-    private fun toggleTichu(seat: Seat, type: TichuType) {
+    private fun setDoubleWin(team: Team?) {
         draft.update { current ->
-            val old = current.tichus[seat]
-            val next = when {
-                old == null || old.type != type -> DraftTichu(type, success = true)
-                old.success -> DraftTichu(type, success = false)
-                else -> null
+            val next = if (current.doubleWin == team) null else team
+            current.copy(
+                doubleWin = next,
+                // Leaving the double win clears the entered card points.
+                enteredA = if (next == null) "" else current.enteredA,
+                enteredB = if (next == null) "" else current.enteredB,
+                // A successful call can only belong to the winning team.
+                tichus = if (next == null) {
+                    current.tichus
+                } else {
+                    current.tichus.filterNot { (seat, call) -> seat.team != next && call.success }
+                },
+            )
+        }
+    }
+
+    private fun selectTichu(seat: Seat, call: DraftTichu?) {
+        draft.update { current ->
+            current.copy(
+                tichus = current.tichus.toMutableMap().apply {
+                    if (call == null) remove(seat) else put(seat, call)
+                },
+            )
+        }
+    }
+
+    private fun quickSetTichu(seat: Seat) {
+        draft.update { current ->
+            val madeAllowed = current.doubleWin == null || current.doubleWin == seat.team
+            val startOfCycle = if (madeAllowed) DraftTichu(TichuType.SMALL, success = true) else DraftTichu(TichuType.SMALL, success = false)
+            val next = when (val old = current.tichus[seat]) {
+                null -> startOfCycle
+                else -> when {
+                    old.type != TichuType.SMALL -> startOfCycle
+                    old.success -> DraftTichu(TichuType.SMALL, success = false)
+                    else -> null
+                }
             }
             current.copy(
                 tichus = current.tichus.toMutableMap().apply {

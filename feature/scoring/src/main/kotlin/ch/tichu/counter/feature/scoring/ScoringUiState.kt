@@ -26,6 +26,14 @@ data class DraftTichu(
 )
 
 @Immutable
+data class TichuEditorUi(
+    val seat: Seat,
+    val name: String,
+    val current: DraftTichu?,
+    val madeAllowed: Boolean,
+)
+
+@Immutable
 data class ScoringUiState(
     val gameId: GameId? = null,
     val status: ScoringStatus = ScoringStatus.LOADING,
@@ -39,9 +47,10 @@ data class ScoringUiState(
     val enteredB: String = "",
     val activeTeam: Team = Team.A,
     val doubleWin: Team? = null,
+    val doubleWinValue: Int = 200,
     val bonusA: Int = 0,
     val bonusB: Int = 0,
-    val roundOptionsExpanded: Boolean = false,
+    val tichuEditor: TichuEditorUi? = null,
     val canUndo: Boolean = false,
     val canRedo: Boolean = false,
     val validationError: Boolean = false,
@@ -77,9 +86,13 @@ sealed interface ScoringUiEvent {
 
     data class DoubleWin(val team: Team?) : ScoringUiEvent
 
-    data class TichuToggled(val seat: Seat, val type: TichuType) : ScoringUiEvent
+    data class TichuOptionSelected(val seat: Seat, val call: DraftTichu?) : ScoringUiEvent
 
-    data object ToggleRoundOptions : ScoringUiEvent
+    data class TichuQuickSetRequested(val seat: Seat) : ScoringUiEvent
+
+    data class PlayerClicked(val seat: Seat) : ScoringUiEvent
+
+    data object TichuEditorDismissed : ScoringUiEvent
 
     data object ConfirmRound : ScoringUiEvent
 

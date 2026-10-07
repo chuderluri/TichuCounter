@@ -35,6 +35,7 @@ fun Keypad(
     onKey: (KeypadKey) -> Unit,
     modifier: Modifier = Modifier,
     enabled: Boolean = true,
+    backspaceEnabled: Boolean = enabled,
     confirmEnabled: Boolean = true,
     confirmLabel: String = "OK",
 ) {
@@ -67,7 +68,7 @@ fun Keypad(
 
                         KeypadKey.Backspace -> FilledTonalButton(
                             onClick = { onKey(key) },
-                            enabled = enabled,
+                            enabled = backspaceEnabled,
                             modifier = keyModifier,
                         ) { Icon(Icons.AutoMirrored.Filled.Backspace, contentDescription = "Backspace") }
 

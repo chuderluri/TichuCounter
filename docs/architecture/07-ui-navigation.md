@@ -276,33 +276,37 @@ separated by a narrow round-number column whose vertical rules run from the
 team header down to the player section.
 
 ```
-+------------------------------------------------+
-| <   Round 4                [undo] [redo]  [⋮]  |   fixed top
-+------------------------------------------------+
-|       TEAM A          │ │        TEAM B         |   fixed top: team names (titleLarge)
-|         390           │ │         310           |   running total (displayLarge, team colour)
-|  ─────────────────────┼─┼─────────────────────  |
-|  T✓      160          │1│    40                 |   history: scrollable, adaptive height
-|           30          │2│   270            GT✓  |   (fills whatever space is left between
-|  DS      200          │3│     0                 |   header and the fixed bottom block)
-|  ─────────────────────┼─┼─────────────────────  |
-|  ● Anna     [T✓][GT ] │ │ ● Cleo     [T ][GT ]  |   fixed bottom: players + Tichu toggles
-|  ● Ben      [T ][GT ] │ │ ◌ Dan      [T✗][GT ]  |   (long press name = swap player)
-|    [ Double win A ]   │ │   [ Double win B ]    |
-+------------------------------------------------+
-|    [  60  ] +100      :      [  40  ] -100     |   fixed bottom: card points + Tichu bonus
-+------------------------------------------------+
-|      7        8        9        ⌫              |   fixed bottom: keypad
-|      4        5        6        +/-            |
-|      1        2        3        OK             |
-|               0                                |
-+------------------------------------------------+
++--------------------------------------------------+
+| <   Round 7                 [undo] [redo] [⋮]    |   fixed top
++--------------------------------------------------+
+|       TEAM A           │ │          TEAM B        |   fixed top: team names (titleLarge)
+|         390            │ │          310           |   running total (displayLarge, team colour)
+|  ─────────────────────┼─┼──────────────────────   |
+|  T✓    160            │4│    40                   |   history: scrollable, adaptive height
+|         30            │5│   270           GT✓     |   (fills whatever space is left between
+|  DS    200            │6│     0                   |   header and the fixed bottom block)
+|  ─────────────────────┼─┼──────────────────────   |
+| ╭─────────╮╭─────────╮ ╭─────────╮╭─────────╮     |
+| │ Anna ▾  ││ Ben ▾   │ │ Cleo ▾  ││ Dan ▾   │     |   fixed bottom: players + Tichu state
+| │ Tichu ✓ ││         │ │         ││ Grand ✗ │     |   (tap cell = sheet, long press = quick Tichu)
+| ╰─────────╯╰─────────╯ ╰─────────╯╰─────────╯     |
+| ╭────────────────────╮ ╭────────────────────╮    |
+| │     Double win     │ │     Double win     │    |   fixed bottom: double win per team
+| ╰────────────────────╯ ╰────────────────────╯    |
+|  ─────────────────────┼─┼──────────────────────   |
+|    [ 60 ] +100        │ : │      [ 40 ] -200      |   fixed bottom: card points + Tichu bonus
++--------------------------------------------------+
+|      7        8        9        ⌫                |   fixed bottom: keypad
+|      4        5        6        +/-              |
+|      1        2        3        OK               |
+|               0                                  |
++--------------------------------------------------+
 ```
 
-Numbers in the sketch: round 1 = A 60 cards + 100 Small Tichu, round 2 =
-B 70 cards + 200 Grand Tichu, round 3 = double win A; totals 390 / 310. Current
-input: A 60 with Anna's Small Tichu made (+100), B 40 with Dan's Small Tichu
-lost (-100). Dan is a guest in this example.
+Numbers in the sketch: round 4 = A 60 cards, round 5 = B 70 cards + 200 Grand
+Tichu, round 6 = double win A; totals 390 / 310. Current input: A 60 with Anna's
+Small Tichu made (+100), B 40 with Dan's Grand Tichu lost (-200). Ben and Cleo
+have no call (empty cell).
 
 Layout rules:
 
@@ -314,35 +318,84 @@ Layout rules:
 - Team names use `titleLarge`, totals use `displayLarge` (largest text on the
   screen), both in the team colour, no spacing between them.
 - The round-number column is as narrow as two digits; thin vertical rules on
-  both sides separate the team columns and continue through the player
-  section. Thin horizontal rules separate totals/history and history/players.
+  both sides separate the team columns in the header and the history. The
+  player block below has no vertical rules - its two team groups are separated
+  by a gap only, so the cells and the double-win buttons get the full width
+  (same horizontal padding as the keypad). Thin horizontal rules separate
+  totals/history, history/players and players/input.
 - History rows show the round total per team (cards + Tichu bonus). Badges
   sit at the outer edge of each team column: `T✓`/`T✗` Small Tichu made/lost,
   `GT✓`/`GT✗` Grand Tichu, `DS` double win. Multiple badges stack.
-- Player section: one line per player with a dot and the name (no avatar
-  letter), Small (`T`) and Grand (`GT`) toggles right-aligned; below each team
-  a full-width **Double win** button. No card frames; the column rules provide
-  the separation. Guests show a hollow dot `◌`; Tichu toggles work identically
-  for guests (the bonus counts for the team, only statistics are skipped).
-- Input row: `[cards] bonus : [cards] bonus`. The active card field is
-  outlined in its team colour; the bonus is the sum of the team's Tichu
-  toggles (`+100`, `-200`, blank when none), green for positive, red for
-  negative. No separate preview line; the totals in the header update after
-  OK.
-- Double win: the card fields show `200 : 0` (or `0 : 200`) read-only, the
-  keypad is disabled.
+- Player section: one rounded cell per player, two cells per team side by side.
+  Each cell has two lines: the player name plus a `▾` chevron on the first
+  line (the tap target), the Tichu state text on the second. The player row has
+  a fixed height (46dp), so every cell is the same height and its content is
+  vertically centred - a cell without a call shows the name in the middle. The
+  border is always 1dp in a muted team
+  outline (`teamAOutline`/`teamBOutline`, ~60 % alpha); border width is never
+  meaningful. The cell background carries the Tichu state: tinted green for
+  `made`, tinted red for `lost`, neutral when no call is set. No seat labels
+  (`A1`/`B2`) and no registered/guest dot are shown here; both are irrelevant
+  while playing.
+- Tichu entry is a sheet, not a toggle cycle. Tapping a cell opens a modal
+  bottom sheet: the player name centred in the team colour, a `⇄` icon button
+  next to it that opens the `SwapPlayer` destination, then five large buttons in
+  a grid - `No call` across the full width, then `Tichu ✓ made` / `Tichu ✗ lost`
+  and `Grand ✓ made` / `Grand ✗ lost` as two rows of two. Tapping a button
+  applies it immediately and closes the sheet.
+- Each button carries its tone as a permanent background, using the same tints
+  as the player cell: light green for `made`, light red for `lost`, grey for
+  `No call`. Only the selection moves: the chosen button gets a 2dp border in
+  the default (`primary`) colour, the others have none. The five buttons are
+  mutually exclusive, so "at most one call per seat" holds.
+- Long press on a cell is the quick path for the Small Tichu states: it cycles
+  `No call -> Tichu ✓ made -> Tichu ✗ lost -> No call`. A `Grand` call is
+  replaced by `Tichu ✓ made` (start of the Small cycle); the sheet remains the
+  only way to set or clear a Grand Tichu. While a double win is active for one
+  team, the cycle starts at `Tichu ✗ lost` for the losing team (a `made` call
+  can only belong to the winner). Haptics confirm the gesture.
+- Guests: no marker in the player section. A guest's Tichu still counts for the
+  team (only statistics are skipped, see `06-statistics.md`); a guest is
+  replaced via the `⇄` action in the Tichu sheet.
+- Input row: `[cards] bonus : [cards] bonus`. The active card field is outlined
+  in its team colour with 2dp (the focus signal of the points input; every other
+  border in the screen stays 1dp), the inactive one with 1dp. Tapping a card
+  field or a team total makes that team active. The bonus is the sum of the
+  team's Tichu states (`+100`, `-200`, blank when none), green for positive, red
+  for negative. The card field is centred in its half and stays put when a bonus
+  appears - the bonus sits in a fixed-width slot at the trailing edge of that
+  half. No separate preview line; the totals in the header update after OK.
+- Double win: a button below the two player cells of its team, 40dp tall, with
+  the muted team outline while off and a solid team
+  colour fill with `onTeam` text and `✓ Double win` while on - the strongest
+  contrast in the block. The two buttons are mutually exclusive: activating one
+  disables the other and makes `Tichu ✓ made` / `Grand ✓ made` not selectable for
+  the losing team (a successful call can only belong to the winning team). While
+  active the card fields show `200 : 0` (or `0 : 200`) read-only and the digits
+  are disabled. Deselecting the button clears the entered card points; leaving
+  the double win through Backspace keeps them (see below).
+- Entering the double-win value (`RuleSet.doubleWinValue`, default `200`) in a
+  card field is a shortcut that activates that team's double win: the value is
+  outside the valid card-point range, so the intent is unambiguous. The button
+  reflects the same state.
+- Backspace stays enabled while a double win is active and clears the double win
+  first (without removing a digit), so a mistyped `200` can be corrected. Only
+  the next backspace removes a digit.
 - Tapping an old history row opens a read-only detail popup (line-up of that
   round, Tichu calls); corrections go through undo.
 
 - State: `gameId`, `status`, `scoreA`, `scoreB`, `targetScore`,
-  `seats: ImmutableMap<Seat, SeatUi>` (occupant + current Tichu toggle state from the draft),
-  `draft: RoundDraftUi` (entered values, active team, sign, doubleWin, tichuCalls, bonusA, bonusB),
-  `validation: RoundValidationUi?` (errors/warnings), `rounds: ImmutableList<RoundRowUi>`,
-  `canUndo`, `canRedo`, `winner`.
+  `seats: ImmutableMap<Seat, SeatUi>` (`SeatUi`: occupant + `tichuCall: TichuCall?`
+  from the draft), `tichuEditor: TichuEditorUi?` (`seat`, `currentSelection`,
+  drives the modal sheet), `draft: RoundDraftUi` (entered values, active team,
+  sign, doubleWin, tichuCalls, bonusA, bonusB), `validation: RoundValidationUi?`
+  (errors/warnings), `rounds: ImmutableList<RoundRowUi>`, `canUndo`, `canRedo`,
+  `winner`.
 - Events: `Digit(n)`, `Backspace`, `ToggleSign`, `Clear`, `SwitchTeam(team)`,
-  `DoubleWin(team?)`, `TichuToggled(seat, type)`, `ConfirmRound`,
-  `Undo`, `Redo`, `SwapPlayerRequested(seat)`, `RoundRowClicked(roundNumber)`,
-  `FinishGameAcknowledged`, `AbandonGame`.
+  `DoubleWin(team?)`, `PlayerClicked(seat)` (opens the Tichu sheet),
+  `TichuOptionSelected(seat, TichuCall?)`, `TichuQuickSetRequested(seat)`
+  (long press), `SwapPlayerRequested(seat)`, `ConfirmRound`, `Undo`, `Redo`,
+  `RoundRowClicked(roundNumber)`, `FinishGameAcknowledged`, `AbandonGame`.
 - Effects: `ShowRoundSavedSnackbar(roundNumber)`, `ShowSnackbar(msgRes)`,
   `Haptic(type)`, `NavigateToSwapDialog(gameId, seat)`, `ShowRoundDetail(roundNumber)`,
   `ShowGameFinishedDialog(winner)`, `NavigateBack`.
@@ -351,20 +404,48 @@ Layout rules:
   `RecordRoundUseCase`, `UndoLastEventUseCase`, `RedoLastEventUseCase`,
   `AbandonGameUseCase`.
 - Behaviour details:
-  - Typing into Team A auto-fills B = 100 - A (and vice versa). Tapping the
-    other field makes it active and allows explicit override.
-  - Selecting a double win disables the keypad and greys out card-point fields.
-  - Tichu is entered **at the end of the round**, not announced: every player
-    has a Small Tichu (`T`) and a Grand Tichu (`GT`) toggle that cycles
-    `off -> made -> lost -> off`. Activating one type clears the other for
-    that player. The toggles are part of the draft and are written into
-    `RoundScored.tichuCalls` on confirm; they reset after each round.
+  - Typing into Team A auto-fills B = 100 - A (and vice versa). Tapping a card
+    field or a team total makes that team active and allows explicit override.
+  - Tichu is entered **at the end of the round**, not announced. Tapping a
+    player cell opens the Tichu sheet; picking a row writes one `TichuCall` for
+    that seat into the draft. The calls are written into
+    `RoundScored.tichuCalls` on confirm and reset after each round.
+  - `TichuQuickSetRequested` (long press) only applies when the seat has no
+    call yet: it sets `TichuType.SMALL` with `success = true`. It never
+    overwrites, clears or changes an existing call, so a deliberate `lost`
+    entry cannot be lost to a stray long press.
+  - The cell background shows the state (green/red/neutral) and the second line
+    the label (`Tichu ✓`, `Tichu ✗`, `Grand ✓`, `Grand ✗`, empty for no call).
+    The empty cell still announces "No call, tap to set Tichu" via
+    `semantics { stateDescription }` even though it renders no text.
   - The bonus next to each card field makes the Tichu effect visible before
     confirming; the header totals update after OK.
   - `OK` disabled while validation has errors; warnings show inline above the
     keypad.
-  - Long press on a player name opens the swap dialog.
   - Game finished -> dialog (below). Undo remains available from the dialog.
+
+Tichu sheet (opened by tapping a player cell):
+
+```
+        ╭──────────────────────────────────╮
+        │              Anna            ⇄   │   name centred in team colour
+        │ ──────────────────────────────── │
+        │  ╭────────────────────────────╮  │
+        │  │          No call           │  │   grey background
+        │  ╰────────────────────────────╯  │
+        │  ╭──────────────╮╭──────────────╮│
+        │  │  Tichu ✓     ││  Tichu ✗     ││   green / red background,
+        │  ╰──────────────╯╰──────────────╯│   selection = 2dp border
+        │  ╭──────────────╮╭──────────────╮│
+        │  │  Grand ✓     ││  Grand ✗     ││
+        │  ╰──────────────╯╰──────────────╯│
+        ╰──────────────────────────────────╯
+```
+
+Tapping a button applies it immediately and dismisses the sheet. Every button
+keeps its tone background; only the selected one carries the 2dp border. The `⇄`
+button opens the `SwapPlayer` destination (below). While a double win is active
+for one team, the `✓ made` buttons are disabled for the losing team.
 
 Game finished dialog:
 
@@ -418,6 +499,10 @@ are the guest names and "Rematch" keeps them. The expanded state is UI-only
 (`isRoundListExpanded` in the dialog state), not persisted.
 
 ### SwapPlayer (dialog)
+
+Reached from the `⇄` button in the Tichu sheet (see Scoring above); it is the
+only entry point for swapping during a game, so the player cell stays free for
+the Tichu tap.
 
 ```
         ┌──────────────────────────────────┐
@@ -599,10 +684,14 @@ there are no registered persons to choose from.
   palette; team colours `teamA`/`teamB` as `LocalTichuColors` extension.
 - Components: `TeamHeader` (name + total), `RoundHistoryTable` (two team
   columns + narrow round column with vertical rules; used in Scoring, GameDetail
-  and the finished dialog), `RoundRow`, `TichuBadge`, `PlayerRow` (dot, name,
-  `T`/`GT` toggles), `OccupantDot` (filled for persons, hollow for guests),
-  `TichuToggle`, `DoubleWinButton`, `RoundInputRow` (card field + bonus per
-  team), `Keypad`, `KeypadButton`, `PersonAvatar`, `EmptyState`,
+  and the finished dialog), `RoundRow`, `TichuBadge`, `PlayerCell` (name +
+  chevron, Tichu state label, 1dp muted team outline, state-tinted background,
+  fixed 46dp row height), `TichuSheet` (centred name in the team colour, `⇄`
+  swap action, five state buttons with permanent tone backgrounds and a 2dp
+  selection border), `OccupantDot`
+  (filled for persons, hollow for guests; used in GameSetup, PlayerList and history, not in
+  the Scoring player section), `DoubleWinButton`, `RoundInputRow` (card field +
+  bonus per team), `Keypad`, `KeypadButton`, `PersonAvatar`, `EmptyState`,
   `TichuTopAppBar`, `LoadingIndicator`.
 - All components stateless with `Modifier` as first optional parameter, previews
   for light/dark and font scale 1.3.
@@ -610,7 +699,8 @@ there are no registered persons to choose from.
   score is readable from across a table; history and input use `bodyLarge`.
 - Accessibility: content descriptions for icon buttons, minimum 48dp touch
   targets, keypad buttons >= 56dp height; `semantics { stateDescription }` for
-  Tichu toggles.
+  the Tichu state of a `PlayerCell` (announced even when the cell renders no
+  text, e.g. "No call, tap to set Tichu").
 
 ## State handling rules
 

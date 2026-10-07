@@ -87,7 +87,7 @@ undone suffix on "new action" is transmitted as a tombstone list. Details in
   not an event).
 - Undo `RoundScored` to fix a wrong Tichu result: the ViewModel pre-fills the
   draft from the undone round (`RestoreDraftFromRound`) so the user only
-  changes the Tichu toggle and confirms again.
+  re-picks the affected Tichu state in the sheet and confirms again.
 - Undo `PlayerSwapped` after later rounds were scored: impossible by
   construction (undo is strictly LIFO).
 - Redo after app restart: works, undone suffix is persisted.

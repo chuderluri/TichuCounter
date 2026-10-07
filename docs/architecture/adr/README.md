@@ -13,6 +13,7 @@ numbered, never deleted; superseded decisions get status `Superseded by ADR-xxxx
 | 0006 | Statistics derived from events, projection table only as cache | Accepted |
 | 0007 | Hilt, Navigation Compose, Ktor, WorkManager as framework choices | Accepted |
 | 0008 | Guest players and quick play mode                                 | Accepted |
+| 0009 | Tichu entry via popup, seat-free player cell                      | Accepted |
 
 Template:
 

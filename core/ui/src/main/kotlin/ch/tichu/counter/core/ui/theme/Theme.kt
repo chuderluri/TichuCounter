@@ -74,4 +74,8 @@ object TichuThemeDefaults {
     @Composable
     @ReadOnlyComposable
     fun teamContainer(team: Team): Color = if (team == Team.A) colors.teamAContainer else colors.teamBContainer
+
+    @Composable
+    @ReadOnlyComposable
+    fun teamOutline(team: Team): Color = if (team == Team.A) colors.teamAOutline else colors.teamBOutline
 }

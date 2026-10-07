@@ -60,7 +60,7 @@ Target: domain and ViewModel coverage > 90 %; every scoring rule example in
    redo -> finish game -> verify history and statistics.
 2. Swap player mid-game -> statistics attribute rounds correctly.
 3. Process death during scoring (activity recreate) keeps the round draft
-   incl. Tichu toggles (draft via `SavedStateHandle`).
+   incl. Tichu calls (draft via `SavedStateHandle`).
 
 ## Test data
 
