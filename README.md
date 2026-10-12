@@ -149,6 +149,14 @@ can restore it. This also makes the future statistics feature reliable.
 - Development roadmap: [`docs/architecture/10-roadmap.md`](docs/architecture/10-roadmap.md)
 - Rules for AI coding agents: [`AGENTS.md`](AGENTS.md)
 
+## Credits
+
+Tichu was created by **Urs Hostettler** and published by **Fata Morgana
+Verlag**, Bern. The card artwork in the launcher icon is adapted from graphics
+by **Res Brandenberger**. This app is an unofficial, non-commercial companion
+app and is not affiliated with or endorsed by Fata Morgana Verlag. Full details
+in [`CREDITS.md`](CREDITS.md).
+
 ## License
 
 Tichu Counter is free software: you can redistribute it and/or modify it under

@@ -84,7 +84,7 @@ fun GameDetailContent(state: GameDetailUiState, onEvent: (GameDetailUiEvent) -> 
             style = MaterialTheme.typography.bodyMedium,
         )
         RoundHistoryTable(state.history, modifier = Modifier.weight(1f))
-        if (state.status == GameStatus.IN_PROGRESS || state.status == GameStatus.ABANDONED) {
+        if (state.status == GameStatus.IN_PROGRESS) {
             Button(
                 onClick = { onEvent(GameDetailUiEvent.Continue) },
                 modifier = Modifier.fillMaxWidth().padding(16.dp),

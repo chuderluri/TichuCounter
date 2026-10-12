@@ -5,14 +5,15 @@
     <string name="feature_history_in_progress">In progress</string>
     <string name="feature_history_finished">Finished</string>
     <string name="feature_history_abandoned">Abandoned</string>
-    <string name="feature_history_rounds">%1$d rounds</string>
+    <plurals name="feature_history_rounds">
+        <item quantity="one">%1$d round</item>
+        <item quantity="other">%1$d rounds</item>
+    </plurals>
     <string name="feature_history_continue">Continue</string>
-    <string name="feature_history_delete">Delete game</string>
     <string name="feature_history_delete_title">Delete this game?</string>
     <string name="feature_history_delete_confirm">Delete</string>
     <string name="feature_history_cancel">Cancel</string>
     <string name="feature_history_empty_title">No games yet</string>
-    <string name="feature_history_empty_description">Finished and abandoned games appear here.</string>
     <string name="feature_history_back">Back</string>
     <string name="feature_history_share">Share as text</string>
     <string name="feature_history_winner_a">Team A wins</string>

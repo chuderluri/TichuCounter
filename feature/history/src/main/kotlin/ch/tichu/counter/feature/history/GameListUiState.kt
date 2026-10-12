@@ -9,17 +9,19 @@ import kotlinx.collections.immutable.persistentListOf
 import kotlinx.datetime.Instant
 
 @Immutable
+data class GameMemberUi(val name: String, val isGuest: Boolean)
+
+@Immutable
 data class GameListRowUi(
     val id: GameId,
     val status: GameStatus,
     val scoreA: Int,
     val scoreB: Int,
     val winner: Team?,
-    val teamANames: String,
-    val teamBNames: String,
+    val teamA: ImmutableList<GameMemberUi>,
+    val teamB: ImmutableList<GameMemberUi>,
     val roundCount: Int,
     val updatedAt: Instant,
-    val hasGuests: Boolean,
 )
 
 @Immutable
@@ -27,14 +29,14 @@ data class GameListUiState(
     val groupName: String? = null,
     val isQuickPlay: Boolean = false,
     val games: ImmutableList<GameListRowUi> = persistentListOf(),
-    val pendingDelete: GameId? = null,
+    val pendingDelete: GameListRowUi? = null,
     val isLoading: Boolean = true,
 )
 
 sealed interface GameListUiEvent {
     data class GameClicked(val gameId: GameId) : GameListUiEvent
 
-    data class DeleteRequested(val gameId: GameId) : GameListUiEvent
+    data class DeleteRequested(val game: GameListRowUi) : GameListUiEvent
 
     data object DeleteConfirmed : GameListUiEvent
 

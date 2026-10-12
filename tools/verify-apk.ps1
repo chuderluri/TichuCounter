@@ -9,6 +9,8 @@
         fdroid/ch.tichu.counter.yml (a typo there silently fails F-Droid)
       - the APK carries no "Dependency metadata" signing block (FourCC
         0x504B4453); F-Droid's scanner rejects it
+      - the APK declares no permissions; the app is fully offline and the
+        description says so
       - prints the SHA-256 of the APK, needed for the reproducible build check
 
     The "Dependency metadata" block never appears as readable text. It is the
@@ -116,13 +118,33 @@ if (-not $apksigner) {
     }
 }
 
+# --- aapt2 is used for the permission check and the optional versionCode check ---
+$aapt2 = Get-ChildItem "$env:LOCALAPPDATA\Android\Sdk\build-tools" -Directory -ErrorAction SilentlyContinue |
+    Sort-Object Name -Descending |
+    ForEach-Object { Join-Path $_.FullName "aapt2.exe" } |
+    Where-Object { Test-Path $_ } |
+    Select-Object -First 1
+
+# --- no permissions: the description promises a fully offline app and F-Droid
+# --- checks the declared set. The AndroidX dynamic-receiver guard is the only
+# --- one any AndroidX build adds, so allow exactly that.
+if (-not $aapt2) {
+    Fail "aapt2 not found, cannot check permissions"
+} else {
+    $declared = & $aapt2 dump permissions $ApkPath 2>&1 |
+        Where-Object { $_ -match "^uses-permission" } |
+        ForEach-Object { if ($_ -match "name='([^']+)'") { $Matches[1] } } |
+        Where-Object { $_ -notlike "*DYNAMIC_RECEIVER_NOT_EXPORTED_PERMISSION" } |
+        Sort-Object -Unique
+    if ($declared.Count -eq 0) {
+        Ok "no permissions declared apart from the AndroidX receiver guard"
+    } else {
+        Fail "unexpected permissions in the APK: $($declared -join ', ') - the description promises a fully offline app"
+    }
+}
+
 # --- optional: version code straight out of the binary resources ---
 if ($ExpectVersionCode -gt 0) {
-    $aapt2 = Get-ChildItem "$env:LOCALAPPDATA\Android\Sdk\build-tools" -Directory -ErrorAction SilentlyContinue |
-        Sort-Object Name -Descending |
-        ForEach-Object { Join-Path $_.FullName "aapt2.exe" } |
-        Where-Object { Test-Path $_ } |
-        Select-Object -First 1
     if (-not $aapt2) {
         Fail "aapt2 not found, cannot check versionCode"
     } else {

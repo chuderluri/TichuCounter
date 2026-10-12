@@ -7,8 +7,8 @@ group = "ch.tichu.counter.buildlogic"
 java {
     toolchain {
         // Build logic compiles with JDK 21: locally via Android Studio's jbr, on
-        // F-Droid via openjdk-21 (installed through sudo). Android code itself
-        // still targets Java 17 in KotlinAndroid.kt.
+        // F-Droid via the openjdk-21 that the buildserver image already provides.
+        // Android code itself still targets Java 17 in KotlinAndroid.kt.
         languageVersion.set(JavaLanguageVersion.of(21))
     }
 }

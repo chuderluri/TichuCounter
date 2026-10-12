@@ -1,0 +1,5 @@
+- History shows one card per game: teams and score on a single line, date and round count below. Games are deleted with a swipe or a long press instead of a delete button on every row, and the confirm dialog is the same for both.
+- History names wear their team colour. The winner is marked with a trophy next to their names and by the score taking the team colour; nobody is bolded any more.
+- Abandoned games no longer offer Continue. Such a game is finished and cannot be resumed, so the button led to a scoring screen with a disabled keypad.
+- Going back from a running game lands on Play instead of the game setup, which is no longer reachable once a game has started.
+- Settings has a "Tichu credits" entry crediting Fata Morgana Verlag, Urs Hostettler and Res Brandenberger.

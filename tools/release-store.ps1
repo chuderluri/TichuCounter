@@ -86,7 +86,9 @@ Pause-Step "prerequisites"
 Write-Step "2/3 Update fdroid/ch.tichu.counter.yml"
 $content = Get-Utf8NoBom $fdroidFile
 $nl = $(if ($content.Contains("`r`n")) { "`r`n" } else { "`n" })
-$binaryUrl = "https://github.com/chuderluri/TichuCounter/releases/download/$tag/app-release.apk"
+# %v expands to the version name of whichever build F-Droid verifies, so this
+# single Binaries line stays valid for every release instead of being rewritten.
+$binaryUrl = "https://github.com/chuderluri/TichuCounter/releases/download/v%v/app-release.apk"
 
 # F-Droid wants the full commit hash, not a tag, and it reads the fastlane
 # metadata from that same commit. release-github.ps1 checks the store changelog
@@ -103,29 +105,19 @@ if ($commitHash -notmatch '^[0-9a-f]{40}$') {
 }
 Write-Host "commit: $commitHash"
 
-# The order of gradle, binary and gradleprops matches what F-Droid's
-# rewritemeta produces. binary: points at the signed APK of this release and
-# gradleprops pins the Gradle daemon to the same JDK the upstream release was
-# built with, both are required for reproducible builds.
-#
-# rewritemeta folds long values onto their own line and leaves a trailing space
-# after "binary:", so it has to be written that way or the CI job fails with
-# "These files need rewritemeta".
+# The order matches what F-Droid's rewritemeta produces: gradle, then the
+# trailing Binaries line folded onto its own. Binaries is a top-level field, not
+# a per-build one, and %v expands to the version name of the current build.
 $entry = @(
     "  - versionName: $Version",
     "    versionCode: $VersionCode",
     "    commit: $commitHash",
     "    subdir: app",
-    "    sudo:",
-    "      - apt-get update || apt-get update",
-    "      - apt-get install -y openjdk-21-jdk-headless",
     "    gradle:",
-    "      - yes",
-    "    binary: ",
-    "      $binaryUrl",
-    "    gradleprops:",
-    "      - org.gradle.java.home=/usr/lib/jvm/java-21-openjdk-amd64"
+    "      - yes"
 ) -join $nl
+
+$binariesLine = "Binaries: $binaryUrl"
 
 if ($content -match "(?m)^\s+versionCode: $VersionCode\s*$") {
     Fail "fdroid metadata already has a build with versionCode $VersionCode"
@@ -135,6 +127,14 @@ if ($content -match "(?m)^\s+versionCode: $VersionCode\s*$") {
 $newContent = $content -replace "(?m)^Builds:\r?\n", ("Builds:" + $nl + $entry + $nl)
 if ($newContent -eq $content) {
     Fail "Could not find 'Builds:' in $fdroidFile"
+}
+# Binaries belongs once, directly after the Repo line. It is missing in older
+# metadata, so add it rather than fail; rewritemeta moves it if it drifts.
+if ($newContent -notmatch "(?m)^Binaries:") {
+    $newContent = $newContent -replace (
+        "(?m)^(Repo: .*\r?\n)",
+        ('$1' + $binariesLine + $nl)
+    )
 }
 # Drop the version/update lines and re-append them at the end of the file with
 # fresh values. F-Droid's rewritemeta requires AutoUpdateMode, UpdateCheckMode,
@@ -158,8 +158,11 @@ foreach ($key in $updateKeys) {
     }
 }
 
+if ($newContent -notmatch "(?m)^Binaries:") {
+    Fail "$fdroidFile needs a top-level Binaries line, otherwise F-Droid cannot verify the rebuilt APK against the published one."
+}
 if ($newContent -notmatch "(?m)^AllowedAPKSigningKeys:") {
-    Fail "The new build entry sets binary:, so $fdroidFile needs AllowedAPKSigningKeys (the SHA-256 of the release key, lower case, no colons). Without it F-Droid does not verify the upstream signature."
+    Fail "$fdroidFile needs AllowedAPKSigningKeys (the SHA-256 of the release key, lower case, no colons). Without it F-Droid does not check the upstream signature when it verifies the binary."
 }
 
 if (-not $WhatIf) { Set-Utf8NoBom $fdroidFile $newContent }

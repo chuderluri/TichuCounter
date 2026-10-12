@@ -20,5 +20,10 @@
     <string name="feature_settings_unavailable">Available in a later version</string>
     <string name="feature_settings_about">About</string>
     <string name="feature_settings_version">Version %1$s</string>
+    <string name="feature_settings_tichu_credits">Tichu credits</string>
+    <string name="feature_settings_tichu_credits_game">Tichu was created by Urs Hostettler and published by Fata Morgana Verlag, Bern.</string>
+    <string name="feature_settings_tichu_credits_artwork">Card artwork adapted from Res Brandenberger.</string>
+    <string name="feature_settings_tichu_credits_disclaimer">Unofficial, non-commercial companion app. Not affiliated with or endorsed by Fata Morgana Verlag.</string>
+    <string name="feature_settings_close">Close</string>
     <string name="feature_settings_back">Back</string>
 </resources>

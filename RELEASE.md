@@ -36,11 +36,13 @@ Edit `app/build.gradle.kts` -> `defaultConfig`:
 
 Update the other places that carry the version number:
 
-- `fdroid/ch.tichu.counter.yml`: bump `CurrentVersion`, `CurrentVersionCode`
-  and the matching `Builds` entry (F-Droid metadata).
 - `fastlane/metadata/android/en-US/changelogs/`: rename the changelog file to
   `<versionCode>.txt` (e.g. `4.txt`) so it matches the new version code.
 - `CHANGELOG.md` (covered in step 3).
+
+Do **not** hand-edit `fdroid/ch.tichu.counter.yml` here. Its `Builds` entry
+carries the commit hash of the release tag, which does not exist yet, and F-Droid
+builds the tagged commit. Step 6a generates the entry instead.
 
 ## 3. Update CHANGELOG.md
 
@@ -85,6 +87,25 @@ new versions):
 git tag v<version>
 git push origin v<version>
 ```
+
+The tag must point at the commit from step 5. F-Droid builds that commit and
+reads the fastlane changelog from it, so a tag placed before the changelog is
+committed leaves the build without a changelog entry.
+
+## 6a. Update the F-Droid metadata
+
+```powershell
+.\tools\release-store.ps1 -Version <version> -VersionCode <code>
+```
+
+This reads the tag, adds a `Builds` entry pinned to the tagged commit, ensures
+the top-level `Binaries:` verification URL exists, and bumps `CurrentVersion`
+and `CurrentVersionCode`. Add a `-WhatIf` run first if you want to see the diff
+before it writes.
+
+Do not tag before this script has run: `Builds.commit` has to be the commit the
+tag points at, and `AutoUpdateMode: Version` with `UpdateCheckMode: Tags` picks
+up the tag to find future versions.
 
 ## 7. Push
 

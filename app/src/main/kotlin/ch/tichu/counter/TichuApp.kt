@@ -131,7 +131,13 @@ fun TichuApp(
             )
             gameGraph(
                 onNavigateToSetup = { abandon -> navController.navigate(GameSetupRoute(abandon)) },
-                onNavigateToScoring = { gameId -> navController.navigate(ScoringRoute(gameId.value)) },
+                onNavigateToScoring = { gameId ->
+                    navController.navigate(ScoringRoute(gameId.value)) {
+                        // The line-up is in the event log now, so the setup screen must not stay
+                        // on the back stack - "back" from a running game has to reach Home.
+                        popUpTo<GameSetupRoute> { inclusive = true }
+                    }
+                },
                 onOpenGroupPicker = { navController.navigate(GroupPickerRoute) },
                 onNavigateToGroupCreate = { navController.navigate(GroupCreateRoute) },
                 onOpenSettings = { navController.navigate(SettingsRoute) },

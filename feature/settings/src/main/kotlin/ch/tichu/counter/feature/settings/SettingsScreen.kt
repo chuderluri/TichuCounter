@@ -1,6 +1,7 @@
 package ch.tichu.counter.feature.settings
 
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
@@ -8,6 +9,7 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -82,6 +84,7 @@ fun SettingsScreen(
 fun SettingsContent(state: SettingsUiState, onEvent: (SettingsUiEvent) -> Unit, modifier: Modifier = Modifier) {
     val context = LocalContext.current
     val versionName = appVersionName(context) ?: "?"
+    var showCredits by remember { mutableStateOf(false) }
     Column(
         modifier
             .fillMaxSize()
@@ -133,6 +136,33 @@ fun SettingsContent(state: SettingsUiState, onEvent: (SettingsUiEvent) -> Unit, 
                 Text(
                     stringResource(R.string.feature_settings_version, versionName),
                 )
+            },
+        )
+        ListItem(
+            headlineContent = { Text(stringResource(R.string.feature_settings_tichu_credits)) },
+            trailingContent = { Text("›", style = MaterialTheme.typography.titleLarge) },
+            modifier = Modifier.clickable { showCredits = true },
+        )
+    }
+    if (showCredits) {
+        AlertDialog(
+            onDismissRequest = { showCredits = false },
+            title = { Text(stringResource(R.string.feature_settings_tichu_credits)) },
+            text = {
+                Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
+                    Text(stringResource(R.string.feature_settings_tichu_credits_game), style = MaterialTheme.typography.bodyMedium)
+                    Text(stringResource(R.string.feature_settings_tichu_credits_artwork), style = MaterialTheme.typography.bodyMedium)
+                    Text(
+                        stringResource(R.string.feature_settings_tichu_credits_disclaimer),
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    )
+                }
+            },
+            confirmButton = {
+                TextButton(onClick = { showCredits = false }) {
+                    Text(stringResource(R.string.feature_settings_close))
+                }
             },
         )
     }

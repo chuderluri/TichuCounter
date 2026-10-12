@@ -1,4 +1,4 @@
-﻿# 07 - UI and Navigation
+# 07 - UI and Navigation
 
 ## Navigation graph
 
@@ -573,38 +573,83 @@ there are no registered persons to choose from.
 ### GameList / GameDetail
 
 ```
-+------------------------------------------------+   +------------------------------------------------+
-| History · Tuesday club ▾             [filter]  |   | <   Game · 12 Sep 2026          [↶] [↷] [⋮]    |
-+------------------------------------------------+   +------------------------------------------------+
-|  IN PROGRESS                                   |   |       TEAM A          │ │        TEAM B         |
-|  Anna · Ben       390 : 310    Cleo · Dan      |   |        1010           │ │         850           |   winner bold + 🏆
-|  Round 4 · today                          ▶    |   |     Anna · Ben        │ │     Cleo · Dan        |
-|                                                |   |  ─────────────────────┼─┼─────────────────────  |
-|  FINISHED                                      |   |  T✓      160          │1│    40                 |   same table as Scoring
-|  🏆 Anna · Ben   1010 : 850    Cleo · Dan      |   |           30          │2│   270            GT✓  |
-|  12 Sep · 12 rounds                            |   |  DS      200          │3│     0                 |
-|                                                |   |  ······· Dan → Eva ··················           |   swap = separator row
-|  Eva · Fritz      620 : 1005  Gina · Hans 🏆   |   |           60          │4│    40            T✗   |
-|  5 Sep · 14 rounds                             |   |  …                                             |
-|                                                |   +------------------------------------------------+
-|  ABANDONED                                     |   |  [ Continue ]  (in-progress / abandoned)       |
-|  Anna · ◌ Guest   120 : 205   Cleo · Dan       |   +------------------------------------------------+
-|  1 Sep · 3 rounds                              |
+```
++---------------------------------------------+
+| History · Tuesday club ▾                [⚙]  |
++---------------------------------------------+
+| IN PROGRESS · 1                               |
+|  +---------------------------------------+  |
+|  | Anna              0 : 0           Cleo |  |
+|  | Benus                          Danus   |  |
+|  | Today · 4 rounds                 ▶    |  |
+|  +---------------------------------------+  |
+|                                               |
+| FINISHED · 1                                  |
+|  +---------------------------------------+  |
+|  | 🏆 Anna         1010 : 850       Slongo |  |
+|  | Benus                         Fäbu    |  |
+|  | 12 Sept 2026 · 12 rounds                |  |
+|  +---------------------------------------+  |
+|                                               |
+| ABANDONED · 1                                 |
+|  +---------------------------------------+  |
+|  | ◌ Guest 1     50 : 50            Chris 🏆|  |
+|  | Slongo                     Gäbu         |  |
+|  | 8 Sept 2026 · 1 round                    |  |
+|  +---------------------------------------+  |
 |  …                                (scrollable) |
-+------------------------------------------------+
++---------------------------------------------+
 | ○ Play   ○ Players   ● History   ○ Stats       |
++---------------------------------------------+
+
+  ← swipe left: red background, threshold 50 % → "Delete this game?"
+  ← long press: same confirm dialog
+
+  card = one horizontal row, one name per line per team:
+      [ 🏆 team A ]   score   [ team B 🏆 ]
+  Every name wears its team colour, no winner is bolded. The 🏆 rides with the
+  winning team's name block (emoji glyph, same as the scoring screen) and the
+  score takes the winning team colour. Both team columns are weight(1f) and the
+  score sits between them as the only fixed-width child, so the ":" stays on the
+  card centre whatever the name or score length is. Meta line inside the card:
+  relative date · rounds, "▶ Continue" on the running game.
+```
+
+```
++------------------------------------------------+
+| <   Game · 12 Sep 2026              [↶] [↷] [⋮] |
++------------------------------------------------+
+|       TEAM A          │ │        TEAM B         |
+|        1010           │ │         850           |   winner bold + 🏆
+|     Anna · Ben        │ │     Cleo · Dan        |
+|  ─────────────────────┼─┼─────────────────────  |
+|  T✓      160          │1│    40                 |   same table as Scoring
+|           30          │2│   270            GT✓  |
+|  DS      200          │3│     0                 |
+|  ······· Dan → Eva ··················           |   swap = separator row
+|           60          │4│    40            T✗   |
+|  …                                             |
++------------------------------------------------+
+|  [ Continue ]  (in progress only)              |
 +------------------------------------------------+
 ```
 
 - List of the active group's games grouped by status (In progress - at most
-  one - / Finished / Abandoned), each row with teams, score, date; winner
-  marked; swipe left to delete with confirmation. An abandoned game can be
-  resumed from its detail screen only if no other game is in progress. In
-  quick play mode the list shows the quick play games (`groupId == null`)
-  instead. Guest names are shown with a hollow dot and in italics.
+  one - / Finished / Abandoned), section header carries the group count. Each
+  game is a card with **one** line - team A left, score centred, team B right -
+  and a meta line below with the relative date, the round count and `▶ Continue`
+  for the running game. Every name is drawn in its team colour and nobody is
+  bolded. The winner is marked by a 🏆 next to their name block and by the score
+  taking the team colour. No delete icon: **swipe left** deletes after
+  confirmation, **long press** opens the same dialog. An abandoned game is
+  read-only: `GameAbandoned` is terminal, so neither the list nor the detail
+  screen offers Continue for it. In quick play mode the list shows the quick
+  play games (`groupId == null`) instead. Guest names get a hollow
+  `OccupantDot` and are italic.
 - Detail: reuses `TeamHeader` + `RoundHistoryTable` from the scoring screen,
   player swaps as dotted separator rows, undo/redo when in progress,
-  "Continue" button. Overflow menu: delete game, share as text.
+  "Continue" button while in progress. Overflow menu: delete game, share as
+  text.
 
 ### Leaderboard / PersonStatistics
 
@@ -670,7 +715,8 @@ there are no registered persons to choose from.
 |  Last sync                     never           |
 |                                                |
 |  ABOUT                                         |
-|  Version 1.0.0 · Licences                 >    |
+|  Version 0.6.4                                  |
+|  Tichu credits                            >    |  dialog: Fata Morgana + Urs Hostettler, artwork by Res Brandenberger
 +------------------------------------------------+
 ```
 

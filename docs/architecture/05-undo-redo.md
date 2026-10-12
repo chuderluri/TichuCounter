@@ -30,11 +30,13 @@ is_undone: 0            0             0              0
 | ------------------- | ------------------------------------------------------------- |
 | `RoundScored`       | Round incl. its Tichu results disappears, running scores drop, game may reopen |
 | `PlayerSwapped`     | Previous occupant (person or guest) returns to the seat        |
-| `GameAbandoned`     | Game returns to `IN_PROGRESS`                                  |
+| `GameAbandoned`     | Game returns to its previous status (usually `IN_PROGRESS`)   |
 | `GameStarted`       | **Not undoable**                                               |
 
-Deleting a whole game is a separate, confirmed action outside undo (soft
-delete via `GameAbandoned` or hard delete from history with confirmation).
+Deleting a whole game is a separate, confirmed action outside undo (hard
+delete from history with confirmation). Note that undo is an *event* undo: it
+marks the last event as undone, it does not reopen a game that has already been
+finished or abandoned for good.
 
 ## Use cases
 
