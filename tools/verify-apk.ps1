@@ -131,11 +131,13 @@ $aapt2 = Get-ChildItem "$env:LOCALAPPDATA\Android\Sdk\build-tools" -Directory -E
 if (-not $aapt2) {
     Fail "aapt2 not found, cannot check permissions"
 } else {
-    $declared = & $aapt2 dump permissions $ApkPath 2>&1 |
-        Where-Object { $_ -match "^uses-permission" } |
-        ForEach-Object { if ($_ -match "name='([^']+)'") { $Matches[1] } } |
-        Where-Object { $_ -notlike "*DYNAMIC_RECEIVER_NOT_EXPORTED_PERMISSION" } |
-        Sort-Object -Unique
+    $declared = @(
+        & $aapt2 dump permissions $ApkPath 2>&1 |
+            Where-Object { $_ -match "^uses-permission" } |
+            ForEach-Object { if ($_ -match "name='([^']+)'") { $Matches[1] } } |
+            Where-Object { $_ -notlike "*DYNAMIC_RECEIVER_NOT_EXPORTED_PERMISSION" } |
+            Sort-Object -Unique
+    )
     if ($declared.Count -eq 0) {
         Ok "no permissions declared apart from the AndroidX receiver guard"
     } else {
