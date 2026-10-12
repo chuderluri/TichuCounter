@@ -13,6 +13,12 @@ Repo: https://github.com/chuderluri/TichuCounter.git
 Binaries: https://github.com/chuderluri/TichuCounter/releases/download/v%v/app-release.apk
 
 Builds:
+  - versionName: 0.6.6
+    versionCode: 13
+    commit: 00d9a0c524a827d7d277dc232275b5f762ca1864
+    subdir: app
+    gradle:
+      - yes
   - versionName: 0.6.5
     versionCode: 12
     commit: 495da3ecc152396f2f4d0dc8f32b21100198ba57
@@ -40,5 +46,5 @@ MaintainerNotes: |-
 
 AutoUpdateMode: Version
 UpdateCheckMode: Tags
-CurrentVersion: 0.6.5
-CurrentVersionCode: 12
+CurrentVersion: 0.6.6
+CurrentVersionCode: 13
