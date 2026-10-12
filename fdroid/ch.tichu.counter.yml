@@ -19,12 +19,6 @@ Builds:
     subdir: app
     gradle:
       - yes
-  - versionName: 0.6.4
-    versionCode: 11
-    commit: 4920212c6d5c0eedbf56bc7d446156ede1e9f756
-    subdir: app
-    gradle:
-      - yes
 
 AllowedAPKSigningKeys: 43eadfbc004585ed5070df54cb5542b423a12a7fb017f99d19d5f8954bc2c008
 
@@ -32,24 +26,17 @@ AntiFeatures:
   - NonFreeAssets
 
 MaintainerNotes: |-
-  Multi-module Gradle build (app + core + feature modules, convention plugins
-  in build-logic/). The pure-JVM modules request a JDK 21 toolchain
-  (jvmToolchain(21)); the buildserver image already provides JDK 21, so nothing
-  is installed. The bytecode target is Java 17 and there is no toolchain
-  auto-download, because F-Droid's source scanner rejects the foojay resolver.
-  Summary, description, icon, screenshots and changelog live in the app's own
-  fastlane/metadata folder and are picked up from the tagged revision.
+  Multi-module Gradle build. The pure-JVM modules use a JDK 21 toolchain
+  without auto-download, because the foojay resolver is rejected by the
+  source scanner. Store text and images are scraped from fastlane/metadata
+  at the tagged revision.
 
-  Reproducible builds are enabled: the app is signed with the upstream release
-  key (SHA-256 43ea...c008) and F-Droid verifies the rebuilt APK against the
-  published one, which is listed in Binaries. If verification fails, the build
-  is skipped rather than published. Nothing is signed in the repo, so a checkout
-  without signing properties still produces the unsigned APK that F-Droid needs.
+  Builds are verified against the published APK in Binaries, signed with the
+  upstream release key listed in AllowedAPKSigningKeys.
 
-  The launcher and store icons are adapted from artwork by Res Brandenberger,
-  used with written permission from Fata Morgana Verlag for non-commercial use
-  only. That artwork is not freely licensed, which is why the NonFreeAssets
-  anti-feature is declared. See CREDITS.md in the source repository.
+  The icons are adapted from artwork by Res Brandenberger with written
+  permission from Fata Morgana Verlag for non-commercial use, which is why
+  NonFreeAssets is declared. See CREDITS.md.
 
 AutoUpdateMode: Version
 UpdateCheckMode: Tags
