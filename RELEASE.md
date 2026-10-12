@@ -23,9 +23,9 @@ git status --short
 ```
 
 Commit outstanding changes in logical units (UI polish, tooling, docs, ...).
-Follow the repo commit style: imperative, English, one subject line, optional
-body. Do not commit `local.properties`, keystores, secrets or session files
-(covered by `.gitignore`).
+Use the Conventional Commit format from `AGENTS.md`; load the `git-commits` skill
+for the type table. Do not commit `local.properties`, keystores, secrets or
+session files (covered by `.gitignore`).
 
 ## 2. Bump the version
 

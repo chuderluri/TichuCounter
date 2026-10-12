@@ -37,6 +37,26 @@ The documents in `docs/architecture/` are the source of truth for design.
   composables; always use string resources.
 - Conversation with the user may be in German; artefacts stay English.
 
+## Commit conventions
+
+Conventional Commits: `<type>(<scope>): <subject>` plus an optional body.
+Load the `git-commits` skill for the full type table, scope naming, PR
+structure and how to split a diff.
+
+- Types: `feat`, `fix`, `docs`, `style`, `refactor`, `perf`, `test`, `build`,
+  `ci`, `chore`, `revert`.
+- Subject: imperative, lowercase after the colon, ~50 characters, no trailing
+  period. A body is required for anything non-trivial and explains *why*, not
+  the diff; wrap at ~72 characters.
+- Scopes follow the modules used here: `history`, `scoring`, `settings`,
+  `players`, `groups`, `domain`, `data`, `ui`, `release`, `fdroid`, `docs`.
+  Omit the scope for genuinely cross-cutting changes.
+- Split by logical unit of change, not by file count or by "I worked on this
+  for an hour". Every commit must be revertible without breaking the others.
+
+The commits before this convention was adopted are not rewritten: `v0.6.5` and
+earlier tags are published and stay as they are.
+
 ## Tech stack (decided - see ADRs in docs/architecture/adr/)
 
 | Concern            | Choice                                              |
@@ -182,4 +202,6 @@ affected module tests before declaring a task done.
 4. Keep ADRs up to date: any deviation from the decided stack or rules needs a
    new file in `docs/architecture/adr/`.
 5. Update `docs/architecture/10-roadmap.md` when a phase item is completed.
-6. Never commit unless explicitly asked.
+6. Load the `git-commits` skill before committing, tagging or describing a pull
+   request.
+7. Never commit unless explicitly asked.
