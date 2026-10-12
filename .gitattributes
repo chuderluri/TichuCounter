@@ -1,0 +1,13 @@
+# Line endings are pinned so the working tree matches the blobs on every platform.
+# The repository stores LF. Without this attribute, a Windows checkout can produce
+# CRLF, ktlint's line-ending rule then flags every .kt file, and `spotlessApply`
+# rewrites them - a diff that is invisible in review but breaks `spotlessCheck`.
+* text=auto eol=lf
+
+# Batch files still need CRLF to run reliably on Windows.
+*.bat text eol=crlf
+
+# Rasterbilder sind binär und dürfen nicht normalisiert werden.
+*.png binary
+*.ico binary
+*.jks binary
