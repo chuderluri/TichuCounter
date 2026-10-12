@@ -204,4 +204,12 @@ affected module tests before declaring a task done.
 5. Update `docs/architecture/10-roadmap.md` when a phase item is completed.
 6. Load the `git-commits` skill before committing, tagging or describing a pull
    request.
-7. Never commit unless explicitly asked.
+7. The file-write tool leaves no trailing newline; `detekt` reports that as
+   `[NewLineAtEndOfFile]`. Append one.
+8. In PowerShell write files with `WriteAllText` + `UTF8Encoding($false)`;
+   `Set-Content -Encoding UTF8` adds a BOM.
+9. Never commit unless explicitly asked.
+10. Anything that touches the phone needs permission first, no exceptions: any
+    `adb` command, installing or uninstalling, system settings, screenshots,
+    logs, pulling or deleting files on the device. Ask first, then do exactly
+    what was agreed — no more.

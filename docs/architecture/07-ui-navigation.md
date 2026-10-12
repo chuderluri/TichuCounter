@@ -735,7 +735,10 @@ there are no registered persons to choose from.
   (filled for persons, hollow for guests; used in GameSetup, PlayerList and history, not in
   the Scoring player section), `DoubleWinButton`, `RoundInputRow` (card field +
   bonus per team), `Keypad`, `KeypadButton`, `PersonAvatar`, `EmptyState`,
-  `TichuTopAppBar`, `LoadingIndicator`.
+  `TichuTopAppBar`.
+- No custom startup screen. The Android 12+ system splash shows the launcher
+  icon and hands over to the app; screens that are still loading render nothing
+  and fill in when the flow delivers.
 - All components stateless with `Modifier` as first optional parameter, previews
   for light/dark and font scale 1.3.
 - Typography: team names `titleLarge`, running totals `displayLarge` so the
