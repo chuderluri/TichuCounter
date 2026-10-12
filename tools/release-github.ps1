@@ -130,9 +130,6 @@ if (-not $WhatIf) {
     if ($LASTEXITCODE -ne 0) {
         Fail "spotless reformatted source files. Commit them and run this script again."
     }
-    # ktlint rewrites line endings, which shows up as a modification with an
-    # empty diff. Drop that noise so the tree is clean for the commit.
-    git checkout -- .
     Write-Host "Formatting is up to date."
 }
 Pause-Step "formatting"
