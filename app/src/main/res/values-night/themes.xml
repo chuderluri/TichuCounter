@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- android:Theme.Material.DayNight only exists from API 29, so the dark variant is a
+         separate file instead of a qualifier on the parent. -->
+    <style name="Theme.TichuCounter" parent="android:style/Theme.Material.NoActionBar">
+        <item name="android:windowBackground">@color/app_window_background</item>
+    </style>
+</resources>

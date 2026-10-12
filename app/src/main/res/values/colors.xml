@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- The system splash on Android 12+ paints this before the first Compose frame, so it has
+         to match the app background or a white flash shows up in dark mode. -->
+    <color name="app_window_background">#FFFBFE</color>
+</resources>
