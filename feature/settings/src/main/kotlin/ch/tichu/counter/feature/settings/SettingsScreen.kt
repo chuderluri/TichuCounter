@@ -50,17 +50,10 @@ fun SettingsScreen(
     viewModel: SettingsViewModel = hiltViewModel(),
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
-    val unavailable = stringResource(R.string.feature_settings_unavailable)
-    val context = LocalContext.current
     CollectEffects(viewModel.effects) { effect ->
         when (effect) {
             SettingsUiEffect.OpenGroupPicker -> onOpenGroupPicker()
             SettingsUiEffect.OpenGroupManagement -> onOpenGroupManagement()
-            SettingsUiEffect.ShowUnavailable -> android.widget.Toast.makeText(
-                context,
-                unavailable,
-                android.widget.Toast.LENGTH_SHORT,
-            ).show()
         }
     }
     Scaffold(
@@ -117,18 +110,6 @@ fun SettingsContent(state: SettingsUiState, onEvent: (SettingsUiEvent) -> Unit, 
         ToggleItem(stringResource(R.string.feature_settings_haptic), state.hapticFeedback) {
             onEvent(SettingsUiEvent.HapticChanged(it))
         }
-        HorizontalDivider()
-        SectionTitle(stringResource(R.string.feature_settings_data))
-        ListItem(
-            headlineContent = { Text(stringResource(R.string.feature_settings_export)) },
-            trailingContent = { Text("›", style = MaterialTheme.typography.titleLarge) },
-            modifier = Modifier.clickable { onEvent(SettingsUiEvent.ExportClicked) },
-        )
-        ListItem(
-            headlineContent = { Text(stringResource(R.string.feature_settings_import)) },
-            trailingContent = { Text("›", style = MaterialTheme.typography.titleLarge) },
-            modifier = Modifier.clickable { onEvent(SettingsUiEvent.ImportClicked) },
-        )
         HorizontalDivider()
         SectionTitle(stringResource(R.string.feature_settings_about))
         ListItem(

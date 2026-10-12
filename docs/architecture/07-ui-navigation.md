@@ -705,10 +705,6 @@ there are no registered persons to choose from.
 |  Keep screen on while scoring        [ on  ]   |
 |  Haptic feedback                     [ on  ]   |
 |                                                |
-|  DATA                                          |
-|  Export backup (JSON)                     >    |
-|  Import backup                            >    |
-|                                                |
 |  ACCOUNT & SYNC              (phase 4)         |
 |  Sign in                                  >    |
 |  Sync                             [ off ]      |
@@ -721,8 +717,9 @@ there are no registered persons to choose from.
 ```
 
 - Group section (active group / manage groups), theme (system/light/dark),
-  default target score, finish-on-tie, keep screen on, haptics, export/import
-  (phase 3), account & sync (phase 4), about.
+  default target score, finish-on-tie, keep screen on, haptics, account & sync
+  (phase 4), about with the Tichu credits. Export/import has no entry until the
+  feature actually exists, so the screen never shows a dead button.
 
 ## Design system (`core:ui`)
 

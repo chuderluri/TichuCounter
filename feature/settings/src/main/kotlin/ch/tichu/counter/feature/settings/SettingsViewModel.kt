@@ -45,18 +45,12 @@ sealed interface SettingsUiEvent {
     data class KeepScreenOnChanged(val enabled: Boolean) : SettingsUiEvent
 
     data class HapticChanged(val enabled: Boolean) : SettingsUiEvent
-
-    data object ExportClicked : SettingsUiEvent
-
-    data object ImportClicked : SettingsUiEvent
 }
 
 sealed interface SettingsUiEffect {
     data object OpenGroupPicker : SettingsUiEffect
 
     data object OpenGroupManagement : SettingsUiEffect
-
-    data object ShowUnavailable : SettingsUiEffect
 }
 
 @HiltViewModel
@@ -89,7 +83,6 @@ class SettingsViewModel @Inject constructor(
             is SettingsUiEvent.FinishOnTieChanged -> viewModelScope.launch { updatePreferences.finishOnTie(event.enabled) }
             is SettingsUiEvent.KeepScreenOnChanged -> viewModelScope.launch { updatePreferences.keepScreenOn(event.enabled) }
             is SettingsUiEvent.HapticChanged -> viewModelScope.launch { updatePreferences.hapticFeedback(event.enabled) }
-            SettingsUiEvent.ExportClicked, SettingsUiEvent.ImportClicked -> send(SettingsUiEffect.ShowUnavailable)
         }
     }
 
