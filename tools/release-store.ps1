@@ -173,9 +173,9 @@ Pause-Step "fdroid metadata"
 Write-Step "3/3 Commit store metadata"
 if (-not $WhatIf) {
     Invoke-Git add fdroid/ch.tichu.counter.yml
-    Invoke-Git commit -m "Add $Version store metadata"
+    Invoke-Git commit -m "fix(fdroid): add the $Version build entry"
 } else {
-    Write-Host "[WhatIf] would run: git add + commit 'Add $Version store metadata'"
+    Write-Host "[WhatIf] would run: git add + commit 'fix(fdroid): add the $Version build entry'"
 }
 
 Write-Host ""
