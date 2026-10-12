@@ -2,6 +2,35 @@
 
 All notable changes to this project are documented in this file.
 
+## [0.6.6] - 2026-10-13
+
+### Fixed
+
+- The app starts in the theme that is saved in the settings. While the
+  preference was still loading, `MainActivity` asked
+  `isSystemInDarkTheme()` and used the answer as a fallback - which is
+  exactly what `ThemeMode.SYSTEM` already means - so a light app theme on
+  a dark system came up in the wrong colours for the first frames.
+- The system splash no longer flashes white before the first frame. The
+  window background is pinned per night qualifier, in a separate
+  `values-night` file because `DayNight` does not exist as a parent below
+  API 29.
+
+### Removed
+
+- Settings no longer shows Export and Import. Both were placeholders that
+  did nothing.
+
+### Housekeeping
+
+- `tools/release-github.ps1` no longer runs `git checkout -- .` after
+  `spotlessApply`. The line existed to drop the CRLF noise that
+  `.gitattributes` now handles, and it would have discarded any
+  uncommitted work.
+- `tools/release-store.ps1` writes a Conventional Commit message.
+- The F-Droid metadata keeps only the build that is actually published,
+  and its `MaintainerNotes` went from 17 lines to 9.
+
 ## [0.6.5] - 2026-10-12
 
 ### Changed

@@ -1,0 +1,2 @@
+- The app now honours your saved theme from the first frame. Previously it fell back to the system setting while the preference was still loading, so a light app theme could start out dark.
+- Settings no longer offers Export and Import. They were placeholders that did nothing; backup and transfer arrive together with the statistics feature.
