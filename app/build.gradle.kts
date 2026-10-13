@@ -17,8 +17,8 @@ android {
 
     defaultConfig {
         applicationId = "ch.tichu.counter"
-        versionCode = 13
-        versionName = "0.6.6"
+        versionCode = 14
+        versionName = "0.6.7"
     }
 
     buildTypes {
