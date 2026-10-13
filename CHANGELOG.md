@@ -2,6 +2,18 @@
 
 All notable changes to this project are documented in this file.
 
+## [0.6.7] - 2026-10-13
+
+### Housekeeping
+
+- The Gradle build runs with a single worker and without parallel project
+  execution. F-Droid rebuilds the release APK and compares it byte for byte
+  with the published one; R8's DEX output can depend on how many threads are
+  available, and the buildserver has a different core count than the release
+  machine. Without this the rebuild differed by 12 bytes in the DEX `code`
+  section. The cause is inferred, not proven - if the next F-Droid build still
+  differs, revert this and work through F-Droid's reproducible-builds wiki.
+
 ## [0.6.6] - 2026-10-13
 
 ### Fixed

@@ -1,0 +1,1 @@
+- No user-visible changes. This release rebuilds the app so that F-Droid can reproduce it from source; the app itself is identical to 0.6.6.
