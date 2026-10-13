@@ -1,3 +1,6 @@
+AntiFeatures:
+  - NonFreeAssets
+
 Categories:
   - Card Game
 License: AGPL-3.0-or-later
@@ -19,17 +22,8 @@ Builds:
     subdir: app
     gradle:
       - yes
-  - versionName: 0.6.6
-    versionCode: 13
-    commit: 00d9a0c524a827d7d277dc232275b5f762ca1864
-    subdir: app
-    gradle:
-      - yes
 
 AllowedAPKSigningKeys: 43eadfbc004585ed5070df54cb5542b423a12a7fb017f99d19d5f8954bc2c008
-
-AntiFeatures:
-  - NonFreeAssets
 
 MaintainerNotes: |-
   Multi-module Gradle build. The pure-JVM modules use a JDK 21 toolchain
