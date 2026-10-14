@@ -133,10 +133,15 @@ Create the release on GitHub and attach the release APK:
 
 ```powershell
 gh release create v<version> `
-  app\build\outputs\apk\release\app-release-unsigned.apk `
+  app\build\outputs\apk\release\app-release.apk `
   --title "Tichu Counter <version>" `
   --notes-file release-notes.md
 ```
+
+The **signed** `app-release.apk` is the reference F-Droid verifies against:
+F-Droid copies its signature onto its own rebuild, so an unsigned file cannot
+be verified at all. `release-github.ps1` therefore refuses to publish when the
+signing properties are missing.
 
 To change the notes or assets later:
 
@@ -172,10 +177,12 @@ $apksigner = "$env:LOCALAPPDATA\Android\Sdk\build-tools\35.0.0\apksigner.bat"
 & $apksigner verify --print-certs app\build\outputs\apk\release\app-release.apk
 ```
 
-Reproducible builds (F-Droid) need the reference APK to be built from the
-tagged commit in a clean tree, because AGP embeds the commit hash in
-`META-INF/version-control-info.textproto`. Only `app-release.apk` qualifies,
-never `app-release-unsigned.apk`.
+Reproducible builds (F-Droid) need the reference APK to be the signed
+`app-release.apk`, built from the tagged commit in a clean tree: F-Droid builds
+exactly that commit, and anything the build picks up from the working tree shows
+up as a difference. AGP's `META-INF/version-control-info.textproto` is not a
+factor - the `android.application` convention plugin disables the task that
+writes it, and `tools/verify-apk.ps1` fails if an entry appears anyway.
 
 ## What F-Droid's byte comparison depends on
 
