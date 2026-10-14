@@ -197,7 +197,7 @@ Write-Step "6/10 Commit and tag (local only)"
 # machine until the APK has been verified.
 if (-not $WhatIf) {
     Invoke-Git add app/build.gradle.kts CHANGELOG.md "fastlane/metadata/android/en-US/changelogs/"
-    Invoke-Git commit -m "Prepare $Version release with changelog"
+    Invoke-Git commit -m "chore(release): prepare the $Version release with changelog"
     Invoke-Git tag $tag
     Write-Host "Tagged $tag. Nothing has been pushed yet."
 } else {

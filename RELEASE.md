@@ -74,9 +74,12 @@ this check should return nothing (or only intentional entries).
 ## 5. Commit version + changelog
 
 ```powershell
-git add app/build.gradle.kts CHANGELOG.md fdroid/ch.tichu.counter.yml fastlane/metadata/android/en-US/changelogs/
-git commit -m "Prepare <version> release with changelog"
+git add app/build.gradle.kts CHANGELOG.md fastlane/metadata/android/en-US/changelogs/
+git commit -m "chore(release): prepare the <version> release with changelog"
 ```
+
+The F-Droid metadata is not part of this commit; step 6a generates its entry
+from the tag.
 
 ## 6. Tag the release
 
