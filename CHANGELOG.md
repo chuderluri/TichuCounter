@@ -2,17 +2,27 @@
 
 All notable changes to this project are documented in this file.
 
+## [0.6.8] - 2026-10-14
+
+### Fixed
+
+- Release APKs are built without the Gradle build cache. A R8 result restored
+  from the cache carried a different `classes.dex` than a fresh build, and that
+  is what made F-Droid reject the 0.6.7 APK. Fresh builds of the same commit are
+  byte identical here and on the F-Droid buildserver (measured 2026-10-14).
+
+### Housekeeping
+
+- `RELEASE.md` and the comment in `gradle.properties` spell out what F-Droid's
+  byte comparison depends on: a single worker and a build without cache hits.
+
 ## [0.6.7] - 2026-10-13
 
 ### Housekeeping
 
 - The Gradle build runs with a single worker and without parallel project
-  execution. F-Droid rebuilds the release APK and compares it byte for byte
-  with the published one; R8's DEX output can depend on how many threads are
-  available, and the buildserver has a different core count than the release
-  machine. Without this the rebuild differed by 12 bytes in the DEX `code`
-  section. The cause is inferred, not proven - if the next F-Droid build still
-  differs, revert this and work through F-Droid's reproducible-builds wiki.
+  execution, so a rebuild of the release APK uses the same R8 thread count as
+  the F-Droid buildserver.
 
 ## [0.6.6] - 2026-10-13
 

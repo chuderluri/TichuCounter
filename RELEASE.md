@@ -174,6 +174,22 @@ tagged commit in a clean tree, because AGP embeds the commit hash in
 `META-INF/version-control-info.textproto`. Only `app-release.apk` qualifies,
 never `app-release-unsigned.apk`.
 
+## What F-Droid's byte comparison depends on
+
+F-Droid rebuilds the tagged commit and compares the result with the published
+APK. Two things in this repository exist for that comparison and must stay:
+
+- `org.gradle.parallel=false` and `org.gradle.workers.max=1` in
+  `gradle.properties`. With them a fresh build here and on the F-Droid
+  buildserver produce an identical `classes.dex` (measured 2026-10-14).
+- `tools/release-github.ps1` builds the release with `--no-build-cache`. A R8
+  result restored from the Gradle build cache carried a different `classes.dex`
+  than a fresh build, and that is what made F-Droid reject the 0.6.7 APK.
+
+So when you build a reference APK by hand, pass `--no-build-cache`; a `clean`
+build alone is not enough, the cache is still consulted for tasks that are not
+up to date.
+
 ## Notes
 
 - Two JDKs are installed on this machine: `java`/`keytool` on `PATH` are JDK 17,

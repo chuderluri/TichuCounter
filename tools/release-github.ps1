@@ -208,7 +208,11 @@ Pause-Step "commit and tag"
 # ------------------------------------------------------------- verify
 Write-Step "7/10 Build and verify the release APK"
 if (-not $WhatIf) {
-    & $gradlew clean testDebugUnitTest detekt assembleDebug assembleRelease
+    # --no-build-cache is not a speed but a correctness switch. The release APK
+    # has to be the output of a real build: a R8 result that came out of the
+    # Gradle build cache had a different DEX than a fresh build and made
+    # F-Droid's reproducible-build check fail for 0.6.7.
+    & $gradlew clean testDebugUnitTest detekt assembleDebug assembleRelease --no-build-cache
     if ($LASTEXITCODE -ne 0) {
         # On Windows clean fails while a Gradle or Kotlin daemon still holds a
         # jar under build/intermediates/lint-cache. Stopping the daemons and
@@ -216,7 +220,7 @@ if (-not $WhatIf) {
         Write-Warning "Build failed, retrying once after stopping the Gradle daemons."
         & $gradlew --stop
         Start-Sleep -Seconds 3
-        & $gradlew clean testDebugUnitTest detekt assembleDebug assembleRelease
+        & $gradlew clean testDebugUnitTest detekt assembleDebug assembleRelease --no-build-cache
     }
     if ($LASTEXITCODE -ne 0) { Fail "Build failed. The local tag $tag exists, delete it with: git tag -d $tag" }
 }

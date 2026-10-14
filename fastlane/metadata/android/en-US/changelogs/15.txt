@@ -1,0 +1,1 @@
+- No user-visible changes. The release build no longer reuses Gradle's build cache, so F-Droid can verify that its rebuild matches the published APK byte for byte.
