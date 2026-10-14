@@ -1,0 +1,7 @@
+# Editors, ktlint and Gradle read this. Every text file ends with exactly one
+# newline; see AGENTS.md, "Coding conventions". With this set, ktlint's
+# final-newline rule fails `spotlessCheck` for Kotlin and Gradle files.
+root = true
+
+[*]
+insert_final_newline = true

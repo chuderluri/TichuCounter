@@ -7,7 +7,7 @@
 # Batch files still need CRLF to run reliably on Windows.
 *.bat text eol=crlf
 
-# Rasterbilder sind binär und dürfen nicht normalisiert werden.
+# Raster images are binary and must not be normalized.
 *.png binary
 *.ico binary
 *.jks binary

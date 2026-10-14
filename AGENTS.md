@@ -154,6 +154,10 @@ Module naming in Gradle: `:core:model`, `:feature:scoring`, etc.
 ## Coding conventions
 
 - Kotlin official code style; 4 spaces; max line length 120.
+- Every text file ends with exactly one newline (the last line included).
+  ktlint enforces it for Kotlin and Gradle files through `.editorconfig`;
+  `detekt` reports a missing one as `NewLineAtEndOfFile`. The only exception
+  are binary files (images, keystores, jars).
 - One public top-level type per file; file name = type name.
 - Composables: `PascalCase`, stateless variant + stateful wrapper
   (`ScoringScreen(viewModel)` -> `ScoringContent(state, onEvent)`).
@@ -204,8 +208,9 @@ affected module tests before declaring a task done.
 5. Update `docs/architecture/10-roadmap.md` when a phase item is completed.
 6. Load the `git-commits` skill before committing, tagging or describing a pull
    request.
-7. The file-write tool leaves no trailing newline; `detekt` reports that as
-   `[NewLineAtEndOfFile]`. Append one.
+7. The file-write tool leaves no trailing newline; append one, otherwise the
+   final-newline rule from the coding conventions is broken the moment the file
+   is saved.
 8. In PowerShell write files with `WriteAllText` + `UTF8Encoding($false)`;
    `Set-Content -Encoding UTF8` adds a BOM.
 9. Never commit unless explicitly asked.
