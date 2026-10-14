@@ -21,12 +21,6 @@ Builds:
     subdir: app
     gradle:
       - yes
-  - versionName: 0.6.7
-    versionCode: 14
-    commit: 72812c7b45339e8e05ba6218159d20e17d9c18db
-    subdir: app
-    gradle:
-      - yes
 
 AllowedAPKSigningKeys: 43eadfbc004585ed5070df54cb5542b423a12a7fb017f99d19d5f8954bc2c008
 
